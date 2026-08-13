@@ -1,0 +1,499 @@
+{
+  "trips": [
+    {
+      "id": "trip-2",
+      "title": "Ancient Java: Bromo Sunrise & Mt. Ijen Blue Fire",
+      "slug": "bromo-ijen",
+      "location": "East Java (Probolinggo & Banyuwangi)",
+      "duration": "3 Days 2 Nights",
+      "description": "Witness the surreal sea of sand surrounding Mount Bromo, feel the cold mountain air as the sun rises over smoke-venting volcanos, and venture deep inside Mount Ijen to see the magical neon-blue sulfuric fire of Banyuwangi.",
+      "coverImage": "https://images.unsplash.com/photo-1605538032432-a9f0c8d9baac?auto=format&fit=crop&w=1200&q=80",
+      "included": [
+        "AC Transport throughout Java tour (3 days)",
+        "4x4 Private Jeep in Mount Bromo",
+        "Local mountain guides for Bromo & Ijen",
+        "Entrance fees for Bromo and Ijen National Parks",
+        "1 Night at Bromo mountain lodge, 1 Night at Banyuwangi hotel",
+        "Gas masks for Mt. Ijen sulfuric fumes",
+        "Daily mineral water and breakfast"
+      ],
+      "excluded": [
+        "Lunch and Dinner meals",
+        "Horse riding fees in Bromo",
+        "Flights or trains to Surabaya/Malang",
+        "Tips for guides and drivers"
+      ],
+      "highlight": "Private 4x4 Jeep sunrise convoy across Bromo's whispering sand sea, and a midnight trek into Ijen crater to see the rare glowing sulfuric blue flame.",
+      "gallery": [
+        "https://images.unsplash.com/photo-1605538032432-a9f0c8d9baac?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1516690561799-46d8f74f9abf?auto=format"
+      ],
+      "faq": [
+        {
+          "question": "Do you supply protective equipment?",
+          "answer": "Yes, we provide professional active-carbon gas masks and headlamps for the Mt. Ijen sulfur hike."
+        }
+      ],
+      "status": "published",
+      "startingPrice": 150,
+      "price": 150,
+      "itinerary": [
+        {
+          "day": 1,
+          "title": "Pick up from Surabaya & Bromo Mountain Check-in",
+          "description": "Pick up from Surabaya Airport/Train Station. Enjoy a private scenic 4-hour drive to Cemoro Lawang village. Check into your cozy room sitting directly on the rim of the Tengger Caldera. Feel the crisp mountain air and rest early for the pre-dawn expedition.",
+          "timeSchedules": [
+            {
+              "time": "12:00",
+              "activity": "Surabaya airport pickup & meet private driver"
+            },
+            {
+              "time": "16:00",
+              "activity": "Check-in at mountain caldera overlook lodge"
+            }
+          ]
+        },
+        {
+          "day": 2,
+          "title": "Bromo Sunrise, Crater Trek & Banyuwangi Drive",
+          "description": "Wake up at 3:00 AM. Board your private 4x4 Jeep to Penanjakan viewpoint to witness the world-famous sunrise over Mt. Bromo, Mt. Batok, and Mt. Semeru. Afterward, cross the dramatic Whispering Sand and hike 250 steps to Bromo's active crater rim. Return, check out, and take a 6-hour scenic drive to Banyuwangi.",
+          "timeSchedules": [
+            {
+              "time": "03:00",
+              "activity": "Board 4x4 Offroad Jeep to sunrise overlook"
+            },
+            {
+              "time": "08:00",
+              "activity": "Volcanic crater rim hike & Whispering Sand crossing"
+            },
+            {
+              "time": "12:00",
+              "activity": "Checkout and transfer drive to Banyuwangi"
+            }
+          ]
+        },
+        {
+          "day": 3,
+          "title": "Ijen Midnight Hike, Blue Flame Experience & Bali Ferry Transfer",
+          "description": "Start at 1:00 AM. Hike 2 hours up Mount Ijen. Descent safely into the crater alongside sulfur miners to see the stunning Neon Blue Acid Flames of Ijen. Walk around the giant turquoise acidic lake at sunrise. Return to base for breakfast, then transfer to Banyuwangi harbor or catch a ferry to Bali.",
+          "timeSchedules": [
+            {
+              "time": "01:00",
+              "activity": "Midnight departure and trek up Mt. Ijen summit"
+            },
+            {
+              "time": "03:30",
+              "activity": "Sulfur crater descent & glowing blue fire viewing"
+            },
+            {
+              "time": "06:00",
+              "activity": "Sunrise view over toxic acid green lake"
+            },
+            {
+              "time": "11:00",
+              "activity": "Breakfast checkout & ferry transfer drop-off"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "batches": [
+    {
+      "id": "batch-4",
+      "tripId": "trip-2",
+      "departureDate": "2026-07-22",
+      "quota": 12,
+      "availableSeats": 12,
+      "price": 150,
+      "status": "Open"
+    },
+    {
+      "id": "batch-5",
+      "tripId": "trip-2",
+      "departureDate": "2026-08-18",
+      "quota": 12,
+      "availableSeats": 10,
+      "price": 150,
+      "status": "Open"
+    }
+  ],
+  "bookings": [
+    {
+      "id": "SJ-84J4OO",
+      "bookingCode": "SJ-84J4OO",
+      "tripId": "General",
+      "tripTitle": "Tumpak Sewu Thousand Waterfalls Adventure",
+      "batchId": "",
+      "fullName": "Sawah Jaya",
+      "customerName": "Sawah Jaya",
+      "email": "sawahjayatrans@gmail.com",
+      "customerEmail": "sawahjayatrans@gmail.com",
+      "phone": "5645645",
+      "customerPhone": "5645645",
+      "participantsCount": 1,
+      "participantsNames": [
+        "Sawah Jaya"
+      ],
+      "proofOfPayment": "ARTOPAY_GATEWAY",
+      "status": "Pending",
+      "paymentStatus": "Pending",
+      "totalPrice": 700000,
+      "totalPriceIDR": 700000,
+      "createdAt": "2026-08-13T03:25:45.284Z"
+    },
+    {
+      "id": "TEST-ORDER-1234",
+      "bookingCode": "TEST-ORDER-1234",
+      "tripId": "General",
+      "tripTitle": "SmartJourney Booking",
+      "batchId": "",
+      "fullName": "Customer",
+      "customerName": "Customer",
+      "email": "customer@example.com",
+      "customerEmail": "customer@example.com",
+      "phone": "N/A",
+      "customerPhone": "N/A",
+      "participantsCount": 1,
+      "participantsNames": [
+        "Customer"
+      ],
+      "proofOfPayment": "ARTOPAY_GATEWAY",
+      "status": "Pending",
+      "paymentStatus": "Pending",
+      "totalPrice": 150000,
+      "totalPriceIDR": 150000,
+      "createdAt": "2026-08-13T03:29:55.136Z",
+      "paymentIntentId": "50107629-9a01-4827-94a9-16d27fefd4ca"
+    },
+    {
+      "id": "SJ-3HS2H1",
+      "bookingCode": "SJ-3HS2H1",
+      "tripId": "General",
+      "tripTitle": "Tumpak Sewu Thousand Waterfalls Adventure",
+      "batchId": "",
+      "fullName": "Sawah Jaya",
+      "customerName": "Sawah Jaya",
+      "email": "sawahjayatrans@gmail.com",
+      "customerEmail": "sawahjayatrans@gmail.com",
+      "phone": "AWE",
+      "customerPhone": "AWE",
+      "participantsCount": 1,
+      "participantsNames": [
+        "Sawah Jaya"
+      ],
+      "proofOfPayment": "ARTOPAY_GATEWAY",
+      "status": "Pending",
+      "paymentStatus": "Pending",
+      "totalPrice": 700000,
+      "totalPriceIDR": 700000,
+      "createdAt": "2026-08-13T03:36:00.760Z"
+    },
+    {
+      "id": "SJ-2026-9999",
+      "bookingCode": "SJ-2026-9999",
+      "tripId": "General",
+      "tripTitle": "Taxi Service",
+      "batchId": "",
+      "fullName": "John Doe",
+      "customerName": "John Doe",
+      "email": "john@example.com",
+      "customerEmail": "john@example.com",
+      "phone": "+62812345678",
+      "customerPhone": "+62812345678",
+      "participantsCount": 1,
+      "participantsNames": [
+        "John Doe"
+      ],
+      "proofOfPayment": "ARTOPAY_GATEWAY",
+      "status": "Pending",
+      "paymentStatus": "Pending",
+      "totalPrice": 150000,
+      "totalPriceIDR": 150000,
+      "createdAt": "2026-08-13T03:38:43.257Z",
+      "paymentIntentId": "9aa7c260-7c1f-45e2-8190-664bfdb99cec"
+    },
+    {
+      "id": "SJ-IRE3CW",
+      "bookingCode": "SJ-IRE3CW",
+      "tripId": "General",
+      "tripTitle": "Mount Bromo Midnight Sunrise Tour",
+      "batchId": "",
+      "fullName": "Wahyu Eka Budi Tania",
+      "customerName": "Wahyu Eka Budi Tania",
+      "email": "sjtrans.op@gmail.com",
+      "customerEmail": "sjtrans.op@gmail.com",
+      "phone": "DW",
+      "customerPhone": "DW",
+      "participantsCount": 1,
+      "participantsNames": [
+        "Wahyu Eka Budi Tania"
+      ],
+      "proofOfPayment": "ARTOPAY_GATEWAY",
+      "status": "Pending",
+      "paymentStatus": "Pending",
+      "totalPrice": 750000,
+      "totalPriceIDR": 750000,
+      "createdAt": "2026-08-13T03:43:05.554Z",
+      "paymentIntentId": "c4a46251-7955-4912-b05d-1c2080d14ffd"
+    },
+    {
+      "id": "SJ-GMA15O",
+      "bookingCode": "SJ-GMA15O",
+      "tripId": "General",
+      "tripTitle": "Mount Bromo Midnight Sunrise Tour",
+      "batchId": "",
+      "fullName": "Wahyu Eka Budi Tania",
+      "customerName": "Wahyu Eka Budi Tania",
+      "email": "sjtrans.op@gmail.com",
+      "customerEmail": "sjtrans.op@gmail.com",
+      "phone": "DW",
+      "customerPhone": "DW",
+      "participantsCount": 1,
+      "participantsNames": [
+        "Wahyu Eka Budi Tania"
+      ],
+      "proofOfPayment": "ARTOPAY_GATEWAY",
+      "status": "Pending",
+      "paymentStatus": "Pending",
+      "totalPrice": 750000,
+      "totalPriceIDR": 750000,
+      "createdAt": "2026-08-13T03:43:40.857Z",
+      "paymentIntentId": "c625abf5-acf9-4dfe-a12f-6f2980c8470e"
+    },
+    {
+      "id": "SJ-7NSPQI",
+      "bookingCode": "SJ-7NSPQI",
+      "tripId": "General",
+      "tripTitle": "Ijen Crater Blue Fire Expedition",
+      "batchId": "",
+      "fullName": "Sawah Jaya",
+      "customerName": "Sawah Jaya",
+      "email": "sawahjayatrans@gmail.com",
+      "customerEmail": "sawahjayatrans@gmail.com",
+      "phone": "GDDRG",
+      "customerPhone": "GDDRG",
+      "participantsCount": 1,
+      "participantsNames": [
+        "Sawah Jaya"
+      ],
+      "proofOfPayment": "ARTOPAY_GATEWAY",
+      "status": "Pending",
+      "paymentStatus": "Pending",
+      "totalPrice": 900000,
+      "totalPriceIDR": 900000,
+      "createdAt": "2026-08-13T03:51:56.646Z",
+      "paymentIntentId": "c06f29d4-122d-4f34-a1f1-2714a3aef7a0"
+    },
+    {
+      "id": "SJ-2026-TEST-PK",
+      "bookingCode": "SJ-2026-TEST-PK",
+      "tripId": "General",
+      "tripTitle": "Taxi Service Test",
+      "batchId": "",
+      "fullName": "Customer",
+      "customerName": "Customer",
+      "email": "customer@example.com",
+      "customerEmail": "customer@example.com",
+      "phone": "N/A",
+      "customerPhone": "N/A",
+      "participantsCount": 1,
+      "participantsNames": [
+        "Customer"
+      ],
+      "proofOfPayment": "ARTOPAY_GATEWAY",
+      "status": "Pending",
+      "paymentStatus": "Pending",
+      "totalPrice": 150000,
+      "totalPriceIDR": 150000,
+      "createdAt": "2026-08-13T03:57:57.903Z",
+      "paymentIntentId": "73ff94b9-60a3-465c-90f9-71696c582dbb"
+    },
+    {
+      "id": "SJ-JLFSPP",
+      "bookingCode": "SJ-JLFSPP",
+      "tripId": "General",
+      "tripTitle": "2-Day Bromo & Madakaripura Waterfall Explorer",
+      "batchId": "",
+      "fullName": "Wahyu Eka Budi Tania",
+      "customerName": "Wahyu Eka Budi Tania",
+      "email": "sjtrans.op@gmail.com",
+      "customerEmail": "sjtrans.op@gmail.com",
+      "phone": "SSS",
+      "customerPhone": "SSS",
+      "participantsCount": 1,
+      "participantsNames": [
+        "Wahyu Eka Budi Tania"
+      ],
+      "proofOfPayment": "ARTOPAY_GATEWAY",
+      "status": "Pending",
+      "paymentStatus": "Pending",
+      "totalPrice": 1900000,
+      "totalPriceIDR": 1900000,
+      "createdAt": "2026-08-13T04:02:42.119Z",
+      "paymentIntentId": "2c9817ba-537c-4894-b72a-b00f3cc84481"
+    },
+    {
+      "id": "SJ-KUASP0",
+      "bookingCode": "SJ-KUASP0",
+      "tripId": "General",
+      "tripTitle": "2-Day Bromo & Madakaripura Waterfall Explorer",
+      "batchId": "",
+      "fullName": "Wahyu Eka Budi Tania",
+      "customerName": "Wahyu Eka Budi Tania",
+      "email": "sjtrans.op@gmail.com",
+      "customerEmail": "sjtrans.op@gmail.com",
+      "phone": "SSS",
+      "customerPhone": "SSS",
+      "participantsCount": 1,
+      "participantsNames": [
+        "Wahyu Eka Budi Tania"
+      ],
+      "proofOfPayment": "ARTOPAY_GATEWAY",
+      "status": "Pending",
+      "paymentStatus": "Pending",
+      "totalPrice": 1900000,
+      "totalPriceIDR": 1900000,
+      "createdAt": "2026-08-13T04:03:03.110Z",
+      "paymentIntentId": "e6119ded-84ea-4dd7-a00d-9a74bbbe9db2"
+    },
+    {
+      "id": "SJ-K8DRJ4",
+      "bookingCode": "SJ-K8DRJ4",
+      "tripId": "General",
+      "tripTitle": "Tumpak Sewu Thousand Waterfalls Adventure",
+      "batchId": "",
+      "fullName": "Sawah Jaya",
+      "customerName": "Sawah Jaya",
+      "email": "sawahjayatrans@gmail.com",
+      "customerEmail": "sawahjayatrans@gmail.com",
+      "phone": "ADAWD",
+      "customerPhone": "ADAWD",
+      "participantsCount": 1,
+      "participantsNames": [
+        "Sawah Jaya"
+      ],
+      "proofOfPayment": "ARTOPAY_GATEWAY",
+      "status": "Pending",
+      "paymentStatus": "Pending",
+      "totalPrice": 700000,
+      "totalPriceIDR": 700000,
+      "createdAt": "2026-08-13T04:35:31.863Z",
+      "paymentIntentId": "5644abee-09bf-4c62-9cd4-c1899d72fb5b"
+    },
+    {
+      "id": "book-1786595799277",
+      "bookingCode": "SJ-T9528G",
+      "tripId": "trip-2",
+      "tripTitle": "Ancient Java: Bromo Sunrise & Mt. Ijen Blue Fire",
+      "batchId": "batch-5",
+      "departureDate": "2026-08-18",
+      "fullName": "Wahyu Eka Budi TaniaA",
+      "email": "sawahjayatrans@gmail.com",
+      "phone": "AD",
+      "participantsCount": 1,
+      "participantsNames": [
+        "Wahyu Eka Budi TaniaA"
+      ],
+      "proofOfPayment": "NOT_APPLICABLE_SLEEK_THEME",
+      "status": "Pending",
+      "totalPrice": 150,
+      "createdAt": "2026-08-13T04:36:39.277Z",
+      "participantData": {
+        "name": "Wahyu Eka Budi TaniaA",
+        "englishName": "AWD",
+        "weChatId": "",
+        "xiaoHongShuId": "",
+        "city": "BALI",
+        "whatsapp": "AD",
+        "email": "sawahjayatrans@gmail.com",
+        "flightNumber": "",
+        "nationalityType": "WNI"
+      },
+      "adminNotes": "",
+      "paymentIntentId": "739ae37d-f919-4190-8326-7a9f6e1912c3",
+      "paymentStatus": "Pending"
+    },
+    {
+      "id": "book-1786596148418",
+      "bookingCode": "SJ-3MEF4D",
+      "tripId": "trip-2",
+      "tripTitle": "Ancient Java: Bromo Sunrise & Mt. Ijen Blue Fire",
+      "batchId": "batch-5",
+      "departureDate": "2026-08-18",
+      "fullName": "Wahyu Eka Budi TaniaA",
+      "email": "sawahjayatrans@gmail.com",
+      "phone": "AD",
+      "participantsCount": 1,
+      "participantsNames": [
+        "Wahyu Eka Budi TaniaA"
+      ],
+      "proofOfPayment": "NOT_APPLICABLE_SLEEK_THEME",
+      "status": "Pending",
+      "totalPrice": 150,
+      "createdAt": "2026-08-13T04:42:28.418Z",
+      "participantData": {
+        "name": "Wahyu Eka Budi TaniaA",
+        "englishName": "AWD",
+        "weChatId": "",
+        "xiaoHongShuId": "",
+        "city": "BALI",
+        "whatsapp": "AD",
+        "email": "sawahjayatrans@gmail.com",
+        "flightNumber": "",
+        "nationalityType": "WNI"
+      },
+      "adminNotes": "",
+      "paymentIntentId": "8860d4a7-1674-4755-94f0-d32d30c6f145",
+      "paymentStatus": "Pending"
+    },
+    {
+      "id": "TEST-VERCEL-CHECK-1",
+      "bookingCode": "TEST-VERCEL-CHECK-1",
+      "tripId": "General",
+      "tripTitle": "Test Vercel Payment Intent",
+      "batchId": "",
+      "fullName": "Customer",
+      "customerName": "Customer",
+      "email": "customer@example.com",
+      "customerEmail": "customer@example.com",
+      "phone": "N/A",
+      "customerPhone": "N/A",
+      "participantsCount": 1,
+      "participantsNames": [
+        "Customer"
+      ],
+      "proofOfPayment": "ARTOPAY_GATEWAY",
+      "status": "Pending",
+      "paymentStatus": "Pending",
+      "totalPrice": 150000,
+      "totalPriceIDR": 150000,
+      "createdAt": "2026-08-13T04:46:30.819Z",
+      "paymentIntentId": "fd469f5a-135c-4bd0-ab20-4f169cc37248"
+    },
+    {
+      "id": "TEST-NO-KEY",
+      "bookingCode": "TEST-NO-KEY",
+      "tripId": "General",
+      "tripTitle": "SmartJourney Booking",
+      "batchId": "",
+      "fullName": "Customer",
+      "customerName": "Customer",
+      "email": "customer@example.com",
+      "customerEmail": "customer@example.com",
+      "phone": "N/A",
+      "customerPhone": "N/A",
+      "participantsCount": 1,
+      "participantsNames": [
+        "Customer"
+      ],
+      "proofOfPayment": "ARTOPAY_GATEWAY",
+      "status": "Pending",
+      "paymentStatus": "Pending",
+      "totalPrice": 10000,
+      "totalPriceIDR": 10000,
+      "createdAt": "2026-08-13T04:46:34.403Z",
+      "paymentIntentId": "d263523f-2a34-4b67-b345-cdea3c4ed4c4"
+    }
+  ]
+}
