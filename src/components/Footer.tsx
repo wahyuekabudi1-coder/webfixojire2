@@ -157,41 +157,45 @@ export default function Footer() {
             </div>
           </div>
  
-          {/* Column 2: Quick Links */}
+          {/* Column 2: Services & Quick Links */}
           <div className="border-t border-neutral-200/60 pt-6 md:border-t-0 md:pt-0">
             <h3 className="text-neutral-900 font-bold text-xs tracking-wider uppercase mb-4 border-l-2 border-amber-500 pl-2.5">
-              Tautan Cepat
+              Services &amp; Navigation
             </h3>
-            <ul className="space-y-3.5 text-sm">
+            <ul className="space-y-2.5 text-sm">
               <li>
-                <button onClick={() => setPage('home')} className="hover:text-amber-600 text-neutral-700 transition-colors cursor-pointer">
-                  Beranda
+                <button onClick={() => setPage('tours')} className="hover:text-amber-600 text-neutral-700 transition-colors cursor-pointer font-medium">
+                  Tour
                 </button>
               </li>
               <li>
-                <button onClick={() => setPage('tours')} className="hover:text-amber-600 text-neutral-700 transition-colors cursor-pointer">
-                  Tour Wisata
-                </button>
-              </li>
-              <li>
-                <button onClick={() => setPage('share-tour')} className="hover:text-amber-600 text-neutral-700 transition-colors cursor-pointer flex items-center gap-1.5">
+                <button onClick={() => setPage('share-tour')} className="hover:text-amber-600 text-neutral-700 transition-colors cursor-pointer flex items-center gap-1.5 font-medium">
                   <span>Share Tour</span>
-                  <span className="text-[9px] bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 px-1 py-0.2 rounded font-mono font-bold uppercase">Baru</span>
+                  <span className="text-[9px] bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 px-1.5 py-0.5 rounded font-mono font-bold uppercase">New</span>
                 </button>
               </li>
               <li>
-                <button onClick={() => setPage('airport')} className="hover:text-amber-600 text-neutral-700 transition-colors cursor-pointer">
-                  Transfer Bandara
+                <button onClick={() => setPage('airport')} className="hover:text-amber-600 text-neutral-700 transition-colors cursor-pointer font-medium">
+                  Airport Transfer
                 </button>
               </li>
               <li>
-                <button onClick={() => setPage('taxi')} className="hover:text-amber-600 text-neutral-700 transition-colors cursor-pointer">
-                  Taksi
+                <button onClick={() => setPage('taxi')} className="hover:text-amber-600 text-neutral-700 transition-colors cursor-pointer font-medium">
+                  Taxi
                 </button>
               </li>
               <li>
-                <button onClick={() => setPage('car-rental')} className="hover:text-amber-600 text-neutral-700 transition-colors cursor-pointer">
-                  Sewa Mobil
+                <button onClick={() => setPage('car-rental')} className="hover:text-amber-600 text-neutral-700 transition-colors cursor-pointer font-medium">
+                  Rental Car
+                </button>
+              </li>
+              <li className="pt-2 border-t border-neutral-200/60 flex items-center gap-4 text-xs font-semibold text-neutral-500">
+                <button onClick={() => setPage('about')} className="hover:text-amber-600 transition-colors cursor-pointer">
+                  About Us
+                </button>
+                <span>•</span>
+                <button onClick={() => setPage('partnerships')} className="hover:text-amber-600 transition-colors cursor-pointer">
+                  Partnerships
                 </button>
               </li>
             </ul>

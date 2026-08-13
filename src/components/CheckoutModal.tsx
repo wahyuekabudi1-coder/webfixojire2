@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../AppContext';
-import { X, ShieldCheck, CheckCircle2, Star, Sparkles, User, Mail, Phone, Calendar, ArrowRight, ChevronRight, Fuel, Briefcase, CreditCard } from 'lucide-react';
+import { X, ShieldCheck, CheckCircle2, Star, Sparkles, User, Mail, Phone, Calendar, ArrowRight, ChevronRight, Fuel, Briefcase, CreditCard, Loader2 } from 'lucide-react';
 import { VEHICLES } from '../data';
 import { motion, AnimatePresence } from 'motion/react';
 import { processArtoPayPayment } from '../lib/artopay';
@@ -44,6 +44,7 @@ export default function CheckoutModal({
   });
   const [confirmedBooking, setConfirmedBooking] = useState<any>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Calculate pricing upgrades if vehicle is premium or large
   const getVehicleMultiplier = () => {
@@ -83,43 +84,54 @@ export default function CheckoutModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
     setErrorMessage(null);
+    setIsSubmitting(true);
 
     if (serviceType === 'tour' || initialDetails?.tourId) {
       if (!customerName.trim()) {
         setErrorMessage('Harap isi Nama Lengkap / Full Name.');
+        setIsSubmitting(false);
         return;
       }
       if (!englishName.trim()) {
         setErrorMessage('Harap isi English Name / Pinyin.');
+        setIsSubmitting(false);
         return;
       }
       if (nationalityType === 'WNA_CHINA') {
         if (!weChatId.trim()) {
           setErrorMessage('Harap isi ID WeChat aktif.');
+          setIsSubmitting(false);
           return;
         }
         if (!xiaoHongShuId.trim()) {
           setErrorMessage('Harap isi ID XiaoHongShu / RED ID.');
+          setIsSubmitting(false);
           return;
         }
       } else {
         if (!customerPhone.trim()) {
           setErrorMessage('Harap isi No. WhatsApp aktif.');
+          setIsSubmitting(false);
           return;
         }
       }
       if (!city.trim()) {
         setErrorMessage('Harap isi Kota / Country of Residence.');
+        setIsSubmitting(false);
         return;
       }
       if (!customerEmail.trim()) {
         setErrorMessage('Harap isi Email Address.');
+        setIsSubmitting(false);
         return;
       }
     } else {
       if (!customerName.trim() || !customerEmail.trim() || !customerPhone.trim()) {
         setErrorMessage('Harap isi Nama Lengkap, Email, dan No. WhatsApp.');
+        setIsSubmitting(false);
         return;
       }
     }
@@ -136,11 +148,13 @@ export default function CheckoutModal({
       
       if (isBlocked) {
         setErrorMessage('Maaf, tanggal ini telah ditutup oleh pihak operasional (Blackout Date). Silakan pilih tanggal lain.');
+        setIsSubmitting(false);
         return;
       }
       const limit = serviceLimits[serviceType] ?? 3;
       if (confirmedCount >= limit) {
         setErrorMessage(`Maaf, kuota pemesanan harian (${limit} slot) untuk layanan ini pada tanggal ini telah penuh. Silakan pilih tanggal lain.`);
+        setIsSubmitting(false);
         return;
       }
     }
@@ -185,26 +199,29 @@ export default function CheckoutModal({
           customerPhone: customerPhone.trim(),
           onSuccess: (res) => {
             console.log('ArtoPay Payment Completed Event:', res);
+            setIsSubmitting(false);
             onClose();
             window.location.hash = '#/bookings';
           },
           onPending: (res) => {
             console.log('ArtoPay Payment Pending Event:', res);
+            setIsSubmitting(false);
             onClose();
             window.location.hash = '#/bookings';
           },
           onError: (err) => {
             console.error('ArtoPay Payment Error:', err);
-            setErrorMessage(err.message || 'Gagal menghubungkan ke ArtoPay Gateway. Silakan periksa kredensial ArtoPay.');
+            setIsSubmitting(false);
+            setErrorMessage(err.message || 'Gagal menghubungkan ke ArtoPay Gateway. Silakan coba lagi.');
           }
         });
-        onClose();
-        window.location.hash = '#/bookings';
       } catch (payErr: any) {
         console.error('ArtoPay checkout trigger error:', payErr);
+        setIsSubmitting(false);
         setErrorMessage(payErr.message || 'Gagal memproses pembayaran via ArtoPay Gateway.');
       }
     } catch (err: any) {
+      setIsSubmitting(false);
       setErrorMessage(err.message || 'Terjadi kesalahan saat memproses reservasi Anda.');
     }
   };
@@ -217,29 +234,29 @@ export default function CheckoutModal({
       <div className="fixed inset-0 cursor-default" onClick={onClose} />
 
       {/* Main Container */}
-      <div className="relative bg-[#203c34] border border-[#315B4F] rounded-3xl w-full max-w-2xl shadow-2xl z-10 flex flex-col my-auto text-white">
+      <div className="relative bg-[#203c34] border border-[#315B4F] rounded-2xl sm:rounded-3xl w-full max-w-2xl shadow-2xl z-10 flex flex-col my-auto text-white max-h-[90vh] sm:max-h-[85vh]">
         
         {/* Header */}
-        <div className="p-6 border-b border-[#315B4F] flex items-center justify-between bg-[#182e28]">
+        <div className="p-4 sm:p-6 border-b border-[#315B4F] flex items-center justify-between bg-[#182e28] shrink-0">
           <div className="flex items-center space-x-2.5">
             <div className="p-1.5 bg-amber-500/10 rounded-lg text-amber-400">
               <ShieldCheck className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-white tracking-tight">Secure Private Reservation</h3>
+              <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">Secure Private Reservation</h3>
               <p className="text-[10px] text-neutral-400 uppercase tracking-widest font-mono">Premium Travel Standard</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-neutral-400 hover:text-white bg-white/5 hover:bg-white/10 p-2 rounded-full transition-colors"
+            className="text-neutral-400 hover:text-white bg-white/5 hover:bg-white/10 p-2 rounded-full transition-colors cursor-pointer"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* Content Stages */}
-        <div className="p-6 md:p-8 grow">
+        <div className="p-4 sm:p-6 md:p-8 grow overflow-y-auto">
           <AnimatePresence mode="wait">
             {step === 1 ? (
               <motion.div
@@ -612,11 +629,23 @@ export default function CheckoutModal({
                     </p>
                     <button
                       type="submit"
-                      className="bg-[#315B4F] hover:bg-[#203c34] text-white font-display font-bold px-6 py-3.5 rounded-2xl flex items-center justify-center space-x-2 shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer border border-[#467b6b]"
+                      disabled={isSubmitting}
+                      className={`bg-[#315B4F] hover:bg-[#203c34] text-white font-display font-bold px-6 py-3.5 rounded-2xl flex items-center justify-center space-x-2 shadow-md transition-all cursor-pointer border border-[#467b6b] ${
+                        isSubmitting ? 'opacity-70 cursor-not-allowed' : 'hover:scale-[1.02] active:scale-[0.98]'
+                      }`}
                     >
-                      <CreditCard className="h-4.5 w-4.5 text-[#D6B16D]" />
-                      <span>Bayar via ArtoPay Gateway</span>
-                      <ArrowRight className="h-4 w-4 text-white" />
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="h-4.5 w-4.5 text-[#D6B16D] animate-spin" />
+                          <span>Menyiapkan Pembayaran ArtoPay...</span>
+                        </>
+                      ) : (
+                        <>
+                          <CreditCard className="h-4.5 w-4.5 text-[#D6B16D]" />
+                          <span>Bayar via ArtoPay Gateway</span>
+                          <ArrowRight className="h-4 w-4 text-white" />
+                        </>
+                      )}
                     </button>
                   </div>
 

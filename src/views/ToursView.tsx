@@ -18,7 +18,7 @@ export const DURATION_FILTERS = [
 ];
 
 export default function ToursView() {
-  const { formatPrice, searchParams, setSearchParams, tours } = useApp();
+  const { formatPrice, searchParams, setSearchParams, tours, setPage } = useApp();
 
   if (searchParams?.selectedTourId) {
     return (
@@ -102,6 +102,15 @@ export default function ToursView() {
   return (
     <div id="tours-view" className="bg-white text-neutral-800 min-h-screen pt-28 md:pt-32 lg:pt-36 pb-16 md:pb-24">
       
+      {/* Breadcrumb Navigation */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+        <nav className="flex items-center space-x-2 text-xs font-medium text-neutral-500">
+          <button onClick={() => setPage('home')} className="hover:text-amber-600 transition-colors cursor-pointer">Home</button>
+          <span>/</span>
+          <span className="text-neutral-900 font-semibold">Tour</span>
+        </nav>
+      </div>
+
       {/* Hero Banner */}
       <section className="relative h-[40vh] min-h-[280px] flex items-center justify-center mb-16 rounded-[32px] overflow-hidden max-w-7xl mx-4 sm:mx-6 lg:mx-8 xl:mx-auto shadow-md">
         <div className="absolute inset-0">

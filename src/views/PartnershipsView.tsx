@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useApp } from '../AppContext';
 import { 
   Handshake, 
   Globe, 
@@ -62,6 +63,7 @@ const DEFAULT_PARTNERS: PartnerApp[] = [
 ];
 
 export default function PartnershipsView() {
+  const { setPage } = useApp();
   const [partners, setPartners] = useState<PartnerApp[]>([]);
   const [isAdminMode, setIsAdminMode] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -196,6 +198,15 @@ export default function PartnershipsView() {
 
   return (
     <div className="bg-[#1c3830] min-h-screen text-neutral-100 pb-24 pt-28">
+      {/* Breadcrumb Navigation */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+        <nav className="flex items-center space-x-2 text-xs font-medium text-neutral-400">
+          <button onClick={() => setPage('home')} className="hover:text-amber-500 transition-colors cursor-pointer">Home</button>
+          <span>/</span>
+          <span className="text-white font-semibold">Partnerships</span>
+        </nav>
+      </div>
+
       {/* Banner / Hero Header */}
       <section className="relative overflow-hidden mb-12">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl" />

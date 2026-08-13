@@ -129,48 +129,45 @@ export default function Header() {
                       <div>
                         <div className="text-sm font-semibold flex items-center gap-1.5">
                           <span>Share Tour</span>
-                          <span className="text-[8px] bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 px-1.5 py-0.5 rounded font-mono font-black uppercase tracking-wider">Baru</span>
+                          <span className="text-[8px] bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 px-1 py-0.5 rounded font-mono font-black uppercase tracking-wider">New</span>
                         </div>
-                        <div className="text-[10px] text-neutral-500">Open Trip / Kuota Per Seat</div>
+                        <div className="text-[10px] text-neutral-500">Open Trip / Per-Seat Booking</div>
                       </div>
                     </button>
                     <button
                       onClick={() => handleNavigate('airport')}
-                      className="flex items-center space-x-3 w-full px-4 py-3 text-left text-neutral-700 hover:text-amber-600 hover:bg-amber-500/5 transition-colors"
+                      className="flex items-center space-x-3 w-full px-4 py-3 text-left text-neutral-700 hover:text-amber-600 hover:bg-amber-500/5 transition-colors border-t border-neutral-100"
                     >
                       <Plane className="h-4 w-4 text-amber-500 shrink-0" />
                       <div>
                         <div className="text-sm font-semibold flex items-center gap-1.5">
-                          <span>Airport transfer</span>
-                          <span className="text-[8px] bg-amber-500/10 text-amber-600 border border-amber-500/20 px-1.5 py-0.5 rounded font-mono font-black uppercase tracking-wider">Soon</span>
+                          <span>Airport Transfer</span>
                         </div>
                         <div className="text-[10px] text-neutral-500">SUB, DPS, YIA, CGK</div>
                       </div>
                     </button>
                     <button
                       onClick={() => handleNavigate('taxi')}
-                      className="flex items-center space-x-3 w-full px-4 py-3 text-left text-neutral-700 hover:text-amber-600 hover:bg-amber-500/5 transition-colors"
+                      className="flex items-center space-x-3 w-full px-4 py-3 text-left text-neutral-700 hover:text-amber-600 hover:bg-amber-500/5 transition-colors border-t border-neutral-100"
                     >
                       <Route className="h-4 w-4 text-amber-500 shrink-0" />
                       <div>
                         <div className="text-sm font-semibold flex items-center gap-1.5">
-                          <span>Taxi service</span>
-                          <span className="text-[8px] bg-amber-500/10 text-amber-600 border border-amber-500/20 px-1.5 py-0.5 rounded font-mono font-black uppercase tracking-wider">Soon</span>
+                          <span>Taxi</span>
                         </div>
                         <div className="text-[10px] text-neutral-500">Point-to-point flat fare</div>
                       </div>
                     </button>
                     <button
                       onClick={() => handleNavigate('car-rental')}
-                      className="flex items-center space-x-3 w-full px-4 py-3 text-left text-neutral-700 hover:text-amber-600 hover:bg-amber-500/5 transition-colors"
+                      className="flex items-center space-x-3 w-full px-4 py-3 text-left text-neutral-700 hover:text-amber-600 hover:bg-amber-500/5 transition-colors border-t border-neutral-100"
                     >
                       <Car className="h-4 w-4 text-amber-500" />
                       <div>
                         <div className="text-sm font-semibold flex items-center gap-1.5">
-                          <span>Car rental</span>
-                          <span className="text-[8px] bg-amber-500/10 text-amber-600 border border-amber-500/20 px-1.5 py-0.5 rounded font-mono font-black uppercase tracking-wider">Soon</span>
+                          <span>Rental Car</span>
                         </div>
-                        <div className="text-[10px] text-neutral-500">Hourly & daily car hire</div>
+                        <div className="text-[10px] text-neutral-500">Hourly & daily car hire with driver</div>
                       </div>
                     </button>
                   </motion.div>
@@ -345,9 +342,8 @@ export default function Header() {
                 >
                   <div className="flex items-center space-x-3">
                     <Plane className="h-4 w-4 text-amber-500 shrink-0" />
-                    <span>Airport transfer</span>
+                    <span>Airport Transfer</span>
                   </div>
-                  <span className="text-[8px] bg-amber-500/10 text-amber-600 border border-amber-500/20 px-1.5 py-0.5 rounded font-mono font-black uppercase tracking-wider">Soon</span>
                 </button>
                 <button
                   onClick={() => handleNavigate('taxi')}
@@ -355,9 +351,8 @@ export default function Header() {
                 >
                   <div className="flex items-center space-x-3">
                     <Route className="h-4 w-4 text-amber-500 shrink-0" />
-                    <span>Taxi service</span>
+                    <span>Taxi</span>
                   </div>
-                  <span className="text-[8px] bg-amber-500/10 text-amber-600 border border-amber-500/20 px-1.5 py-0.5 rounded font-mono font-black uppercase tracking-wider">Soon</span>
                 </button>
                 <button
                   onClick={() => handleNavigate('car-rental')}
@@ -365,9 +360,8 @@ export default function Header() {
                 >
                   <div className="flex items-center space-x-3">
                     <Car className="h-4 w-4 text-amber-500 shrink-0" />
-                    <span>Car rental</span>
+                    <span>Rental Car</span>
                   </div>
-                  <span className="text-[8px] bg-amber-500/10 text-amber-600 border border-amber-500/20 px-1.5 py-0.5 rounded font-mono font-black uppercase tracking-wider">Soon</span>
                 </button>
               </div>
 

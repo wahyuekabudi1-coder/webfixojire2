@@ -412,8 +412,8 @@ export default function HomeView() {
           </div>
 
           {/* Tour Search Widget */}
-          <div className="hidden lg:block max-w-4xl mx-auto bg-white/95 border border-neutral-200/80 p-6 rounded-3xl shadow-2xl backdrop-blur-md">
-            <form onSubmit={handleSearch} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          <div className="mt-8 lg:mt-12 w-full max-w-4xl mx-auto bg-white/95 border border-neutral-200/80 p-4 sm:p-6 rounded-2xl sm:rounded-3xl shadow-2xl backdrop-blur-md text-neutral-800">
+            <form onSubmit={handleSearch} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 sm:gap-4">
               
               {/* Destination */}
               <div className="text-left space-y-1">
@@ -616,166 +616,57 @@ export default function HomeView() {
       </section>
 
       {/* 3. OUR SERVICES */}
-      <section className="py-10 md:py-14 lg:py-16 bg-[#1c3830] text-slate-100 relative border-t border-b border-[#2a5247] overflow-hidden">
-        {/* Subtle glowing cosmic gradients in the background */}
-        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-amber-500/5 rounded-full blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-amber-500/5 rounded-full blur-[120px] pointer-events-none" />
+      <section className="py-16 sm:py-20 lg:py-24 bg-neutral-900 text-slate-100 relative overflow-hidden">
+        {/* Subtle background glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[300px] bg-amber-500/5 rounded-full blur-[140px] pointer-events-none" />
         
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           
-          <div className="text-center space-y-3 mb-6 sm:mb-8">
-            <span className="inline-flex items-center gap-1.5 bg-amber-500/10 text-amber-500 font-extrabold uppercase tracking-widest font-mono text-[10px] sm:text-xs px-3.5 py-1.5 rounded-full border border-amber-500/20">
+          <div className="text-center space-y-3 mb-10 sm:mb-14 max-w-2xl mx-auto">
+            <span className="inline-flex items-center gap-1.5 bg-amber-500/10 text-amber-400 font-semibold uppercase tracking-widest text-xs px-3.5 py-1.5 rounded-full border border-amber-500/20">
               <Sparkles className="h-3.5 w-3.5" />
-              <span>Direktori Layanan</span>
+              <span>Service Directory</span>
             </span>
-            <h2 className="text-2xl sm:text-4.5xl font-black text-white tracking-tight leading-none mt-2">
-              Layanan Transportasi Premium
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
+              Premium Transport &amp; Travel Services
             </h2>
-            <p className="text-xs sm:text-sm text-emerald-100/80 max-w-xl mx-auto font-medium">
-              Layanan transportasi profesional dan paket perjalanan wisata yang dirancang khusus untuk kenyamanan Anda di Jawa Timur.
+            <p className="text-sm sm:text-base text-neutral-400 font-medium leading-relaxed">
+              Tailored travel experiences and professional private transportation across East Java and Indonesia.
             </p>
-            <div className="h-1 w-20 bg-gradient-to-r from-amber-500 to-amber-600 mx-auto rounded-full mt-3" />
           </div>
 
-          {/* Interactive Circular Orbit Selection Panel (Sleek Celestial System Layout) */}
-          <div className="bg-[#203c34]/80 border border-[#315B4F] rounded-3xl p-6 sm:p-10 mb-8 shadow-2xl relative overflow-hidden backdrop-blur-sm">
-            <div className="absolute inset-0 bg-gradient-to-b from-slate-950/20 to-transparent pointer-events-none" />
-            
-            <div className="text-center space-y-1 mb-2">
-              <span className="text-[10px] sm:text-xs text-amber-500 font-extrabold tracking-widest uppercase font-mono">
-                Layanan Kami
-              </span>
-              <h3 className="text-lg sm:text-2xl font-black text-slate-100 tracking-tight">
-                Pilih Cara Anda Menjelajah
-              </h3>
-            </div>
-
-
-            {/* Orbit Container Area */}
-            <div className="relative w-full max-w-[280px] sm:max-w-[360px] aspect-square mx-auto my-6 flex items-center justify-center">
-              {/* Concentric orbital rings with rotational movement */}
-              <div className="absolute inset-2 rounded-full border border-dashed border-amber-500/10 animate-[spin_80s_linear_infinite]" />
-              <div className="absolute inset-10 rounded-full border border-dashed border-amber-500/15 animate-[spin_120s_linear_infinite]" />
-              <div className="absolute inset-20 rounded-full border border-dashed border-amber-500/20 animate-[spin_60s_linear_infinite]" />
-              
-              {/* Constellation curved vector paths */}
-              <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-40" viewBox="0 0 100 100">
-                <path d="M 15 50 Q 50 15 85 50" fill="none" stroke="url(#orbitGrad)" strokeWidth="0.5" strokeDasharray="2 2" />
-                <path d="M 15 50 Q 50 85 85 50" fill="none" stroke="url(#orbitGrad)" strokeWidth="0.5" strokeDasharray="2 2" />
-                <path d="M 50 15 Q 15 50 50 85" fill="none" stroke="url(#orbitGrad)" strokeWidth="0.5" strokeDasharray="2 2" />
-                <path d="M 50 15 Q 85 50 50 85" fill="none" stroke="url(#orbitGrad)" strokeWidth="0.5" strokeDasharray="2 2" />
-                
-                <defs>
-                  <radialGradient id="orbitGrad" cx="50%" cy="50%" r="50%">
-                    <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.8" />
-                    <stop offset="100%" stopColor="#d97706" stopOpacity="0.1" />
-                  </radialGradient>
-                </defs>
-              </svg>
-
-              {/* Pulsing center aura */}
-              <div className="absolute w-24 h-24 bg-amber-500/10 rounded-full blur-2xl pointer-events-none animate-pulse" />
-
-              {/* Orbital interactive service nodes (5 nodes) */}
-              {[
-                { id: 'tours', label: 'Tour Wisata', icon: <Compass className="h-5 w-5 sm:h-6 sm:w-6" />, pos: 'top', hint: 'Bromo & Ijen', isComingSoon: false },
-                { id: 'share-tour', label: 'Share Tour', icon: <Users className="h-5 w-5 sm:h-6 sm:w-6" />, pos: 'top-right', hint: 'Open Trip', isComingSoon: false, isNew: true },
-                { id: 'taxi', label: 'Taksi', icon: <Route className="h-5 w-5 sm:h-6 sm:w-6" />, pos: 'bottom-right', hint: 'Tarif Flat', isComingSoon: true },
-                { id: 'car-rental', label: 'Rental Mobil', icon: <Car className="h-5 w-5 sm:h-6 sm:w-6" />, pos: 'bottom-left', hint: 'Sopir Handal', isComingSoon: true },
-                { id: 'airport', label: 'Antar-Jemput Bandara', icon: <Plane className="h-5 w-5 sm:h-6 sm:w-6" />, pos: 'top-left', hint: 'Layanan 24 Jam', isComingSoon: true },
-              ].map((srv) => {
-                const isActive = activeService === srv.id;
-                
-                // Specific positional absolute alignments on the orbit circle
-                let positionStyle = '';
-                if (srv.pos === 'top') positionStyle = 'top-[10%] left-[50%] -translate-x-1/2 -translate-y-1/2';
-                if (srv.pos === 'top-right') positionStyle = 'top-[28%] right-[8%] translate-x-1/2 -translate-y-1/2';
-                if (srv.pos === 'bottom-right') positionStyle = 'bottom-[18%] right-[16%] translate-x-1/2 translate-y-1/2';
-                if (srv.pos === 'bottom-left') positionStyle = 'bottom-[18%] left-[16%] -translate-x-1/2 translate-y-1/2';
-                if (srv.pos === 'top-left') positionStyle = 'top-[28%] left-[8%] -translate-x-1/2 -translate-y-1/2';
-
-                return (
-                  <button
-                    key={srv.id}
-                    onClick={() => setActiveService(srv.id as any)}
-                    className={`absolute z-10 flex flex-col items-center justify-center transition-all duration-500 group cursor-pointer ${positionStyle}`}
-                  >
-                    {/* Node Sphere Element */}
-                    <div className="relative">
-                      {isActive && (
-                        <>
-                          {/* Radial high-contrast aura glow */}
-                          <span className="absolute inset-0 bg-amber-500/40 rounded-full blur-xl scale-150 animate-pulse" />
-                          <span className="absolute inset-[-4px] border border-amber-400 rounded-full animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite]" />
-                        </>
-                      )}
-                      
-                      <div
-                        className={`flex items-center justify-center rounded-full transition-all duration-500 relative z-10 shadow-xl ${
-                          isActive
-                            ? 'w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-tr from-amber-400 to-amber-300 text-neutral-950 scale-110 border border-amber-300 shadow-amber-500/30'
-                            : 'w-11 h-11 sm:w-14 sm:h-14 bg-slate-900/90 hover:bg-slate-900 text-slate-400 hover:text-white border border-slate-800 hover:border-amber-500/50 hover:scale-105'
-                        }`}
-                      >
-                        {srv.icon}
-                        {srv.isNew && !srv.isComingSoon && (
-                          <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border border-slate-950"></span>
-                          </span>
-                        )}
-                        {srv.isComingSoon && (
-                          <span className="absolute -top-1 -right-1 flex h-3 w-3">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Sphere Labels */}
-                    <div className="mt-2.5 text-center relative z-20 max-w-[100px] sm:max-w-[120px]">
-                      <span
-                        className={`block text-[10px] sm:text-xs font-black tracking-tight leading-tight transition-all duration-300 select-none ${
-                          isActive
-                            ? 'text-amber-400 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]'
-                            : 'text-slate-400 group-hover:text-slate-200'
-                        }`}
-                      >
-                        {srv.label}
-                        {srv.isNew && (
-                          <span className="block mt-0.5 text-[7px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1 py-0.2 rounded font-mono font-bold uppercase tracking-wider scale-90">Baru</span>
-                        )}
-                        {srv.isComingSoon && (
-                          <span className="block mt-0.5 text-[7px] bg-amber-500/10 text-amber-500 border border-amber-500/20 px-1 py-0.2 rounded font-mono font-bold uppercase tracking-wider scale-90">Soon</span>
-                        )}
-                      </span>
-                      <span
-                        className={`hidden sm:block text-[8px] font-medium mt-0.5 tracking-wide transition-colors ${
-                          isActive ? 'text-amber-500/70' : 'text-slate-500 group-hover:text-amber-500/40'
-                        }`}
-                      >
-                        {srv.hint}
-                      </span>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Bouncing Help Indicator Prompt */}
-            <div className="text-center mt-2">
-              <p className="text-[10px] sm:text-xs text-slate-400 font-semibold animate-pulse tracking-wide">
-                Pilih layanan untuk menjelajahi lebih lanjut
-              </p>
-              <motion.div 
-                animate={{ y: [0, 4, 0] }}
-                transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-                className="mt-1 flex justify-center"
-              >
-                <div className="h-1.5 w-1.5 bg-amber-500 rounded-full" />
-              </motion.div>
-            </div>
+          {/* Sleek Minimalist Service Navigation Tabs */}
+          <div className="flex items-center justify-start md:justify-center overflow-x-auto scrollbar-none gap-2 sm:gap-3 mb-10 pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+            {[
+              { id: 'tours', label: 'Private Tours', icon: <Compass className="h-4 w-4" />, hint: 'Bromo & Ijen', isNew: false },
+              { id: 'share-tour', label: 'Share Tour', icon: <Users className="h-4 w-4" />, hint: 'Open Trip', isNew: true },
+              { id: 'airport', label: 'Airport Transfer', icon: <Plane className="h-4 w-4" />, hint: '24/7 Pickup', isNew: false },
+              { id: 'taxi', label: 'City Taxi', icon: <Route className="h-4 w-4" />, hint: 'Flat Rate', isNew: false },
+              { id: 'car-rental', label: 'Car Rental', icon: <Car className="h-4 w-4" />, hint: 'With Driver', isNew: false },
+            ].map((srv) => {
+              const isActive = activeService === srv.id;
+              return (
+                <button
+                  key={srv.id}
+                  onClick={() => setActiveService(srv.id as any)}
+                  className={`flex items-center gap-2.5 px-5 py-3 rounded-2xl text-xs sm:text-sm font-semibold transition-all duration-300 shrink-0 cursor-pointer border ${
+                    isActive
+                      ? 'bg-amber-500 text-neutral-950 border-amber-400 shadow-lg shadow-amber-500/20 font-bold scale-[1.02]'
+                      : 'bg-neutral-800/80 text-neutral-300 border-neutral-700/80 hover:bg-neutral-800 hover:text-white hover:border-neutral-600'
+                  }`}
+                >
+                  {srv.icon}
+                  <span>{srv.label}</span>
+                  {srv.isNew && (
+                    <span className={`text-[9px] px-1.5 py-0.5 rounded font-mono font-bold uppercase tracking-wider ${
+                      isActive ? 'bg-neutral-950 text-amber-400' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                    }`}>
+                      New
+                    </span>
+                  )}
+                </button>
+              );
+            })}
           </div>
 
           {/* Service Detailed Showcase Card */}
@@ -786,10 +677,10 @@ export default function HomeView() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.25 }}
-              className="bg-slate-900/40 border border-slate-800 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 min-h-[350px] backdrop-blur-sm"
+              className="bg-neutral-800/60 border border-neutral-700/60 rounded-3xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 backdrop-blur-sm shadow-2xl"
             >
-              {/* Image side - elegant layout */}
-              <div className="lg:col-span-5 relative min-h-[240px] lg:min-h-full overflow-hidden bg-neutral-950 group">
+              {/* Image side */}
+              <div className="lg:col-span-5 relative min-h-[260px] lg:min-h-full overflow-hidden bg-neutral-950 group">
                 <img
                   src={
                     activeService === 'tours'
@@ -803,96 +694,88 @@ export default function HomeView() {
                       : 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=1000&q=80'
                   }
                   alt={activeService}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-all duration-700 opacity-80"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-all duration-700 opacity-85"
                   referrerPolicy="no-referrer"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent lg:bg-gradient-to-r lg:from-transparent lg:to-slate-950/15" />
+                <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/20 to-transparent lg:bg-gradient-to-r lg:from-transparent lg:to-neutral-950/20" />
                 
                 {/* Visual badge */}
-                <div className="absolute bottom-6 left-6 right-6 lg:hidden">
-                  <span className="text-[10px] text-amber-500 font-extrabold uppercase tracking-widest font-mono bg-slate-950/90 backdrop-blur-sm px-2.5 py-1 rounded border border-amber-500/20">
-                    {activeService === 'tours' && 'Paket Tour Jawa Timur'}
+                <div className="absolute bottom-6 left-6 right-6">
+                  <span className="text-[11px] text-amber-400 font-bold uppercase tracking-wider font-mono bg-neutral-950/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-neutral-700/80 shadow-md">
+                    {activeService === 'tours' && 'East Java Curated Tours'}
                     {activeService === 'share-tour' && 'Share Tour & Open Trip'}
-                    {activeService === 'airport' && 'Antar-Jemput Bandara 24/7'}
-                    {activeService === 'taxi' && 'Taksi Tarif Flat'}
-                    {activeService === 'car-rental' && 'Sewa Mobil & Sopir'}
+                    {activeService === 'airport' && '24/7 Airport Transfer'}
+                    {activeService === 'taxi' && 'Flat-Rate Executive Taxi'}
+                    {activeService === 'car-rental' && 'Private Car & Driver'}
                   </span>
                 </div>
               </div>
 
               {/* Content side */}
-              <div className="lg:col-span-7 p-6 sm:p-10 flex flex-col justify-between space-y-6">
+              <div className="lg:col-span-7 p-6 sm:p-10 lg:p-12 flex flex-col justify-between space-y-6">
                 <div className="space-y-4">
-                  <span className="hidden lg:inline-block text-[10px] text-amber-400 font-extrabold uppercase tracking-widest font-mono bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">
-                    {activeService === 'tours' && 'Eksplorasi Jawa Timur'}
-                    {activeService === 'share-tour' && 'Open Trip & Kuota Per Seat'}
-                    {activeService === 'airport' && 'Transportasi Bandara Nyaman'}
-                    {activeService === 'taxi' && 'Perjalanan Point-to-Point'}
-                    {activeService === 'car-rental' && 'Penyewaan Mobil Premium'}
-                  </span>
-                  
-                  <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-tight">
-                    {activeService === 'tours' && 'Tur Gunung Bromo & Air Terjun Privat atau Bersama'}
-                    {activeService === 'share-tour' && 'Open Trip Share Tour Berbagi Kuota Wisata Hemat'}
-                    {activeService === 'airport' && 'Penjemputan & Pengantaran Bandara Bebas Stres'}
-                    {activeService === 'taxi' && 'Taksi Eksekutif Antar Kota Door-to-Door'}
-                    {activeService === 'car-rental' && 'Rental Mobil Premium Lengkap dengan Sopir Wisata'}
+                  <h3 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight leading-snug">
+                    {activeService === 'tours' && 'Private Mount Bromo & Ijen Crater Adventures'}
+                    {activeService === 'share-tour' && 'Open Trip Share Tour for Smart Solo & Small Group Travelers'}
+                    {activeService === 'airport' && 'Seamless Airport Pickups & Transfers'}
+                    {activeService === 'taxi' && 'Point-to-Point Executive Intercity Taxi'}
+                    {activeService === 'car-rental' && 'Premium Car Rental with Professional Local Driver'}
                   </h3>
 
-                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-medium">
-                    {activeService === 'tours' && 'Nikmati perjalanan petualangan tak terlupakan ke Gunung Bromo (sunset & sunrise), Kawah Ijen (blue fire), serta air terjun menakjubkan seperti Tumpak Sewu. Kami menyediakan paket lengkap mulai dari mobil ber-AC, Jeep 4x4 lokal, pemandu wisata berpengalaman, hingga tiket masuk objek wisata yang sudah dipesan terlebih dahulu.'}
-                    {activeService === 'share-tour' && 'Solusi hemat bagi solo traveler, pasangan, maupun grup kecil. Bergabunglah dalam jadwal keberangkatan terkonfirmasi (batch open trip) untuk destinasi populer seperti Gunung Bromo, Kawah Ijen, dan Tumpak Sewu. Nikmati armada nyaman, Jeep 4x4, serta pemandu profesional dengan tarif per seat yang sangat terjangkau.'}
-                    {activeService === 'airport' && 'Hindari kerumunan dan kebingungan di terminal bandara. Kami menyediakan jasa antar-jemput profesional di Bandara Juanda Surabaya (SUB), Bandara Yogyakarta (YIA), Jakarta (CGK), dan Bali (DPS). Pengemudi kami memantau jadwal penerbangan Anda secara langsung dan akan menyambut Anda dengan papan nama khusus.'}
-                    {activeService === 'taxi' && 'Nikmati perjalanan pribadi dalam kota maupun antar kota sesuai kebutuhan Anda. Sempurna untuk perjalanan bisnis atau liburan keluarga dengan tarif flat yang transparan dan sudah disepakati di awal. Sama sekali tidak ada biaya tersembunyi, kejutan tarif tol, atau biaya tambahan lainnya.'}
-                    {activeService === 'car-rental' && 'Jelajahi keindahan Jawa Timur dengan rute dan jadwal yang sepenuhnya Anda tentukan sendiri. Sewa armada modern kami yang selalu bersih dan wangi (Avanza, Innova Reborn, Innova Zenix, atau Hiace berkapasitas besar) secara harian atau per jam bersama sopir berlisensi yang ramah.'}
+                  <p className="text-sm text-neutral-300 leading-relaxed font-normal">
+                    {activeService === 'tours' && 'Experience unforgettable expeditions to Mount Bromo sunrise, Ijen Crater blue fire, and Tumpak Sewu Waterfall. Complete packages include climate-controlled transport, 4x4 off-road Jeeps, licensed English-speaking guides, and pre-arranged park permits.'}
+                    {activeService === 'share-tour' && 'Cost-effective group departures for solo travelers and couples. Join confirmed departure batches for Mount Bromo and Ijen Crater with per-seat pricing, comfortable fleet, professional guide, and instant voucher validation.'}
+                    {activeService === 'airport' && 'Stress-free transfers connecting Juanda International Airport Surabaya (SUB), Yogyakarta (YIA), CGK, and Bali (DPS). Drivers monitor live flight status and provide personalized terminal arrival meet & greet.'}
+                    {activeService === 'taxi' && 'Reliable private transfers with fixed transparent pricing. Enjoy door-to-door comfort for business or leisure with zero hidden toll, parking, or surge fees.'}
+                    {activeService === 'car-rental' && 'Explore East Java on your own customized itinerary with our immaculate fleet (Avanza, Innova Reborn, Zenix, Hiace) and experienced local drivers.'}
                   </p>
 
                   {/* High quality bullets checklist */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-2">
                     {(activeService === 'tours'
                       ? [
-                          'Tiket masuk & perizinan wisata lengkap',
-                          'Kendaraan Jeep 4x4 off-road Gunung Bromo',
-                          'Pemandu lokal bersertifikat & ramah',
-                          'Penjemputan fleksibel di Surabaya, Malang, atau Banyuwangi',
+                          'All entrance tickets & permits included',
+                          'Private 4x4 Bromo Jeep included',
+                          'Certified English-speaking guide',
+                          'Flexible pickup in Surabaya, Malang, or Banyuwangi',
                         ]
                       : activeService === 'share-tour'
                       ? [
-                          'Harga paling terjangkau dihitung per kursi (per seat)',
-                          'Jadwal batch open trip pasti & terkonfirmasi',
-                          'Sudah termasuk Jeep 4x4, driver, & pemandu wisata',
-                          'Kemudahan sistem booking & cek status voucher online',
+                          'Budget-friendly per-seat pricing',
+                          'Guaranteed batch departure schedules',
+                          'Includes Jeep 4x4, driver & guide',
+                          'Instant digital voucher confirmation',
                         ]
                       : activeService === 'airport'
                       ? [
-                          'Pemantauan jadwal penerbangan real-time',
-                          'Penyambutan dengan papan nama di terminal',
-                          'Sudah termasuk biaya tol dan parkir bandara',
-                          'Bantuan bagasi & rute perjalanan tercepat',
+                          'Real-time flight status tracking',
+                          'Paging nameboard meet & greet at terminal',
+                          'Tolls & airport parking fees included',
+                          'Luggage assistance & direct routing',
                         ]
                       : activeService === 'taxi'
                       ? [
-                          'Tarif flat transparan tanpa biaya tambahan',
-                          'Layanan pintu-ke-pintu (door-to-door) privat',
-                          'Pengemudi profesional bebas rokok',
-                          'Fasilitas air mineral gratis & colokan daya',
+                          'Fixed transparent rates without surge',
+                          'Door-to-door executive private service',
+                          'Professional non-smoking drivers',
+                          'Complimentary bottled water & phone charging',
                         ]
                       : [
-                          'Biaya bensin & uang makan sopir sudah termasuk',
-                          'Jadwal fleksibel tanpa batas perubahan rute',
-                          'Pilihan kapasitas armada dari 5 hingga 15 orang',
-                          'Mobil steril dengan AC super dingin',
+                          'Fuel & driver allowance fully included',
+                          'Customizable daily routing & stops',
+                          'Clean fleet option for 5 to 15 passengers',
+                          'Sanitized vehicles with cold air conditioning',
                         ]
                     ).map((feat, idx) => (
-                      <div key={idx} className="flex items-start gap-2 text-slate-300">
-                        <Check className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
-                        <span className="text-xs sm:text-sm font-semibold leading-tight">{feat}</span>
+                      <div key={idx} className="flex items-center gap-2.5 text-neutral-200">
+                        <Check className="h-4 w-4 text-amber-400 shrink-0" />
+                        <span className="text-xs sm:text-sm font-medium leading-tight">{feat}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-slate-800 flex flex-col sm:flex-row items-center gap-4">
+                <div className="pt-6 border-t border-neutral-700/60 flex flex-col sm:flex-row items-center gap-4">
                   <button
                     onClick={() => {
                       if (activeService === 'tours') {
@@ -903,19 +786,19 @@ export default function HomeView() {
                         setPage(activeService as any);
                       }
                     }}
-                    className="w-full sm:w-auto bg-amber-500 hover:bg-amber-400 text-neutral-950 font-extrabold px-8 py-3.5 rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md shadow-amber-500/10 hover:shadow-lg hover:shadow-amber-500/20 hover:-translate-y-0.5 transition-all cursor-pointer"
+                    className="w-full sm:w-auto bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold px-7 py-3.5 rounded-xl text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-md shadow-amber-500/10 cursor-pointer"
                   >
                     <span>
-                      {activeService === 'tours' && 'Jelajahi Paket Tour'}
-                      {activeService === 'share-tour' && 'Jelajahi Share Tour'}
-                      {activeService === 'airport' && 'Pesan Antar-Jemput'}
-                      {activeService === 'taxi' && 'Pesan Taksi Eksekutif'}
-                      {activeService === 'car-rental' && 'Pesan Rental Mobil'}
+                      {activeService === 'tours' && 'Explore Private Tours'}
+                      {activeService === 'share-tour' && 'Explore Share Tour'}
+                      {activeService === 'airport' && 'Book Airport Transfer'}
+                      {activeService === 'taxi' && 'Book Executive Taxi'}
+                      {activeService === 'car-rental' && 'Book Car Rental'}
                     </span>
                     <ArrowRight className="h-4 w-4" />
                   </button>
-                  <span className="text-[10px] sm:text-xs text-amber-500 font-bold tracking-wider uppercase font-mono">
-                    ★ Jaminan Harga Terbaik
+                  <span className="text-xs text-neutral-400 font-medium">
+                    ★ Guaranteed Best Service &amp; Fixed Pricing
                   </span>
                 </div>
               </div>

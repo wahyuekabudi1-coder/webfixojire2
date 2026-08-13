@@ -56,6 +56,13 @@ export default function TripListing({ trips, batches, onSelectTrip, onNavigateTo
   return (
     <div className="space-y-20 pb-20 font-sans" id="luxury-trip-listing-container">
       
+      {/* Breadcrumb Navigation */}
+      <nav className="flex items-center space-x-2 text-xs font-medium text-neutral-500 mb-4 px-2">
+        <a href="#/" className="hover:text-amber-600 transition-colors">Home</a>
+        <span>/</span>
+        <span className="text-neutral-900 font-semibold">Share Tour</span>
+      </nav>
+
       {/* 1. HERO SECTION WITH NATURE BACKGROUND & PREMIUM GRADIENT OVERLAY */}
       <section 
         className="relative rounded-3xl overflow-hidden shadow-[0_15px_40px_rgba(0,0,0,0.15)] bg-[#0f172a] text-white py-16 sm:py-24 px-6 sm:px-12 md:px-16"

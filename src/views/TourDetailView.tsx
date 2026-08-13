@@ -1082,7 +1082,14 @@ export default function TourDetailView({ tourId, onBack }: TourDetailViewProps) 
     <div className="bg-white text-neutral-850 min-h-screen pt-24 md:pt-28 lg:pt-32 pb-20">
 
       {/* Top Breadcrumb & Return Navigation bar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 flex flex-wrap items-center justify-between gap-3">
+        <nav className="flex items-center space-x-2 text-xs font-medium text-neutral-500">
+          <button onClick={() => setPage('home')} className="hover:text-amber-600 transition-colors cursor-pointer">Home</button>
+          <span>/</span>
+          <button onClick={() => setPage('tours')} className="hover:text-amber-600 transition-colors cursor-pointer">Tour</button>
+          <span>/</span>
+          <span className="text-neutral-900 font-semibold truncate max-w-[200px] sm:max-w-xs">{tour.name}</span>
+        </nav>
         <button
           onClick={onBack}
           className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-neutral-600 hover:text-amber-600 transition-colors cursor-pointer group"

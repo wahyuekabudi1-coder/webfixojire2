@@ -271,6 +271,15 @@ export default function AboutView() {
   return (
     <div id="about-view" className="bg-slate-50 text-slate-900 min-h-screen pt-20">
       
+      {/* Breadcrumb Navigation */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2">
+        <nav className="flex items-center space-x-2 text-xs font-medium text-slate-500">
+          <button onClick={() => setPage('home')} className="hover:text-amber-600 transition-colors cursor-pointer">Home</button>
+          <span>/</span>
+          <span className="text-slate-900 font-semibold">About Us</span>
+        </nav>
+      </div>
+
       {/* 1. HERO BANNER - ABOUT SMARTJOURNEY */}
       <section className="relative py-24 md:py-32 bg-slate-950 text-white overflow-hidden border-b border-slate-900">
         {/* Ambient cosmic gradient lines */}

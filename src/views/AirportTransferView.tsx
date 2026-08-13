@@ -22,7 +22,8 @@ export default function AirportTransferView() {
     schedules, 
     serviceLimits, 
     setActivePage,
-    airports
+    airports,
+    setPage
   } = useApp();
 
   // Search widget parameters
@@ -303,6 +304,13 @@ export default function AirportTransferView() {
     <div id="airport-transfer-view" className="bg-[#f8fafc] text-neutral-800 min-h-screen pt-28 md:pt-32 lg:pt-36 pb-16 md:pb-24 font-sans">
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Breadcrumb Navigation */}
+        <nav className="flex items-center space-x-2 text-xs font-medium text-neutral-500 mb-6">
+          <button onClick={() => setPage('home')} className="hover:text-amber-600 transition-colors cursor-pointer">Home</button>
+          <span>/</span>
+          <span className="text-neutral-900 font-semibold">Airport Transfer</span>
+        </nav>
         
         {/* 1. THREE-STEP PROCESS INDICATOR */}
         <div id="process-steps-bar" className="w-full max-w-3xl mx-auto mb-10 md:mb-14">

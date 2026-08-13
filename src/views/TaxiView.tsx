@@ -757,6 +757,15 @@ export default function TaxiView() {
   return (
     <div id="taxi-view" className="bg-[#f8fafc] text-neutral-800 min-h-screen pt-28 md:pt-32 lg:pt-36 pb-16 md:pb-24 font-sans">
       
+      {/* Breadcrumb Navigation */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+        <nav className="flex items-center space-x-2 text-xs font-medium text-neutral-500">
+          <button onClick={() => setPage('home')} className="hover:text-amber-600 transition-colors cursor-pointer">Home</button>
+          <span>/</span>
+          <span className="text-neutral-900 font-semibold">Taxi</span>
+        </nav>
+      </div>
+
       {/* 1. HERO DESCRIPTION HEADER */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
         <div className="text-center space-y-4 max-w-3xl mx-auto">

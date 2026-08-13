@@ -320,7 +320,8 @@ export default function CarRentalView() {
     rentalVehicles,
     rentalCategories,
     rentalAddons,
-    rentalZonePricing
+    rentalZonePricing,
+    setPage
   } = useApp();
 
   const getRelativeDateString = (daysAhead: number) => {
@@ -739,6 +740,15 @@ export default function CarRentalView() {
   return (
     <div id="car-rental-view" className="bg-neutral-950 text-neutral-100 min-h-screen pt-28 md:pt-32 pb-20 font-sans">
       
+      {/* Breadcrumb Navigation */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
+        <nav className="flex items-center space-x-2 text-xs font-medium text-neutral-400">
+          <button onClick={() => setPage('home')} className="hover:text-amber-500 transition-colors cursor-pointer">Home</button>
+          <span>/</span>
+          <span className="text-white font-semibold">Rental Car</span>
+        </nav>
+      </div>
+
       {/* HEADER SECTION */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-8 space-y-3">
         <span className="inline-flex items-center space-x-2 bg-amber-500/10 border border-amber-500/20 px-4 py-1.5 rounded-full text-xs font-semibold text-amber-500 uppercase tracking-widest font-mono">
@@ -756,8 +766,8 @@ export default function CarRentalView() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* TRAVELOKA PROGRESS TRACKER */}
-        <div className="max-w-4xl mx-auto mb-10">
-          <div className="flex items-center justify-between text-[11px] font-bold text-neutral-500 uppercase tracking-wider border-b border-neutral-800 pb-3">
+        <div className="max-w-4xl mx-auto mb-10 overflow-x-auto scrollbar-none">
+          <div className="flex items-center justify-between min-w-[580px] sm:min-w-0 text-[11px] font-bold text-neutral-500 uppercase tracking-wider border-b border-neutral-800 pb-3">
             <span className={currentScreen === 'search' ? 'text-amber-500 font-extrabold border-b-2 border-amber-500 pb-3 -mb-[14px]' : 'text-neutral-300'}>
               1. Search
             </span>

@@ -165,6 +165,13 @@ export default function BookingsView() {
     <div id="bookings-view" className="bg-[#1c3830] text-white min-h-screen pt-32 pb-16 relative">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
 
+        {/* Breadcrumb Navigation */}
+        <nav className="flex items-center space-x-2 text-xs font-medium text-emerald-200/60 -mb-6">
+          <button onClick={() => setPage('home')} className="hover:text-amber-400 transition-colors cursor-pointer">Home</button>
+          <span>/</span>
+          <span className="text-white font-semibold">My Bookings</span>
+        </nav>
+
         {/* Header Intro */}
         <div className="text-center space-y-3">
           <span className="inline-flex items-center space-x-1.5 bg-amber-500/10 border border-amber-500/20 text-amber-400 px-3 py-1 rounded-full text-xs font-semibold font-mono uppercase tracking-widest">
