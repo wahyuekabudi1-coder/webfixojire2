@@ -9,7 +9,8 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { processArtoPayPayment } from '../lib/artopay';
 import CustomerReviewsSection from '../components/CustomerReviewsSection';
-import ComingSoonPage from '../components/ComingSoonPage';
+import Breadcrumbs from '../components/Breadcrumbs';
+import ServiceNavTabs from '../components/ServiceNavTabs';
 
 // Predefined node coordinates for matching admin configured tariffs
 const cityCoordinates: Record<string, { lat: number, lon: number }> = {
@@ -99,8 +100,6 @@ const POPULAR_ROUTES = [
 ];
 
 export default function TaxiView() {
-  return <ComingSoonPage service="taxi" />;
-
   const { 
     airportRoutes, 
     formatPrice, 
@@ -755,16 +754,13 @@ export default function TaxiView() {
   };
 
   return (
-    <div id="taxi-view" className="bg-[#f8fafc] text-neutral-800 min-h-screen pt-28 md:pt-32 lg:pt-36 pb-16 md:pb-24 font-sans">
+    <div id="taxi-view" className="bg-[#f8fafc] text-neutral-800 min-h-screen pt-20 md:pt-24 pb-16 md:pb-24 font-sans">
       
+      {/* Service Switcher Navigation Bar */}
+      <ServiceNavTabs />
+
       {/* Breadcrumb Navigation */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
-        <nav className="flex items-center space-x-2 text-xs font-medium text-neutral-500">
-          <button onClick={() => setPage('home')} className="hover:text-amber-600 transition-colors cursor-pointer">Home</button>
-          <span>/</span>
-          <span className="text-neutral-900 font-semibold">Taxi</span>
-        </nav>
-      </div>
+      <Breadcrumbs items={[{ label: 'Private Intercity Taxi' }]} />
 
       {/* 1. HERO DESCRIPTION HEADER */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">

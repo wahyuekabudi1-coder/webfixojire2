@@ -60,7 +60,7 @@ export default function TripListing({ trips, batches, onSelectTrip, onNavigateTo
       <nav className="flex items-center space-x-2 text-xs font-medium text-neutral-500 mb-4 px-2">
         <a href="#/" className="hover:text-amber-600 transition-colors">Home</a>
         <span>/</span>
-        <span className="text-neutral-900 font-semibold">Share Tour</span>
+        <span className="text-neutral-900 font-semibold">{t("Share Tour")}</span>
       </nav>
 
       {/* 1. HERO SECTION WITH NATURE BACKGROUND & PREMIUM GRADIENT OVERLAY */}
@@ -203,6 +203,14 @@ export default function TripListing({ trips, batches, onSelectTrip, onNavigateTo
                       <span className="inline-flex items-center space-x-1 bg-black/60 backdrop-blur-sm text-white text-xs px-2.5 py-1 rounded-md border border-white/10 shadow-md">
                         <MapPin className="w-3.5 h-3.5 text-[#D6B16D]" />
                         <span className="tracking-wide uppercase text-[10px]">{t(trip.location).split(",")[0]}</span>
+                      </span>
+                    </div>
+
+                    {/* Absolute Top Right: Standout Golden Amber Ribbon Badge */}
+                    <div className="absolute top-4 right-4 z-10">
+                      <span className="bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-400 text-neutral-950 text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider shadow-lg shadow-amber-500/35 border border-white/60 flex items-center gap-1">
+                        <Sparkles className="w-2.5 h-2.5 fill-neutral-950 text-neutral-950" />
+                        <span>{trip.slug.includes("bromo") ? "BEST SELLER" : "OPEN TRIP"}</span>
                       </span>
                     </div>
 

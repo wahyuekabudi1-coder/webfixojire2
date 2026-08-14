@@ -15,6 +15,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import Breadcrumbs from '../components/Breadcrumbs';
 
 interface PartnerApp {
   id: string;
@@ -197,15 +198,8 @@ export default function PartnershipsView() {
   };
 
   return (
-    <div className="bg-[#1c3830] min-h-screen text-neutral-100 pb-24 pt-28">
-      {/* Breadcrumb Navigation */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
-        <nav className="flex items-center space-x-2 text-xs font-medium text-neutral-400">
-          <button onClick={() => setPage('home')} className="hover:text-amber-500 transition-colors cursor-pointer">Home</button>
-          <span>/</span>
-          <span className="text-white font-semibold">Partnerships</span>
-        </nav>
-      </div>
+    <div className="bg-[#1c3830] min-h-screen text-neutral-100 pb-24 pt-20">
+      <Breadcrumbs items={[{ label: 'B2B Partnerships & Affiliates' }]} />
 
       {/* Banner / Hero Header */}
       <section className="relative overflow-hidden mb-12">

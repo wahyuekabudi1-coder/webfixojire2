@@ -32,8 +32,8 @@ export default function SettingsRBAC({
     whatsappContact: '+6281233445566',
     smtpHost: 'smtp.sawajayatrans.co.id',
     smtpUser: 'operations@sawajayatrans.co.id',
-    artoPayPublicKey: 'pk_sandbox_smartjourney',
-    artoPaySecretKey: 'sk_sandbox_smartjourney'
+    artoPayPublicKey: 'pk_live_smartjourney_configured',
+    artoPaySecretKey: '••••••••••••••••••••'
   });
 
   // Roles permission matrix state

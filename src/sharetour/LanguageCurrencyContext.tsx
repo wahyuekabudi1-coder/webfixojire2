@@ -1,15 +1,36 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { 
+  Language, 
+  Currency, 
+  translateKey, 
+  getLocalizedTour, 
+  getLocalizedVehicle, 
+  getLocalizedFAQs, 
+  getLocalizedCity, 
+  getLocalizedAirport,
+  getLocalizedHeroSlides,
+  getLocalizedWhyUs,
+  getLocalizedDestinations,
+} from "../locales";
+import { Tour, Vehicle } from "../types";
 
-export type Language = "en" | "id" | "zh";
-export type Currency = "IDR" | "CNY" | "USD";
+export type { Language, Currency };
 
 interface LanguageCurrencyContextProps {
   language: Language;
   setLanguage: (lang: Language) => void;
   currency: Currency;
   setCurrency: (curr: Currency) => void;
-  t: (key: string) => string;
+  t: (key: string, params?: Record<string, string | number>) => string;
   formatPrice: (priceUSD: number) => string;
+  getTour: (tour: Tour) => Tour;
+  getVehicle: (vehicle: Vehicle) => Vehicle;
+  getFaqs: () => Array<{ question: string; answer: string }>;
+  getCity: (city: string) => string;
+  getAirport: (code: string) => string;
+  getHeroSlides: () => ReturnType<typeof getLocalizedHeroSlides>;
+  getWhyUs: () => ReturnType<typeof getLocalizedWhyUs>;
+  getDestinations: () => ReturnType<typeof getLocalizedDestinations>;
 }
 
 const LanguageCurrencyContext = createContext<LanguageCurrencyContextProps | undefined>(undefined);
@@ -33,6 +54,156 @@ const dictionary: Record<string, Partial<Record<Language, string>>> = {
     en: "SMART JOURNEY",
     zh: "慧捷之旅 SMART JOURNEY"
   },
+  "nav.toursSubtitle": {
+    en: "Explore curated travel destinations",
+    id: "Jelajahi destinasi wisata terbaik",
+    zh: "精选经典旅游目的地与路线"
+  },
+  "nav.shareTour": {
+    en: "Share Tour / Open Trip",
+    id: "Share Tour / Open Trip",
+    zh: "拼团游 (Share Tour / Open Trip)"
+  },
+  "nav.shareTourSubtitle": {
+    en: "Join open group trips & split costs",
+    id: "Gabung open trip hemat & seru",
+    zh: "加入拼团游，高性价比结伴同行"
+  },
+  "nav.newBadge": {
+    en: "NEW",
+    id: "BARU",
+    zh: "最新"
+  },
+  "nav.airportSubtitle": {
+    en: "Reliable airport pickups & drop-offs",
+    id: "Antar jemput bandara tepat waktu",
+    zh: "准时机场接送机服务 (SUB / DPS)"
+  },
+  "nav.taxiSubtitle": {
+    en: "Point-to-point intercity private rides",
+    id: "Layanan antar kota point-to-point",
+    zh: "点对点城际舒适专车直达"
+  },
+  "nav.carRentalSubtitle": {
+    en: "With driver or self-drive options",
+    id: "Sewa mobil dengan driver atau lepas kunci",
+    zh: "优质车队，支持带驾或自驾"
+  },
+  "nav.services": {
+    en: "Services",
+    id: "Layanan",
+    zh: "特色服务"
+  },
+  "FOOTER.SERVICESTITLE": {
+    en: "Services",
+    id: "Layanan",
+    zh: "特色服务"
+  },
+  "footer.servicesTitle": {
+    en: "Services",
+    id: "Layanan",
+    zh: "特色服务"
+  },
+  "footer.services": {
+    en: "Services",
+    id: "Layanan",
+    zh: "特色服务"
+  },
+  "FOOTER.CONTACTTITLE": {
+    en: "Contact",
+    id: "Kontak",
+    zh: "联系我们"
+  },
+  "footer.contactTitle": {
+    en: "Contact",
+    id: "Kontak",
+    zh: "联系我们"
+  },
+  "footer.contact": {
+    en: "Contact",
+    id: "Kontak",
+    zh: "联系我们"
+  },
+  "footer.aboutText": {
+    en: "Smart Journey is an officially licensed travel and transportation operator under PT Sawah Jaya Trans. Specializing in Mount Bromo and Ijen Crater volcanic tours, private car rentals, and 24/7 airport transfers across East Java and Bali.",
+    id: "Smart Journey adalah operator tur dan penyedia transportasi berizin resmi di bawah PT Sawah Jaya Trans. Melayani wisata gunung berapi Bromo & Ijen, sewa mobil, dan transfer bandara di Jawa Timur & Bali.",
+    zh: "Smart Journey 慧捷之旅是 PT Sawah Jaya Trans 旗下正规持牌旅游出行品牌。专注布罗莫与宜珍火山生态游、商务包车及全天候机场接送，覆盖印尼东爪哇与巴厘岛。"
+  },
+  "footer.aboutCompany": {
+    en: "Smart Journey is an officially licensed travel and transportation operator under PT Sawah Jaya Trans. Specializing in Mount Bromo and Ijen Crater volcanic tours, private car rentals, and 24/7 airport transfers across East Java and Bali.",
+    id: "Smart Journey adalah operator tur dan penyedia transportasi berizin resmi di bawah PT Sawah Jaya Trans. Melayani wisata gunung berapi Bromo & Ijen, sewa mobil, dan transfer bandara di Jawa Timur & Bali.",
+    zh: "Smart Journey 慧捷之旅是 PT Sawah Jaya Trans 旗下正规持牌旅游出行品牌。专注布罗莫与宜珍火山生态游、商务包车及全天候机场接送，覆盖印尼东爪哇与巴厘岛。"
+  },
+  "footer.officialOperator": {
+    en: "Official Licensed Travel Operator",
+    id: "Operator Perjalanan Berizin Resmi",
+    zh: "正规持牌旅行与车队运营商"
+  },
+  "footer.partnerships": {
+    en: "B2B Partnerships",
+    id: "Kemitraan B2B",
+    zh: "B2B 商务合作"
+  },
+  "footer.secure": {
+    en: "100% SECURE & TRUSTED",
+    id: "100% AMAN & TERPERCAYA",
+    zh: "100% 安全可靠"
+  },
+  "footer.licensed": {
+    en: "OFFICIAL TRANSPORT LICENSE",
+    id: "IZIN ANGKUTAN RESMI",
+    zh: "正规客运营运资质"
+  },
+  "footer.paymentMethods": {
+    en: "ACCEPTED PAYMENT METHODS",
+    id: "METODE PEMBAYARAN RESMI",
+    zh: "支持的支付方式"
+  },
+  "footer.privacyPolicy": {
+    en: "Privacy Policy",
+    id: "Kebijakan Privasi",
+    zh: "隐私政策"
+  },
+  "footer.termsConditions": {
+    en: "Terms & Conditions",
+    id: "Syarat & Ketentuan",
+    zh: "服务条款"
+  },
+  "footer.contactUs": {
+    en: "Contact Us",
+    id: "Hubungi Kami",
+    zh: "联系我们"
+  },
+  "footer.allRightsReserved": {
+    en: "All rights reserved",
+    id: "Hak cipta dilindungi undang-undang",
+    zh: "版权所有"
+  },
+  "wechat.title": {
+    en: "Official WeChat Customer Service",
+    id: "Layanan Pelanggan Resmi WeChat",
+    zh: "Smart Journey 官方微信客服"
+  },
+  "wechat.instruction": {
+    en: "Scan QR Code with WeChat app or copy WeChat ID to connect with our official travel consultants.",
+    id: "Pindai QR Code menggunakan aplikasi WeChat atau salin ID WeChat untuk terhubung dengan konsultan perjalanan kami.",
+    zh: "使用微信扫描上方二维码，或复制微信号添加官方客服，为您提供一对一行程定制咨询。"
+  },
+  "wechat.done": {
+    en: "Done",
+    id: "Selesai",
+    zh: "完成"
+  },
+  "wechat.copied": {
+    en: "Copied!",
+    id: "Tersalin!",
+    zh: "已复制！"
+  },
+  "wechat.copyId": {
+    en: "Copy ID",
+    id: "Salin ID",
+    zh: "复制微信号"
+  },
 
   // Hero Section
   "Premium Nature Tour Packages": {
@@ -44,8 +215,9 @@ const dictionary: Record<string, Partial<Record<Language, string>>> = {
     zh: "特色出行信息与预订"
   },
   "Share Tour": {
-    en: "Share Tour",
-    zh: "拼团拼车行 (Share Tour)"
+    en: "Share Tour / Open Trip",
+    id: "Share Tour / Open Trip",
+    zh: "拼团游 (Share Tour / Open Trip)"
   },
   "Curated micro-expeditions for environment advocates and outdoor explorers.": {
     en: "Curated micro-expeditions for environment advocates and outdoor explorers.",
@@ -177,15 +349,18 @@ const dictionary: Record<string, Partial<Record<Language, string>>> = {
   // Sidebar Booking Banner / Bottom Bar
   "Already booked an expedition?": {
     en: "Already booked an expedition?",
+    id: "Sudah memesan paket perjalanan?",
     zh: "已经预订过了探险行程？"
   },
   "Check your real-time verification logs or trace your trip itinerary voucher status instantly.": {
     en: "Check your real-time verification logs or trace your trip itinerary voucher status instantly.",
+    id: "Cek log verifikasi real-time atau lacak status voucher jadwal perjalanan Anda secara instan.",
     zh: "查看您的真实飞行与向导交接日志，或者即时追踪您的行程单和代金券激活状态。"
   },
   "Check Booking Details": {
     en: "Check Booking Details",
-    zh: "提取已定客户订单"
+    id: "Cek Detail Pesanan",
+    zh: "查询预订详情"
   },
   "Real-time Secure Checkouts Locked": {
     en: "Real-time Secure Checkouts Locked",
@@ -833,7 +1008,7 @@ export const LanguageCurrencyProvider: React.FC<{ children: React.ReactNode }> =
   });
 
   const [currency, setCurrencyState] = useState<Currency>(() => {
-    return (localStorage.getItem("sj_currency") as Currency) || "IDR";
+    return (localStorage.getItem("sj_currency") as Currency) || "USD";
   });
 
   const setLanguage = (lang: Language) => {
@@ -847,37 +1022,43 @@ export const LanguageCurrencyProvider: React.FC<{ children: React.ReactNode }> =
   };
 
   // Safe client translation translator
-  const t = (key: string): string => {
+  const t = (key: string, params?: Record<string, string | number>): string => {
     if (!key) return "";
     const cleanKey = key.trim();
     
-    // Check main static dictionary
+    // 1. Primary: Use structured hierarchical translator
+    const translated = translateKey(cleanKey, language, params);
+    if (translated && translated !== cleanKey) {
+      return translated;
+    }
+
+    // 2. Check main static dictionary
     if (dictionary[cleanKey]) {
       const val = dictionary[cleanKey][language];
       if (val) return val;
-      if (language === "id") return cleanKey;
+      if (language === "id") return dictionary[cleanKey]["id"] || cleanKey;
       return dictionary[cleanKey]["en"] || key;
     }
 
-    // Secondary deep dynamic lookup (such as backend database content)
+    // 3. Secondary deep dynamic lookup (such as backend database content)
     if (language === "zh" && dynamicDatabaseZH[cleanKey]) {
       return dynamicDatabaseZH[cleanKey];
     }
 
-    // Try case-insensitive matching if direct match fails
+    // 4. Try case-insensitive matching if direct match fails
     const matchKey = Object.keys(dictionary).find(
       (k) => k.toLowerCase() === cleanKey.toLowerCase()
     );
     if (matchKey) {
-      return dictionary[matchKey][language];
+      const val = dictionary[matchKey][language];
+      if (val) return val;
     }
 
-    // Dynamic checks for partial sentences
+    // 5. Dynamic checks for partial sentences in Chinese
     if (language === "zh") {
       let result = cleanKey;
-      // Loop over known translations to do partial replacement for dynamic titles / locations
       for (const [enStr, transObj] of Object.entries(dictionary)) {
-        if (result.includes(enStr)) {
+        if (result.includes(enStr) && transObj.zh) {
           result = result.replaceAll(enStr, transObj.zh);
         }
       }
@@ -889,7 +1070,60 @@ export const LanguageCurrencyProvider: React.FC<{ children: React.ReactNode }> =
       if (result !== cleanKey) return result;
     }
 
-    return key;
+    // 6. Safe fallback for untranslated internal navigation/badge/footer keys
+    if (/^nav\..*subtitle/i.test(cleanKey) || /\.subtitle$/i.test(cleanKey)) {
+      return "";
+    }
+    if (/^nav\.newbadge$/i.test(cleanKey) || cleanKey.toUpperCase() === "NAV.NEWBADGE") {
+      return language === "zh" ? "最新" : language === "id" ? "BARU" : "NEW";
+    }
+    if (/^footer\.services/i.test(cleanKey) || cleanKey.toUpperCase() === "FOOTER.SERVICESTITLE") {
+      return language === "zh" ? "特色服务" : language === "id" ? "Layanan" : "Services";
+    }
+    if (/^footer\.contact/i.test(cleanKey) || cleanKey.toUpperCase() === "FOOTER.CONTACTTITLE") {
+      return language === "zh" ? "联系我们" : language === "id" ? "Kontak" : "Contact";
+    }
+    if (/^footer\.partnership/i.test(cleanKey)) {
+      return language === "zh" ? "B2B 商务合作" : language === "id" ? "Kemitraan B2B" : "B2B Partnerships";
+    }
+    if (/^footer\.secure/i.test(cleanKey)) {
+      return language === "zh" ? "100% 安全可靠" : language === "id" ? "100% AMAN & TERPERCAYA" : "100% SECURE & TRUSTED";
+    }
+    if (/^footer\.licensed/i.test(cleanKey)) {
+      return language === "zh" ? "正规客运营运资质" : language === "id" ? "IZIN ANGKUTAN RESMI" : "OFFICIAL TRANSPORT LICENSE";
+    }
+    if (/^footer\.about/i.test(cleanKey)) {
+      return language === "zh"
+        ? "Smart Journey 慧捷之旅是 PT Sawah Jaya Trans 旗下正规持牌旅游出行品牌。专注布罗莫与宜珍火山生态游、商务包车及全天候机场接送，覆盖印尼东爪哇与巴厘岛。"
+        : language === "id"
+        ? "Smart Journey adalah operator tur dan penyedia transportasi berizin resmi di bawah PT Sawah Jaya Trans. Melayani wisata gunung berapi Bromo & Ijen, sewa mobil, dan transfer bandara di Jawa Timur & Bali."
+        : "Smart Journey is an officially licensed travel and transportation operator under PT Sawah Jaya Trans. Specializing in Mount Bromo and Ijen Crater volcanic tours, private car rentals, and 24/7 airport transfers across East Java and Bali.";
+    }
+    if (/^footer\.official/i.test(cleanKey)) {
+      return language === "zh" ? "正规持牌旅行与车队运营商" : language === "id" ? "Operator Perjalanan Berizin Resmi" : "Official Licensed Travel Operator";
+    }
+
+    return cleanKey;
+  };
+
+  const getTour = (tour: Tour): Tour => {
+    return getLocalizedTour(tour, language);
+  };
+
+  const getVehicle = (vehicle: Vehicle): Vehicle => {
+    return getLocalizedVehicle(vehicle, language);
+  };
+
+  const getFaqs = () => {
+    return getLocalizedFAQs(language);
+  };
+
+  const getCity = (city: string): string => {
+    return getLocalizedCity(city, language);
+  };
+
+  const getAirport = (code: string): string => {
+    return getLocalizedAirport(code, language);
   };
 
   // Convert USD to native currency and format beautiful outputs
@@ -926,8 +1160,31 @@ export const LanguageCurrencyProvider: React.FC<{ children: React.ReactNode }> =
     }
   };
 
+  // Update document language attribute dynamically when language changes
+  useEffect(() => {
+    const htmlLang = language === 'zh' ? 'zh-CN' : language === 'id' ? 'id' : 'en';
+    document.documentElement.lang = htmlLang;
+    document.body.classList.remove('lang-id', 'lang-en', 'lang-zh');
+    document.body.classList.add(`lang-${language}`);
+  }, [language]);
+
   return (
-    <LanguageCurrencyContext.Provider value={{ language, setLanguage, currency, setCurrency, t, formatPrice }}>
+    <LanguageCurrencyContext.Provider value={{ 
+      language, 
+      setLanguage, 
+      currency, 
+      setCurrency, 
+      t, 
+      formatPrice,
+      getTour,
+      getVehicle,
+      getFaqs,
+      getCity,
+      getAirport,
+      getHeroSlides: () => getLocalizedHeroSlides(language),
+      getWhyUs: () => getLocalizedWhyUs(language),
+      getDestinations: () => getLocalizedDestinations(language),
+    }}>
       {children}
     </LanguageCurrencyContext.Provider>
   );

@@ -12,6 +12,8 @@ import BookingSuccess from '../sharetour/components/BookingSuccess';
 import { Trip, Batch, Booking } from '../sharetour/types';
 import { motion, AnimatePresence } from 'motion/react';
 import CustomerReviewsSection from '../components/CustomerReviewsSection';
+import ServiceNavTabs from '../components/ServiceNavTabs';
+import Breadcrumbs from '../components/Breadcrumbs';
 
 interface TourDetailViewProps {
   tourId: string;
@@ -1079,20 +1081,17 @@ export default function TourDetailView({ tourId, onBack }: TourDetailViewProps) 
   };
 
   return (
-    <div className="bg-white text-neutral-850 min-h-screen pt-24 md:pt-28 lg:pt-32 pb-20">
+    <div className="bg-white text-neutral-850 min-h-screen pt-20 pb-20">
+
+      {/* Service Switcher Navigation Bar */}
+      <ServiceNavTabs />
 
       {/* Top Breadcrumb & Return Navigation bar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 flex flex-wrap items-center justify-between gap-3">
-        <nav className="flex items-center space-x-2 text-xs font-medium text-neutral-500">
-          <button onClick={() => setPage('home')} className="hover:text-amber-600 transition-colors cursor-pointer">Home</button>
-          <span>/</span>
-          <button onClick={() => setPage('tours')} className="hover:text-amber-600 transition-colors cursor-pointer">Tour</button>
-          <span>/</span>
-          <span className="text-neutral-900 font-semibold truncate max-w-[200px] sm:max-w-xs">{tour.name}</span>
-        </nav>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-4 flex flex-wrap items-center justify-between gap-3">
+        <Breadcrumbs items={[{ label: 'Private Tours', page: 'tours' }, { label: tour.name }]} />
         <button
           onClick={onBack}
-          className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-neutral-600 hover:text-amber-600 transition-colors cursor-pointer group"
+          className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-neutral-600 hover:text-amber-600 transition-colors cursor-pointer group bg-neutral-100 hover:bg-neutral-200 px-3.5 py-1.5 rounded-lg border border-neutral-200/80"
         >
           <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
           <span>Kembali ke Semua Paket Wisata</span>
@@ -1757,9 +1756,24 @@ export default function TourDetailView({ tourId, onBack }: TourDetailViewProps) 
                       <ArrowRight className="h-4 w-4" />
                     </button>
 
-                    <div className="flex items-center justify-center space-x-1.5 text-[10px] text-gray-500 font-mono text-center">
-                      <Sparkles className="w-3.5 h-3.5 text-[#D6B16D]" />
-                      <span>Real-time Secure Checkouts Locked</span>
+                    <div className="space-y-1.5 pt-1">
+                      <div className="flex items-center justify-center gap-3 text-[10px] text-gray-600 font-semibold flex-wrap">
+                        <span className="flex items-center gap-1 text-emerald-700">
+                          <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                          <span>Garansi Batal Gratis 24 Jam</span>
+                        </span>
+                        <span className="flex items-center gap-1 text-emerald-700">
+                          <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                          <span>Tanpa Biaya Tersembunyi</span>
+                        </span>
+                        <span className="flex items-center gap-1 text-emerald-700">
+                          <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                          <span>E-Voucher Instan</span>
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-gray-500 font-medium text-center pt-1 border-t border-gray-200/80">
+                        Butuh bantuan atau rute kustom? <a href="https://wa.me/6285212347289" target="_blank" rel="noopener noreferrer" className="text-[#315B4F] font-bold hover:underline">Chat WhatsApp Hotlines ↗</a>
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -1881,10 +1895,10 @@ export default function TourDetailView({ tourId, onBack }: TourDetailViewProps) 
 
       {/* Sticky Floating Bottom Action Bar */}
       {!isBookingOpen && (
-        <div className="fixed bottom-0 left-0 right-0 bg-[#315B4F]/95 backdrop-blur-md border-t border-[#467b6b] z-40 shadow-2xl px-4 py-3 sm:px-6 flex items-center justify-between transition-all animate-fade-in">
-          <div className="flex flex-col items-start text-left">
+        <div className="fixed bottom-0 left-0 right-0 bg-[#315B4F]/95 backdrop-blur-md border-t border-[#467b6b] z-40 shadow-2xl px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-6 flex items-center justify-between transition-all animate-fade-in">
+          <div className="flex flex-col items-start text-left max-w-[40%] sm:max-w-xs">
             <span className="text-[9px] text-amber-300 font-bold uppercase tracking-widest font-mono">Destinasi Pilihan</span>
-            <span className="text-xs sm:text-sm font-black text-white truncate max-w-[120px] sm:max-w-xs">{tour.name}</span>
+            <span className="text-xs sm:text-sm font-black text-white truncate w-full">{tour.name}</span>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
             <button
@@ -1894,19 +1908,19 @@ export default function TourDetailView({ tourId, onBack }: TourDetailViewProps) 
                   el.scrollIntoView({ behavior: 'smooth' });
                 }
               }}
-              className="bg-amber-400 hover:bg-amber-300 text-neutral-950 font-black px-3.5 py-2.5 sm:px-5 sm:py-3 rounded-xl text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-lg shadow-black/20 transition-all hover:scale-[1.03] cursor-pointer border border-amber-300"
+              className="bg-amber-400 hover:bg-amber-300 active:bg-amber-500 text-neutral-950 font-black px-3.5 py-2.5 sm:px-5 sm:py-3 rounded-xl text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-lg transition-all cursor-pointer border border-amber-300 min-h-[44px]"
             >
-              <User className="h-3.5 w-3.5 shrink-0" />
+              <User className="h-4 w-4 shrink-0" />
               <span>Private Tour</span>
             </button>
             <button
               onClick={() => {
                 setPage('share-tour');
               }}
-              className="bg-amber-400 hover:bg-amber-300 text-neutral-950 font-black px-3.5 py-2.5 sm:px-5 sm:py-3 rounded-xl text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-lg shadow-black/20 transition-all hover:scale-[1.03] cursor-pointer border border-amber-300"
+              className="bg-amber-400 hover:bg-amber-300 active:bg-amber-500 text-neutral-950 font-black px-3.5 py-2.5 sm:px-5 sm:py-3 rounded-xl text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-lg transition-all cursor-pointer border border-amber-300 min-h-[44px]"
             >
-              <Users className="h-3.5 w-3.5 shrink-0" />
-              <span>Share Tour</span>
+              <Users className="h-4 w-4 shrink-0" />
+              <span>Share Tour / Open Trip</span>
             </button>
           </div>
         </div>

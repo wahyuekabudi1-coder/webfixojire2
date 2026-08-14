@@ -30,6 +30,7 @@ import {
   Share2
 } from 'lucide-react';
 import { BLOG_POSTS, BlogPost } from '../blogData';
+import Breadcrumbs from '../components/Breadcrumbs';
 
 interface StatCardProps {
   key?: React.Key;
@@ -224,13 +225,12 @@ export default function AboutView() {
     }
   ];
 
-  // Track Record stats
+  // Track Record stats based on actual project tour and review data
   const STATS_DATA = [
-    { target: 1200, suffix: "+", label: "Customers", sublabel: "Pelanggan Puas" },
-    { target: 950, suffix: "+", label: "Trips", sublabel: "Perjalanan Sukses" },
-    { target: 15, suffix: "+", label: "Drivers", sublabel: "Sopir Berlisensi" },
-    { target: 10, suffix: "+", label: "Destinations", sublabel: "Destinasi Pilihan" },
-    { target: 87, suffix: "%", label: "Repeat Rate", sublabel: "Pelanggan Setia" }
+    { target: 849, suffix: "+", label: "Reviews", sublabel: "Ulasan Terverifikasi" },
+    { target: 7, suffix: "", label: "Packages", sublabel: "Paket Tur Unggulan" },
+    { target: 4, suffix: "", label: "Fleets", sublabel: "Kelas Armada" },
+    { target: 100, suffix: "%", label: "Transparent", sublabel: "Garansi Tanpa Biaya Tersembunyi" }
   ];
 
   // Filtered Blog Posts
@@ -270,15 +270,7 @@ export default function AboutView() {
 
   return (
     <div id="about-view" className="bg-slate-50 text-slate-900 min-h-screen pt-20">
-      
-      {/* Breadcrumb Navigation */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2">
-        <nav className="flex items-center space-x-2 text-xs font-medium text-slate-500">
-          <button onClick={() => setPage('home')} className="hover:text-amber-600 transition-colors cursor-pointer">Home</button>
-          <span>/</span>
-          <span className="text-slate-900 font-semibold">About Us</span>
-        </nav>
-      </div>
+      <Breadcrumbs items={[{ label: 'About Smart Journey' }]} />
 
       {/* 1. HERO BANNER - ABOUT SMARTJOURNEY */}
       <section className="relative py-24 md:py-32 bg-slate-950 text-white overflow-hidden border-b border-slate-900">
@@ -315,7 +307,7 @@ export default function AboutView() {
               <span className="text-amber-500">SMART JOURNEY</span>
             </h1>
             <p className="text-sm sm:text-lg text-slate-300 leading-relaxed font-medium">
-              Trusted by thousands of travelers from around the world.
+              Spesialis paket wisata Bromo, Ijen, Tumpak Sewu, serta layanan transportasi antar-jemput bandara resmi di Indonesia.
             </p>
             <div className="pt-4">
               <button

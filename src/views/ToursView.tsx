@@ -4,6 +4,8 @@ import { TOURS, FAQS } from '../data';
 import { Clock, Star, MapPin, Calendar, Users, Sparkles, HelpCircle, ChevronDown, Check, ArrowRight, ShieldCheck, Heart, Car } from 'lucide-react';
 import CheckoutModal from '../components/CheckoutModal';
 import TourDetailView from './TourDetailView';
+import Breadcrumbs from '../components/Breadcrumbs';
+import ServiceNavTabs from '../components/ServiceNavTabs';
 import { motion, AnimatePresence } from 'motion/react';
 import ComingSoonPage from '../components/ComingSoonPage';
 
@@ -100,16 +102,13 @@ export default function ToursView() {
   };
 
   return (
-    <div id="tours-view" className="bg-white text-neutral-800 min-h-screen pt-28 md:pt-32 lg:pt-36 pb-16 md:pb-24">
+    <div id="tours-view" className="bg-white text-neutral-800 min-h-screen pt-20 md:pt-24 pb-16 md:pb-24">
       
-      {/* Breadcrumb Navigation */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
-        <nav className="flex items-center space-x-2 text-xs font-medium text-neutral-500">
-          <button onClick={() => setPage('home')} className="hover:text-amber-600 transition-colors cursor-pointer">Home</button>
-          <span>/</span>
-          <span className="text-neutral-900 font-semibold">Tour</span>
-        </nav>
-      </div>
+      {/* Service Switcher Navigation Bar */}
+      <ServiceNavTabs />
+
+      {/* Reusable Breadcrumb Navigation */}
+      <Breadcrumbs items={[{ label: 'Private Tours & Expeditions' }]} />
 
       {/* Hero Banner */}
       <section className="relative h-[40vh] min-h-[280px] flex items-center justify-center mb-16 rounded-[32px] overflow-hidden max-w-7xl mx-4 sm:mx-6 lg:mx-8 xl:mx-auto shadow-md">
@@ -223,14 +222,17 @@ export default function ToursView() {
                         src={tour.image}
                         alt={tour.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        loading="lazy"
+                        decoding="async"
                         referrerPolicy="no-referrer"
                       />
                       {/* Dark gradient overlay for visual premium depth */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10" />
                       
-                      {/* Top Left: Best Seller Badge */}
-                      <span className="absolute top-4 left-4 bg-[#0F766E] text-white text-[9px] font-black px-3.5 py-1.5 rounded-full uppercase tracking-widest shadow-md">
-                        BEST SELLER
+                      {/* Top Left: Standout Golden Amber Ribbon Badge */}
+                      <span className="absolute top-4 left-4 bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-400 text-neutral-950 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-lg shadow-amber-500/35 border border-white/60 flex items-center gap-1.5 z-10">
+                        <Sparkles className="w-3 h-3 fill-neutral-950 text-neutral-950" />
+                        <span>{tour.id === 'bromo' ? 'BEST SELLER' : tour.id === 'ijen' ? 'TOP RATED' : 'POPULAR'}</span>
                       </span>
 
                       {/* Top Right: Wishlist Icon */}

@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from 'motion/react';
 
 export default function Header() {
   const { activePage, setPage, bookings } = useApp();
-  const { language, setLanguage, currency, setCurrency } = useLanguageCurrency();
+  const { language, setLanguage, currency, setCurrency, t } = useLanguageCurrency();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -79,7 +79,7 @@ export default function Header() {
                   : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100'
               }`}
             >
-              Home
+              {t('nav.home')}
             </button>
 
             {/* Services Dropdown */}
@@ -96,7 +96,7 @@ export default function Header() {
                     : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100'
                 }`}
               >
-                <span>Service</span>
+                <span>{t('nav.services')}</span>
                 <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
 
@@ -107,7 +107,7 @@ export default function Header() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute left-0 mt-2 w-56 rounded-2xl bg-white border border-neutral-200 shadow-xl py-2 overflow-hidden"
+                    className="absolute left-0 mt-2 w-64 rounded-2xl bg-white border border-neutral-200 shadow-xl py-2 overflow-hidden"
                   >
                      <button
                       onClick={() => handleNavigate('tours')}
@@ -116,9 +116,9 @@ export default function Header() {
                       <Compass className="h-4 w-4 text-amber-500 shrink-0" />
                       <div>
                         <div className="text-sm font-semibold">
-                          <span>Tour</span>
+                          <span>{t('nav.tours')}</span>
                         </div>
-                        <div className="text-[10px] text-neutral-500">Bromo, Ijen, Waterfalls</div>
+                        <div className="text-[10px] text-neutral-500">{t('nav.toursSubtitle')}</div>
                       </div>
                     </button>
                     <button
@@ -128,10 +128,10 @@ export default function Header() {
                       <Users className="h-4 w-4 text-amber-500 shrink-0" />
                       <div>
                         <div className="text-sm font-semibold flex items-center gap-1.5">
-                          <span>Share Tour</span>
-                          <span className="text-[8px] bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 px-1 py-0.5 rounded font-mono font-black uppercase tracking-wider">New</span>
+                          <span>{t('nav.shareTour')}</span>
+                          <span className="text-[8px] bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 px-1 py-0.5 rounded font-mono font-black uppercase tracking-wider">{t('nav.newBadge')}</span>
                         </div>
-                        <div className="text-[10px] text-neutral-500">Open Trip / Per-Seat Booking</div>
+                        <div className="text-[10px] text-neutral-500">{t('nav.shareTourSubtitle')}</div>
                       </div>
                     </button>
                     <button
@@ -141,9 +141,9 @@ export default function Header() {
                       <Plane className="h-4 w-4 text-amber-500 shrink-0" />
                       <div>
                         <div className="text-sm font-semibold flex items-center gap-1.5">
-                          <span>Airport Transfer</span>
+                          <span>{t('nav.airport')}</span>
                         </div>
-                        <div className="text-[10px] text-neutral-500">SUB, DPS, YIA, CGK</div>
+                        <div className="text-[10px] text-neutral-500">{t('nav.airportSubtitle')}</div>
                       </div>
                     </button>
                     <button
@@ -153,9 +153,9 @@ export default function Header() {
                       <Route className="h-4 w-4 text-amber-500 shrink-0" />
                       <div>
                         <div className="text-sm font-semibold flex items-center gap-1.5">
-                          <span>Taxi</span>
+                          <span>{t('nav.taxi')}</span>
                         </div>
-                        <div className="text-[10px] text-neutral-500">Point-to-point flat fare</div>
+                        <div className="text-[10px] text-neutral-500">{t('nav.taxiSubtitle')}</div>
                       </div>
                     </button>
                     <button
@@ -165,9 +165,9 @@ export default function Header() {
                       <Car className="h-4 w-4 text-amber-500" />
                       <div>
                         <div className="text-sm font-semibold flex items-center gap-1.5">
-                          <span>Rental Car</span>
+                          <span>{t('nav.carRental')}</span>
                         </div>
-                        <div className="text-[10px] text-neutral-500">Hourly & daily car hire with driver</div>
+                        <div className="text-[10px] text-neutral-500">{t('nav.carRentalSubtitle')}</div>
                       </div>
                     </button>
                   </motion.div>
@@ -183,7 +183,7 @@ export default function Header() {
                   : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100'
               }`}
             >
-              About
+              {t('nav.about')}
             </button>
           </nav>
 
@@ -193,7 +193,9 @@ export default function Header() {
             <div className="relative">
               <button
                 onClick={() => setIsLangOpen(!isLangOpen)}
-                className="flex items-center space-x-1 px-2.5 py-1 rounded-full text-xs font-bold bg-neutral-100 hover:bg-neutral-200/80 border border-neutral-200 text-neutral-800 transition-all cursor-pointer"
+                aria-expanded={isLangOpen}
+                aria-label="Pilih Bahasa / Choose Language / 选择语言"
+                className="flex items-center space-x-1 px-2.5 py-1 rounded-full text-xs font-bold bg-neutral-100 hover:bg-neutral-200/80 border border-neutral-200 text-neutral-800 transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
               >
                 <Globe className="h-3.5 w-3.5 text-amber-600" />
                 <span className="uppercase tracking-wide">
@@ -208,27 +210,27 @@ export default function Header() {
                     initial={{ opacity: 0, y: 5 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 5 }}
-                    className="absolute right-0 mt-2 w-28 rounded-2xl bg-white border border-neutral-200 shadow-xl py-1 z-50 overflow-hidden"
+                    className="absolute right-0 mt-2 w-32 rounded-2xl bg-white border border-neutral-200 shadow-xl py-1 z-50 overflow-hidden"
                   >
-                    <button
-                      onClick={() => { setLanguage('en'); setIsLangOpen(false); }}
-                      className={`w-full text-left px-3 py-1.5 text-xs flex items-center justify-between hover:bg-amber-50 cursor-pointer ${language === 'en' ? 'font-black text-amber-600 bg-amber-50/60' : 'text-neutral-700'}`}
-                    >
-                      <span className="flex items-center gap-1.5 font-bold">🇺🇸 EN</span>
-                      {language === 'en' && <Check className="h-3.5 w-3.5 text-amber-600" />}
-                    </button>
                     <button
                       onClick={() => { setLanguage('id'); setIsLangOpen(false); }}
                       className={`w-full text-left px-3 py-1.5 text-xs flex items-center justify-between hover:bg-amber-50 cursor-pointer ${language === 'id' ? 'font-black text-amber-600 bg-amber-50/60' : 'text-neutral-700'}`}
                     >
-                      <span className="flex items-center gap-1.5 font-bold">🇮🇩 ID</span>
+                      <span className="flex items-center gap-1.5 font-bold">🇮🇩 Indonesia</span>
                       {language === 'id' && <Check className="h-3.5 w-3.5 text-amber-600" />}
+                    </button>
+                    <button
+                      onClick={() => { setLanguage('en'); setIsLangOpen(false); }}
+                      className={`w-full text-left px-3 py-1.5 text-xs flex items-center justify-between hover:bg-amber-50 cursor-pointer ${language === 'en' ? 'font-black text-amber-600 bg-amber-50/60' : 'text-neutral-700'}`}
+                    >
+                      <span className="flex items-center gap-1.5 font-bold">🇬🇧 English</span>
+                      {language === 'en' && <Check className="h-3.5 w-3.5 text-amber-600" />}
                     </button>
                     <button
                       onClick={() => { setLanguage('zh'); setIsLangOpen(false); }}
                       className={`w-full text-left px-3 py-1.5 text-xs flex items-center justify-between hover:bg-amber-50 cursor-pointer ${language === 'zh' ? 'font-black text-amber-600 bg-amber-50/60' : 'text-neutral-700'}`}
                     >
-                      <span className="flex items-center gap-1.5 font-bold">🇨🇳 ZH</span>
+                      <span className="flex items-center gap-1.5 font-bold">🇨🇳 中文</span>
                       {language === 'zh' && <Check className="h-3.5 w-3.5 text-amber-600" />}
                     </button>
                   </motion.div>
@@ -236,57 +238,84 @@ export default function Header() {
               </AnimatePresence>
             </div>
 
-            {/* Currency Switcher */}
-            <div className="flex items-center bg-neutral-100 border border-neutral-200 p-0.5 rounded-full">
+            {/* Currency Switcher: 3 lines high, logo only */}
+            <div className="flex flex-col items-center justify-center bg-neutral-100/90 border border-neutral-200/90 p-0.5 rounded-lg shadow-sm" id="desktop-currency-switcher" title="Select Currency">
               <button
                 onClick={() => setCurrency('USD')}
-                className={`px-2.5 py-0.5 rounded-full text-xs font-bold transition-all duration-200 cursor-pointer ${
+                className={`w-6 h-4 rounded text-[11px] font-black leading-none flex items-center justify-center transition-all duration-150 cursor-pointer ${
                   currency === 'USD'
                     ? 'bg-amber-500 text-neutral-950 shadow-sm font-black'
-                    : 'text-neutral-500 hover:text-neutral-900'
+                    : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200/60 font-bold'
                 }`}
                 title="USD ($)"
+                aria-label="Set currency to US Dollar ($)"
               >
-                USD
+                $
               </button>
               <button
                 onClick={() => setCurrency('IDR')}
-                className={`px-2.5 py-0.5 rounded-full text-xs font-bold transition-all duration-200 cursor-pointer ${
+                className={`w-6 h-4 rounded text-[9.5px] font-black leading-none flex items-center justify-center transition-all duration-150 cursor-pointer ${
                   currency === 'IDR'
                     ? 'bg-amber-500 text-neutral-950 shadow-sm font-black'
-                    : 'text-neutral-500 hover:text-neutral-900'
+                    : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200/60 font-bold'
                 }`}
                 title="IDR (Rp)"
+                aria-label="Set currency to Indonesian Rupiah (Rp)"
               >
-                IDR
+                Rp
               </button>
               <button
                 onClick={() => setCurrency('CNY')}
-                className={`px-2.5 py-0.5 rounded-full text-xs font-bold transition-all duration-200 cursor-pointer ${
+                className={`w-6 h-4 rounded text-[11px] font-black leading-none flex items-center justify-center transition-all duration-150 cursor-pointer ${
                   currency === 'CNY'
                     ? 'bg-amber-500 text-neutral-950 shadow-sm font-black'
-                    : 'text-neutral-500 hover:text-neutral-900'
+                    : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200/60 font-bold'
                 }`}
                 title="CNY (¥)"
+                aria-label="Set currency to Chinese Yuan (¥)"
               >
-                CNY
+                ¥
               </button>
             </div>
+
+            {/* My Bookings Link */}
+            <button
+              onClick={() => handleNavigate('bookings')}
+              className={`relative px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-200 flex items-center space-x-1.5 cursor-pointer ${
+                activePage === 'bookings'
+                  ? 'text-amber-600 bg-amber-500/10'
+                  : 'text-neutral-700 hover:text-neutral-900 hover:bg-neutral-100'
+              }`}
+            >
+              <Calendar className="h-3.5 w-3.5 text-amber-500" />
+              <span>{t('nav.myBookings')}</span>
+              {bookings && bookings.length > 0 && (
+                <span className="ml-0.5 bg-amber-500 text-neutral-950 text-[10px] font-black px-1.5 py-0.2 rounded-full">
+                  {bookings.length}
+                </span>
+              )}
+            </button>
           </div>
 
           {/* Mobile Menu Toggle */}
-          <div className="flex md:hidden items-center space-x-3">
-            {/* Quick Currency Button for Mobile */}
+          <div className="flex md:hidden items-center space-x-2">
+            {/* Quick Currency Button for Mobile - Logo only */}
             <button
-              onClick={() => setCurrency(currency === 'USD' ? 'IDR' : 'USD')}
-              className="bg-neutral-100 border border-neutral-200 text-neutral-700 text-xs px-2.5 py-1.5 rounded-lg font-mono font-semibold"
+              onClick={() => setCurrency(currency === 'USD' ? 'IDR' : currency === 'IDR' ? 'CNY' : 'USD')}
+              className="bg-neutral-100 active:bg-neutral-200 border border-neutral-200 text-neutral-900 text-sm px-3 py-2 rounded-xl font-bold min-h-[40px] min-w-[40px] flex items-center justify-center cursor-pointer shadow-sm"
+              title="Switch currency"
+              aria-label="Toggle currency"
             >
-              {currency}
+              <span className="font-black text-amber-600 font-mono">
+                {currency === 'USD' ? '$' : currency === 'IDR' ? 'Rp' : '¥'}
+              </span>
             </button>
 
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="text-neutral-600 hover:text-neutral-900 p-2"
+              className="text-neutral-700 hover:text-neutral-900 active:bg-neutral-100 p-2.5 rounded-xl min-h-[44px] min-w-[44px] flex items-center justify-center cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+              aria-label="Toggle Navigation Menu"
+              aria-expanded={isMobileMenuOpen}
             >
               {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
@@ -295,165 +324,219 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile Menu Panel */}
+      {/* Mobile Menu Backdrop & Drawer Panel */}
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className="md:hidden bg-white border-b border-neutral-200 shadow-xl max-h-[calc(100vh-5rem)] overflow-y-auto"
-          >
-            <div className="px-4 pt-2 pb-6 space-y-3">
-              <button
-                onClick={() => handleNavigate('home')}
-                className="block w-full text-left px-4 py-2.5 rounded-xl text-neutral-800 hover:bg-neutral-50 font-medium animate-fadeIn"
-              >
-                Home
-              </button>
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 top-[60px] bg-black/60 backdrop-blur-sm z-40 md:hidden"
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
 
-              <div className="border-t border-neutral-100 pt-2 my-2">
-                <div className="px-4 text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-1">
-                  Services
+            {/* Drawer */}
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="relative z-50 md:hidden bg-white border-b border-neutral-200 shadow-2xl max-h-[calc(100vh-4rem)] overflow-y-auto"
+            >
+              <div className="px-4 pt-3 pb-8 space-y-3">
+                <button
+                  onClick={() => handleNavigate('home')}
+                  className={`flex items-center w-full text-left px-4 py-3 rounded-2xl text-sm font-semibold transition-colors min-h-[44px] cursor-pointer ${
+                    activePage === 'home' ? 'bg-amber-500/10 text-amber-700 font-bold' : 'text-neutral-800 hover:bg-neutral-50'
+                  }`}
+                >
+                  {t('nav.home')}
+                </button>
+
+                <div className="border-t border-neutral-100 pt-3 my-1">
+                  <div className="px-4 text-[10px] font-bold text-neutral-400 uppercase tracking-widest mb-2 font-mono">
+                    {t('nav.services')}
+                  </div>
+                  <button
+                    onClick={() => handleNavigate('tours')}
+                    className={`flex items-center justify-between w-full px-4 py-3 rounded-2xl text-sm transition-colors min-h-[44px] cursor-pointer ${
+                      activePage === 'tours' ? 'bg-amber-500/10 text-amber-700 font-bold' : 'text-neutral-700 hover:bg-neutral-50'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <Compass className="h-5 w-5 text-amber-500 shrink-0" />
+                      <span className="font-medium">{t('nav.tours')}</span>
+                    </div>
+                    <span className="text-xs text-neutral-400">Bromo, Ijen</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleNavigate('share-tour')}
+                    className={`flex items-center justify-between w-full px-4 py-3 rounded-2xl text-sm transition-colors min-h-[44px] cursor-pointer ${
+                      activePage === 'share-tour' ? 'bg-amber-500/10 text-amber-700 font-bold' : 'text-neutral-700 hover:bg-neutral-50'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <Users className="h-5 w-5 text-amber-500 shrink-0" />
+                      <span className="font-medium">{t('nav.shareTour')}</span>
+                    </div>
+                    <span className="text-[9px] bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 px-2 py-0.5 rounded font-mono font-bold uppercase tracking-wider">{t('nav.newBadge')}</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleNavigate('airport')}
+                    className={`flex items-center justify-between w-full px-4 py-3 rounded-2xl text-sm transition-colors min-h-[44px] cursor-pointer ${
+                      activePage === 'airport' ? 'bg-amber-500/10 text-amber-700 font-bold' : 'text-neutral-700 hover:bg-neutral-50'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <Plane className="h-5 w-5 text-amber-500 shrink-0" />
+                      <span className="font-medium">{t('nav.airport')}</span>
+                    </div>
+                    <span className="text-xs text-neutral-400">SUB, DPS</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleNavigate('taxi')}
+                    className={`flex items-center justify-between w-full px-4 py-3 rounded-2xl text-sm transition-colors min-h-[44px] cursor-pointer ${
+                      activePage === 'taxi' ? 'bg-amber-500/10 text-amber-700 font-bold' : 'text-neutral-700 hover:bg-neutral-50'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <Route className="h-5 w-5 text-amber-500 shrink-0" />
+                      <span className="font-medium">{t('nav.taxi')}</span>
+                    </div>
+                    <span className="text-xs text-neutral-400">{t('nav.taxiSubtitle')}</span>
+                  </button>
+
+                  <button
+                    onClick={() => handleNavigate('car-rental')}
+                    className={`flex items-center justify-between w-full px-4 py-3 rounded-2xl text-sm transition-colors min-h-[44px] cursor-pointer ${
+                      activePage === 'car-rental' ? 'bg-amber-500/10 text-amber-700 font-bold' : 'text-neutral-700 hover:bg-neutral-50'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <Car className="h-5 w-5 text-amber-500 shrink-0" />
+                      <span className="font-medium">{t('nav.carRental')}</span>
+                    </div>
+                    <span className="text-xs text-neutral-400">{t('nav.carRentalSubtitle')}</span>
+                  </button>
                 </div>
+
                 <button
-                  onClick={() => handleNavigate('tours')}
-                  className="flex items-center justify-between w-full px-4 py-2.5 rounded-xl text-neutral-700 hover:bg-neutral-50 animate-fadeIn"
+                  onClick={() => handleNavigate('about')}
+                  className={`flex items-center w-full text-left px-4 py-3 rounded-2xl text-sm font-semibold transition-colors min-h-[44px] cursor-pointer ${
+                    activePage === 'about' ? 'bg-amber-500/10 text-amber-700 font-bold' : 'text-neutral-800 hover:bg-neutral-50'
+                  }`}
                 >
-                  <div className="flex items-center space-x-3">
-                    <Compass className="h-4 w-4 text-amber-500 shrink-0" />
-                    <span>Tour</span>
-                  </div>
+                  {t('nav.about')}
                 </button>
-                <button
-                  onClick={() => handleNavigate('share-tour')}
-                  className="flex items-center justify-between w-full px-4 py-2.5 rounded-xl text-neutral-700 hover:bg-neutral-50 animate-fadeIn"
-                >
-                  <div className="flex items-center space-x-3">
-                    <Users className="h-4 w-4 text-amber-500 shrink-0" />
-                    <span>Share Tour</span>
+
+                {/* Mobile Language & Currency Selector Section */}
+                <div className="border-t border-neutral-100 pt-3 my-1 space-y-3">
+                  <div className="px-1">
+                    <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest block mb-2 font-mono">
+                      Language / Bahasa / 语言
+                    </span>
+                    <div className="grid grid-cols-3 gap-2">
+                      <button
+                        onClick={() => setLanguage('id')}
+                        className={`py-3 px-2 rounded-xl text-xs font-bold text-center border transition-all cursor-pointer min-h-[44px] flex items-center justify-center ${
+                          language === 'id'
+                            ? 'bg-amber-500 text-neutral-950 border-amber-500 font-black shadow-sm'
+                            : 'bg-neutral-50 border-neutral-200 text-neutral-700 active:bg-neutral-100'
+                        }`}
+                      >
+                        🇮🇩 ID
+                      </button>
+                      <button
+                        onClick={() => setLanguage('en')}
+                        className={`py-3 px-2 rounded-xl text-xs font-bold text-center border transition-all cursor-pointer min-h-[44px] flex items-center justify-center ${
+                          language === 'en'
+                            ? 'bg-amber-500 text-neutral-950 border-amber-500 font-black shadow-sm'
+                            : 'bg-neutral-50 border-neutral-200 text-neutral-700 active:bg-neutral-100'
+                        }`}
+                      >
+                        🇬🇧 EN
+                      </button>
+                      <button
+                        onClick={() => setLanguage('zh')}
+                        className={`py-3 px-2 rounded-xl text-xs font-bold text-center border transition-all cursor-pointer min-h-[44px] flex items-center justify-center ${
+                          language === 'zh'
+                            ? 'bg-amber-500 text-neutral-950 border-amber-500 font-black shadow-sm'
+                            : 'bg-neutral-50 border-neutral-200 text-neutral-700 active:bg-neutral-100'
+                        }`}
+                      >
+                        🇨🇳 ZH
+                      </button>
+                    </div>
                   </div>
-                  <span className="text-[8px] bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 px-1.5 py-0.5 rounded font-mono font-black uppercase tracking-wider">Baru</span>
-                </button>
-                <button
-                  onClick={() => handleNavigate('airport')}
-                  className="flex items-center justify-between w-full px-4 py-2.5 rounded-xl text-neutral-700 hover:bg-neutral-50 animate-fadeIn"
-                >
-                  <div className="flex items-center space-x-3">
-                    <Plane className="h-4 w-4 text-amber-500 shrink-0" />
-                    <span>Airport Transfer</span>
+
+                  <div className="px-1">
+                    <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest block mb-2 font-mono">
+                      Currency
+                    </span>
+                    {/* Three lines high vertical currency buttons: logo only */}
+                    <div className="flex flex-col gap-2" id="mobile-currency-switcher">
+                      <button
+                        onClick={() => setCurrency('USD')}
+                        className={`w-full py-2.5 px-4 rounded-xl text-base font-black border transition-all cursor-pointer min-h-[44px] flex items-center justify-center ${
+                          currency === 'USD'
+                            ? 'bg-amber-500 text-neutral-950 border-amber-500 shadow-sm'
+                            : 'bg-neutral-50 border-neutral-200 text-neutral-700 active:bg-neutral-100'
+                        }`}
+                        title="US Dollar ($)"
+                      >
+                        <span className="text-lg font-black leading-none">$</span>
+                      </button>
+                      <button
+                        onClick={() => setCurrency('IDR')}
+                        className={`w-full py-2.5 px-4 rounded-xl text-base font-black border transition-all cursor-pointer min-h-[44px] flex items-center justify-center ${
+                          currency === 'IDR'
+                            ? 'bg-amber-500 text-neutral-950 border-amber-500 shadow-sm'
+                            : 'bg-neutral-50 border-neutral-200 text-neutral-700 active:bg-neutral-100'
+                        }`}
+                        title="Indonesian Rupiah (Rp)"
+                      >
+                        <span className="text-base font-black leading-none">Rp</span>
+                      </button>
+                      <button
+                        onClick={() => setCurrency('CNY')}
+                        className={`w-full py-2.5 px-4 rounded-xl text-base font-black border transition-all cursor-pointer min-h-[44px] flex items-center justify-center ${
+                          currency === 'CNY'
+                            ? 'bg-amber-500 text-neutral-950 border-amber-500 shadow-sm'
+                            : 'bg-neutral-50 border-neutral-200 text-neutral-700 active:bg-neutral-100'
+                        }`}
+                        title="Chinese Yuan (¥)"
+                      >
+                        <span className="text-lg font-black leading-none">¥</span>
+                      </button>
+                    </div>
                   </div>
-                </button>
-                <button
-                  onClick={() => handleNavigate('taxi')}
-                  className="flex items-center justify-between w-full px-4 py-2.5 rounded-xl text-neutral-700 hover:bg-neutral-50 animate-fadeIn"
-                >
-                  <div className="flex items-center space-x-3">
-                    <Route className="h-4 w-4 text-amber-500 shrink-0" />
-                    <span>Taxi</span>
-                  </div>
-                </button>
-                <button
-                  onClick={() => handleNavigate('car-rental')}
-                  className="flex items-center justify-between w-full px-4 py-2.5 rounded-xl text-neutral-700 hover:bg-neutral-50 animate-fadeIn"
-                >
-                  <div className="flex items-center space-x-3">
-                    <Car className="h-4 w-4 text-amber-500 shrink-0" />
-                    <span>Rental Car</span>
-                  </div>
-                </button>
+                </div>
+
+                {/* Mobile Drawer Action Buttons */}
+                <div className="pt-3 border-t border-neutral-100 space-y-2.5">
+                  <button
+                    onClick={() => handleNavigate('bookings')}
+                    className="flex items-center justify-between w-full px-4 py-3.5 rounded-2xl bg-neutral-100 active:bg-neutral-200 text-neutral-900 text-xs font-bold transition-all cursor-pointer min-h-[44px]"
+                  >
+                    <div className="flex items-center space-x-2.5">
+                      <Calendar className="h-4.5 w-4.5 text-amber-600" />
+                      <span>{t('nav.checkStatus')}</span>
+                    </div>
+                    {bookings && bookings.length > 0 && (
+                      <span className="bg-amber-500 text-neutral-950 text-[10px] font-black px-2.5 py-1 rounded-full">
+                        {bookings.length} {t('common.bookingsCount') || 'Pesanan'}
+                      </span>
+                    )}
+                  </button>
+                </div>
               </div>
-
-              <button
-                onClick={() => handleNavigate('about')}
-                className="block w-full text-left px-4 py-2.5 rounded-xl text-neutral-800 hover:bg-neutral-50 font-medium"
-              >
-                About
-              </button>
-
-              {/* Mobile Language & Currency Selector Section */}
-              <div className="border-t border-neutral-100 pt-3 my-2 space-y-3">
-                <div className="px-1">
-                  <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest block mb-2">
-                    Language / Bahasa
-                  </span>
-                  <div className="grid grid-cols-3 gap-1.5">
-                    <button
-                      onClick={() => setLanguage('en')}
-                      className={`py-2 px-2 rounded-xl text-xs font-bold text-center border transition-all cursor-pointer ${
-                        language === 'en'
-                          ? 'bg-amber-500 text-neutral-950 border-amber-500 font-black shadow-sm'
-                          : 'bg-neutral-50 border-neutral-200 text-neutral-600 hover:bg-neutral-100'
-                      }`}
-                    >
-                      🇺🇸 EN
-                    </button>
-                    <button
-                      onClick={() => setLanguage('id')}
-                      className={`py-2 px-2 rounded-xl text-xs font-bold text-center border transition-all cursor-pointer ${
-                        language === 'id'
-                          ? 'bg-amber-500 text-neutral-950 border-amber-500 font-black shadow-sm'
-                          : 'bg-neutral-50 border-neutral-200 text-neutral-600 hover:bg-neutral-100'
-                      }`}
-                    >
-                      🇮🇩 ID
-                    </button>
-                    <button
-                      onClick={() => setLanguage('zh')}
-                      className={`py-2 px-2 rounded-xl text-xs font-bold text-center border transition-all cursor-pointer ${
-                        language === 'zh'
-                          ? 'bg-amber-500 text-neutral-950 border-amber-500 font-black shadow-sm'
-                          : 'bg-neutral-50 border-neutral-200 text-neutral-600 hover:bg-neutral-100'
-                      }`}
-                    >
-                      🇨🇳 ZH
-                    </button>
-                  </div>
-                </div>
-
-                <div className="px-1">
-                  <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest block mb-2">
-                    Currency / Mata Uang
-                  </span>
-                  <div className="grid grid-cols-3 gap-1.5">
-                    <button
-                      onClick={() => setCurrency('USD')}
-                      className={`py-2 px-2 rounded-xl text-xs font-bold text-center border transition-all cursor-pointer ${
-                        currency === 'USD'
-                          ? 'bg-amber-500 text-neutral-950 border-amber-500 font-black shadow-sm'
-                          : 'bg-neutral-50 border-neutral-200 text-neutral-600 hover:bg-neutral-100'
-                      }`}
-                    >
-                      USD
-                    </button>
-                    <button
-                      onClick={() => setCurrency('IDR')}
-                      className={`py-2 px-2 rounded-xl text-xs font-bold text-center border transition-all cursor-pointer ${
-                        currency === 'IDR'
-                          ? 'bg-amber-500 text-neutral-950 border-amber-500 font-black shadow-sm'
-                          : 'bg-neutral-50 border-neutral-200 text-neutral-600 hover:bg-neutral-100'
-                      }`}
-                    >
-                      IDR
-                    </button>
-                    <button
-                      onClick={() => setCurrency('CNY')}
-                      className={`py-2 px-2 rounded-xl text-xs font-bold text-center border transition-all cursor-pointer ${
-                        currency === 'CNY'
-                          ? 'bg-amber-500 text-neutral-950 border-amber-500 font-black shadow-sm'
-                          : 'bg-neutral-50 border-neutral-200 text-neutral-600 hover:bg-neutral-100'
-                      }`}
-                    >
-                      CNY
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* No more My Bookings or Book Private Tour buttons as requested */}
-            </div>
-          </motion.div>
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </header>

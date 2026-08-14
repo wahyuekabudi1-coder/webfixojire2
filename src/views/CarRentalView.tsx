@@ -7,7 +7,8 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import CustomerReviewsSection from '../components/CustomerReviewsSection';
-import ComingSoonPage from '../components/ComingSoonPage';
+import Breadcrumbs from '../components/Breadcrumbs';
+import ServiceNavTabs from '../components/ServiceNavTabs';
 import { processArtoPayPayment } from '../lib/artopay';
 
 interface LocationItem {
@@ -310,8 +311,6 @@ function InteractiveCalendar({
 }
 
 export default function CarRentalView() {
-  return <ComingSoonPage service="car-rental" />;
-
   const { 
     formatPrice, 
     addBooking,
@@ -738,16 +737,13 @@ export default function CarRentalView() {
   })();
 
   return (
-    <div id="car-rental-view" className="bg-neutral-950 text-neutral-100 min-h-screen pt-28 md:pt-32 pb-20 font-sans">
+    <div id="car-rental-view" className="bg-neutral-950 text-neutral-100 min-h-screen pt-20 md:pt-24 pb-20 font-sans">
       
+      {/* Service Switcher Navigation Bar */}
+      <ServiceNavTabs />
+
       {/* Breadcrumb Navigation */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
-        <nav className="flex items-center space-x-2 text-xs font-medium text-neutral-400">
-          <button onClick={() => setPage('home')} className="hover:text-amber-500 transition-colors cursor-pointer">Home</button>
-          <span>/</span>
-          <span className="text-white font-semibold">Rental Car</span>
-        </nav>
-      </div>
+      <Breadcrumbs items={[{ label: 'Car Rental with Driver' }]} />
 
       {/* HEADER SECTION */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-8 space-y-3">
@@ -756,10 +752,10 @@ export default function CarRentalView() {
           <span>Verified Premium Fleets</span>
         </span>
         <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight">
-          Traveloka-Style <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-amber-600">Car Rental Portal</span>
+          Sewa Mobil &amp; Rental <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-amber-600">Innova &amp; HiAce Premio</span>
         </h1>
         <p className="text-neutral-400 text-xs sm:text-sm max-w-lg mx-auto">
-          99.999% identical flow featuring real-time provider comparisons, clear pick-up/drop-off requirements, and seamless payment execution.
+          Layanan rental mobil privat dengan driver berpengalaman di Jawa Timur dan Bali. Pilihan unit Toyota Avanza, Innova Reborn, Zenix, HiAce Premio, dan Alphard.
         </p>
       </div>
 

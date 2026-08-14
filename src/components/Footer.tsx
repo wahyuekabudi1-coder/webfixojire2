@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../AppContext';
+import { useLanguageCurrency } from '../sharetour/LanguageCurrencyContext';
 import { Compass, Mail, MapPin, Phone, Clock, MessageSquare, Instagram, Facebook, Youtube, Share2, Sparkles, QrCode, Copy, Check, X, ShieldCheck, FileText, Lock, Eye, EyeOff } from 'lucide-react';
 
 function WeChatIcon({ className = "h-4 w-4" }: { className?: string }) {
@@ -18,6 +19,7 @@ function WeChatIcon({ className = "h-4 w-4" }: { className?: string }) {
 
 export default function Footer() {
   const { setPage, setPrivacyOpen, setTermsOpen } = useApp();
+  const { t } = useLanguageCurrency();
   const [emailSubscribed, setEmailSubscribed] = useState(false);
   const [email, setEmail] = useState('');
   const [imageFailed, setImageFailed] = useState(false);
@@ -106,7 +108,7 @@ export default function Footer() {
               </div>
             </div>
             <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">
-              Smart Journey adalah spesialis perjalanan premium dan antar-jemput bandara di Indonesia. Kami menyediakan paket tour wisata, kemitraan lokal terverifikasi, serta transportasi standar concierge 24/7 yang memenuhi tolok ukur internasional.
+              {t('footer.aboutText')}
             </p>
             
             {/* Social Media Links under description */}
@@ -115,44 +117,48 @@ export default function Footer() {
                 href="https://instagram.com"
                 target="_blank"
                 rel="noreferrer"
-                className="bg-white border border-neutral-200 text-neutral-500 hover:border-amber-500 hover:text-amber-500 p-2 rounded-lg transition-all duration-300 shadow-sm hover:-translate-y-0.5"
+                aria-label="Instagram Smart Journey"
+                className="bg-white border border-neutral-200 text-neutral-500 hover:border-amber-500 hover:text-amber-500 p-2 rounded-lg transition-all duration-300 shadow-sm hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
                 title="Instagram"
               >
-                <Instagram className="h-4 w-4" />
+                <Instagram className="h-4 w-4" aria-hidden="true" />
               </a>
               <a
                 href="https://facebook.com"
                 target="_blank"
                 rel="noreferrer"
-                className="bg-white border border-neutral-200 text-neutral-500 hover:border-amber-500 hover:text-amber-500 p-2 rounded-lg transition-all duration-300 shadow-sm hover:-translate-y-0.5"
+                aria-label="Facebook Smart Journey"
+                className="bg-white border border-neutral-200 text-neutral-500 hover:border-amber-500 hover:text-amber-500 p-2 rounded-lg transition-all duration-300 shadow-sm hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
                 title="Facebook"
               >
-                <Facebook className="h-4 w-4" />
+                <Facebook className="h-4 w-4" aria-hidden="true" />
               </a>
               <a
                 href="https://youtube.com"
                 target="_blank"
                 rel="noreferrer"
-                className="bg-white border border-neutral-200 text-neutral-500 hover:border-amber-500 hover:text-amber-500 p-2 rounded-lg transition-all duration-300 shadow-sm hover:-translate-y-0.5"
+                aria-label="YouTube Smart Journey"
+                className="bg-white border border-neutral-200 text-neutral-500 hover:border-amber-500 hover:text-amber-500 p-2 rounded-lg transition-all duration-300 shadow-sm hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
                 title="YouTube"
               >
-                <Youtube className="h-4 w-4" />
+                <Youtube className="h-4 w-4" aria-hidden="true" />
               </a>
               <a
                 href="https://tiktok.com"
                 target="_blank"
                 rel="noreferrer"
-                className="bg-white border border-neutral-200 text-neutral-500 hover:border-amber-500 hover:text-amber-500 p-2 rounded-lg transition-all duration-300 shadow-sm hover:-translate-y-0.5"
-                title="Share"
+                aria-label="TikTok Smart Journey"
+                className="bg-white border border-neutral-200 text-neutral-500 hover:border-amber-500 hover:text-amber-500 p-2 rounded-lg transition-all duration-300 shadow-sm hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+                title="TikTok"
               >
-                <Share2 className="h-4 w-4" />
+                <Share2 className="h-4 w-4" aria-hidden="true" />
               </a>
             </div>
 
             <div className="pt-1">
               <span className="inline-flex items-center gap-1.5 bg-emerald-500/10 text-emerald-600 px-2.5 py-1 rounded-full text-[11px] font-semibold">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                Operator Tur Resmi Indonesia
+                {t('footer.officialOperator')}
               </span>
             </div>
           </div>
@@ -160,42 +166,42 @@ export default function Footer() {
           {/* Column 2: Services & Quick Links */}
           <div className="border-t border-neutral-200/60 pt-6 md:border-t-0 md:pt-0">
             <h3 className="text-neutral-900 font-bold text-xs tracking-wider uppercase mb-4 border-l-2 border-amber-500 pl-2.5">
-              Services &amp; Navigation
+              {t('footer.servicesTitle')}
             </h3>
             <ul className="space-y-2.5 text-sm">
               <li>
                 <button onClick={() => setPage('tours')} className="hover:text-amber-600 text-neutral-700 transition-colors cursor-pointer font-medium">
-                  Tour
+                  {t('nav.tours')}
                 </button>
               </li>
               <li>
                 <button onClick={() => setPage('share-tour')} className="hover:text-amber-600 text-neutral-700 transition-colors cursor-pointer flex items-center gap-1.5 font-medium">
-                  <span>Share Tour</span>
-                  <span className="text-[9px] bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 px-1.5 py-0.5 rounded font-mono font-bold uppercase">New</span>
+                  <span>{t('nav.shareTour')}</span>
+                  <span className="text-[9px] bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 px-1.5 py-0.5 rounded font-mono font-bold uppercase">{t('nav.newBadge')}</span>
                 </button>
               </li>
               <li>
                 <button onClick={() => setPage('airport')} className="hover:text-amber-600 text-neutral-700 transition-colors cursor-pointer font-medium">
-                  Airport Transfer
+                  {t('nav.airport')}
                 </button>
               </li>
               <li>
                 <button onClick={() => setPage('taxi')} className="hover:text-amber-600 text-neutral-700 transition-colors cursor-pointer font-medium">
-                  Taxi
+                  {t('nav.taxi')}
                 </button>
               </li>
               <li>
                 <button onClick={() => setPage('car-rental')} className="hover:text-amber-600 text-neutral-700 transition-colors cursor-pointer font-medium">
-                  Rental Car
+                  {t('nav.carRental')}
                 </button>
               </li>
               <li className="pt-2 border-t border-neutral-200/60 flex items-center gap-4 text-xs font-semibold text-neutral-500">
                 <button onClick={() => setPage('about')} className="hover:text-amber-600 transition-colors cursor-pointer">
-                  About Us
+                  {t('nav.about')}
                 </button>
                 <span>•</span>
                 <button onClick={() => setPage('partnerships')} className="hover:text-amber-600 transition-colors cursor-pointer">
-                  Partnerships
+                  {t('footer.partnerships')}
                 </button>
               </li>
             </ul>
@@ -204,7 +210,7 @@ export default function Footer() {
           {/* Column 3: Contact Details */}
           <div id="footer-contact-column" className="border-t border-neutral-200/60 pt-6 md:border-t-0 md:pt-0 rounded-2xl p-2 transition-all duration-500">
             <h3 className="text-neutral-900 font-bold text-xs tracking-wider uppercase mb-4 border-l-2 border-amber-500 pl-2.5">
-              Contact &amp; Inquiries
+              {t('footer.contactTitle')}
             </h3>
             <ul className="space-y-3 text-xs sm:text-sm text-neutral-600">
               <li className="flex items-center space-x-2.5">
@@ -262,7 +268,7 @@ export default function Footer() {
           {/* Label + Badge Container */}
           <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
             <span className="text-[9px] font-extrabold uppercase tracking-widest text-emerald-100 font-sans shrink-0">
-              PAYMENT METHODS
+              {t('footer.paymentMethods')}
             </span>
             {/* Cards Row */}
             <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
@@ -300,11 +306,11 @@ export default function Footer() {
                 <span className="text-[#00A1E9] font-extrabold text-[10px] sm:text-xs tracking-tight font-sans">Alipay</span>
               </div>
 
-              {/* WeChat Pay */}
+              {/* PayPal */}
               <div className="w-[54px] h-[26px] sm:w-[60px] sm:h-[28px] bg-white rounded-md flex items-center justify-center select-none shrink-0 border border-neutral-200 shadow-sm transition-all duration-300 hover:scale-105">
-                <div className="flex flex-col items-center justify-center leading-none">
-                  <span className="text-[#09BB07] font-semibold text-[8px] sm:text-[9px] tracking-tight">WeChat</span>
-                  <span className="text-[#09BB07] font-semibold text-[7px] sm:text-[8px] tracking-tight">Pay</span>
+                <div className="flex items-center justify-center font-sans tracking-tight font-black italic text-[10px] sm:text-xs">
+                  <span className="text-[#003087]">Pay</span>
+                  <span className="text-[#0079C1]">Pal</span>
                 </div>
               </div>
             </div>
@@ -314,12 +320,12 @@ export default function Footer() {
           <div className="inline-flex items-center gap-2.5 bg-[#203c34] border border-[#3e6f62] rounded-full px-3.5 py-1.5 text-[9px] sm:text-[10px] text-emerald-100 font-semibold select-none shadow-inner shrink-0">
             <div className="flex items-center gap-1.5 hover:text-white transition-colors duration-200">
               <ShieldCheck className="h-3.5 w-3.5 text-amber-300" />
-              <span>Secure</span>
+              <span>{t('footer.secure')}</span>
             </div>
             <div className="h-3 w-[1px] bg-[#315B4F]" />
             <div className="flex items-center gap-1.5 hover:text-white transition-colors duration-200">
               <FileText className="h-3.5 w-3.5 text-amber-300" />
-              <span>Licensed</span>
+              <span>{t('footer.licensed')}</span>
             </div>
           </div>
         </div>
@@ -331,13 +337,13 @@ export default function Footer() {
               onClick={() => setPrivacyOpen(true)} 
               className="hover:text-neutral-800 transition-colors cursor-pointer"
             >
-              Kebijakan Privasi
+              {t('footer.privacyPolicy')}
             </button>
             <button 
               onClick={() => setTermsOpen(true)} 
               className="hover:text-neutral-800 transition-colors cursor-pointer"
             >
-              Syarat &amp; Ketentuan
+              {t('footer.termsConditions')}
             </button>
             <button 
               onClick={() => {
@@ -352,7 +358,7 @@ export default function Footer() {
               }} 
               className="hover:text-neutral-800 transition-colors cursor-pointer"
             >
-              Hubungi Kami
+              {t('footer.contactUs')}
             </button>
           </div>
         </div>
@@ -360,7 +366,7 @@ export default function Footer() {
         {/* 4. COPYRIGHT & DEV ADMIN ACCESS BUTTONS */}
         <div className="border-t border-neutral-200 mt-6 pt-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-neutral-500 font-medium">
           <div>
-            © 2026 <span className="font-semibold text-neutral-700">PT Sawah Jaya Trans 1</span>. All Rights Reserved.
+            © 2026 <span className="font-semibold text-neutral-700">PT Sawah Jaya Trans</span>. {t('footer.allRightsReserved')}.
           </div>
 
           {/* Development / Testing Admin Quick Access Buttons */}
@@ -423,7 +429,7 @@ export default function Footer() {
                 </div>
                 <div>
                   <h3 className="font-bold text-neutral-800 text-sm sm:text-base leading-tight">Smart Journey</h3>
-                  <p className="text-xs text-neutral-500 font-medium">WeChat Contact</p>
+                  <p className="text-xs text-neutral-500 font-medium">{t('wechat.title')}</p>
                 </div>
               </div>
               
@@ -432,7 +438,7 @@ export default function Footer() {
                 id="close-wechat-modal-btn"
                 onClick={() => setIsWeChatModalOpen(false)}
                 className="flex items-center justify-center p-2 rounded-full text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition-all border border-neutral-200/50"
-                title="Tutup"
+                title={t('common.close')}
               >
                 <X className="h-5 w-5" />
               </button>
@@ -480,12 +486,12 @@ export default function Footer() {
                   {copiedWeChat ? (
                     <>
                       <Check className="h-3.5 w-3.5" />
-                      <span>Tersalin</span>
+                      <span>{t('wechat.copied')}</span>
                     </>
                   ) : (
                     <>
                       <Copy className="h-3.5 w-3.5" />
-                      <span>Salin ID</span>
+                      <span>{t('wechat.copyId')}</span>
                     </>
                   )}
                 </button>
@@ -494,7 +500,7 @@ export default function Footer() {
 
             {/* Help / Instructions */}
             <div className="text-xs text-neutral-500 text-center leading-relaxed px-2">
-              Buka aplikasi <span className="font-bold text-emerald-600">WeChat</span> &rarr; Ketuk <span className="font-bold">+</span> di kanan atas &rarr; Pilih <span className="font-bold">Scan</span> atau cari ID <span className="font-bold text-neutral-800 bg-neutral-100 px-1 py-0.5 rounded">sjtrans</span>.
+              {t('wechat.instruction')}
             </div>
 
             {/* Primary Selesai Button */}
@@ -502,7 +508,7 @@ export default function Footer() {
               onClick={() => setIsWeChatModalOpen(false)}
               className="w-full py-3 bg-neutral-900 hover:bg-neutral-800 text-white font-bold rounded-2xl text-sm transition-all shadow-md hover:shadow-lg duration-200"
             >
-              Selesai & Tutup
+              {t('wechat.done')}
             </button>
           </div>
         </div>

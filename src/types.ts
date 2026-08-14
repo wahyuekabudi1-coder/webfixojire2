@@ -10,7 +10,7 @@ export interface Tour {
   image: string;
   highlights: string[];
   itinerary: string[];
-  category: 'Adventure' | 'Nature' | 'Culture' | 'City';
+  category: 'Adventure' | 'Nature' | 'Culture' | 'City' | string;
   includes?: string[];
   excludes?: string[];
   gallery?: string[];
@@ -20,7 +20,7 @@ export interface Tour {
 export interface Vehicle {
   id: string;
   name: string;
-  category: 'Standard' | 'Premium' | 'Family' | 'Van';
+  category: 'Standard' | 'Premium' | 'Family' | 'Van' | string;
   passengers: number;
   luggage: number;
   hasAC: boolean;
@@ -39,6 +39,7 @@ export interface Review {
   text: string;
   date: string;
   avatar: string;
+  isLocalGuide?: boolean;
   status?: 'pending' | 'approved';
   serviceType?: 'tour' | 'airport' | 'taxi' | 'rental';
   serviceId?: string;

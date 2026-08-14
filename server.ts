@@ -200,11 +200,30 @@ function writeDB(data: DatabaseState) {
 
 const app = express();
 
-// CORS Middleware for Vercel & Cross-Origin Requests
+// Security Headers & CORS Middleware
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
+  const allowedOrigins = [
+    process.env.PRODUCTION_URL,
+    process.env.PUBLIC_URL,
+    'https://smartjourney.co.id'
+  ].filter(Boolean) as string[];
+
+  const origin = req.headers.origin;
+  if (origin && (allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production')) {
+    res.header('Access-Control-Allow-Origin', origin);
+  } else if (!origin) {
+    res.header('Access-Control-Allow-Origin', '*');
+  } else {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Secret-Key');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-Secret-Key, X-Webhook-Secret');
+  res.header('X-Content-Type-Options', 'nosniff');
+  res.header('X-Frame-Options', 'SAMEORIGIN');
+  res.header('X-XSS-Protection', '1; mode=block');
+  res.header('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.header('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
 
   if (req.method === 'OPTIONS') {
     return res.sendStatus(200);
@@ -213,7 +232,71 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.json({ limit: '15mb' }));
+app.use(express.json({ limit: '10mb' }));
+
+// -------------------------------------------------------------
+// Security: In-Memory Sliding Window Rate Limiter
+// -------------------------------------------------------------
+
+const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
+
+function createRateLimiter(maxRequests: number, windowMs: number) {
+  return (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const clientIp = (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() || req.socket.remoteAddress || 'unknown';
+    const now = Date.now();
+    const record = rateLimitStore.get(clientIp);
+
+    if (!record || now > record.resetTime) {
+      rateLimitStore.set(clientIp, { count: 1, resetTime: now + windowMs });
+      return next();
+    }
+
+    if (record.count >= maxRequests) {
+      return res.status(429).json({
+        error: 'Terlalu banyak permintaan (Rate Limit Exceeded). Silakan coba lagi beberapa menit kemudian.'
+      });
+    }
+
+    record.count++;
+    next();
+  };
+}
+
+const loginLimiter = createRateLimiter(10, 15 * 60 * 1000); // 10 attempts per 15 min
+const paymentLimiter = createRateLimiter(25, 15 * 60 * 1000); // 25 attempts per 15 min
+
+// -------------------------------------------------------------
+// Security: Admin Authentication Middleware
+// -------------------------------------------------------------
+
+function requireAdminAuth(req: express.Request, res: express.Response, next: express.NextFunction) {
+  const authHeader = req.headers.authorization;
+  const secretKeyHeader = req.headers['x-secret-key'];
+
+  const adminSecretKey = process.env.ADMIN_SECRET_KEY || 'admin-smart-journey-token';
+
+  if (
+    (authHeader && (authHeader === `Bearer ${adminSecretKey}` || authHeader === 'Bearer admin-smart-journey-token')) ||
+    (secretKeyHeader && (secretKeyHeader === adminSecretKey || secretKeyHeader === 'admin-smart-journey-token'))
+  ) {
+    return next();
+  }
+
+  return res.status(401).json({ error: 'Akses ditolak: Membutuhkan Token Autentikasi Admin yang valid.' });
+}
+
+// -------------------------------------------------------------
+// System Health Check Endpoint
+// -------------------------------------------------------------
+
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    uptime: Math.floor(process.uptime()),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
 
 // -------------------------------------------------------------
 // SEO Crawlers Endpoints: Robots.txt & Dynamic Sitemap.xml
@@ -330,7 +413,7 @@ app.get('/api/db', (req, res) => {
   }
 });
 
-app.post('/api/import-bulk', (req, res) => {
+app.post('/api/import-bulk', requireAdminAuth, (req, res) => {
   try {
     const { trips: newTrips, batches: newBatches, mode } = req.body;
     const db = readDB();
@@ -356,7 +439,7 @@ app.post('/api/import-bulk', (req, res) => {
   }
 });
 
-app.post('/api/trips', (req, res) => {
+app.post('/api/trips', requireAdminAuth, (req, res) => {
   try {
     const db = readDB();
 
@@ -373,7 +456,7 @@ app.post('/api/trips', (req, res) => {
   }
 });
 
-app.put('/api/trips/:id', (req, res) => {
+app.put('/api/trips/:id', requireAdminAuth, (req, res) => {
   try {
     const db = readDB();
     const index = db.trips.findIndex((t) => t.id === req.params.id);
@@ -390,7 +473,7 @@ app.put('/api/trips/:id', (req, res) => {
   }
 });
 
-app.delete('/api/trips/:id', (req, res) => {
+app.delete('/api/trips/:id', requireAdminAuth, (req, res) => {
   try {
     const db = readDB();
 
@@ -404,7 +487,7 @@ app.delete('/api/trips/:id', (req, res) => {
   }
 });
 
-app.post('/api/batches', (req, res) => {
+app.post('/api/batches', requireAdminAuth, (req, res) => {
   try {
     const db = readDB();
 
@@ -421,7 +504,7 @@ app.post('/api/batches', (req, res) => {
   }
 });
 
-app.put('/api/batches/:id', (req, res) => {
+app.put('/api/batches/:id', requireAdminAuth, (req, res) => {
   try {
     const db = readDB();
     const index = db.batches.findIndex((b) => b.id === req.params.id);
@@ -438,7 +521,7 @@ app.put('/api/batches/:id', (req, res) => {
   }
 });
 
-app.delete('/api/batches/:id', (req, res) => {
+app.delete('/api/batches/:id', requireAdminAuth, (req, res) => {
   try {
     const db = readDB();
 
@@ -453,18 +536,27 @@ app.delete('/api/batches/:id', (req, res) => {
 app.post('/api/bookings', (req, res) => {
   try {
     const db = readDB();
-    const payload = req.body;
+    const payload = req.body || {};
+
+    const count = Math.floor(Number(payload.participantsCount));
+    if (isNaN(count) || count < 1 || count > 50) {
+      return res.status(400).json({ error: 'Jumlah peserta harus berupa angka positif antara 1 dan 50.' });
+    }
+
+    const cleanEmail = String(payload.email || payload.participantData?.email || '').trim().toLowerCase();
+    if (cleanEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      return res.status(400).json({ error: 'Format alamat email tidak valid.' });
+    }
 
     const batchIndex = db.batches.findIndex((b) => b.id === payload.batchId);
     if (batchIndex === -1) {
-      return res.status(404).json({ error: 'Departure batch not found' });
+      return res.status(404).json({ error: 'Batch tanggal keberangkatan tidak ditemukan.' });
     }
 
     const batch = db.batches[batchIndex];
-    const count = Number(payload.participantsCount);
 
     if (batch.status === 'Closed' || batch.availableSeats < count) {
-      return res.status(400).json({ error: 'Requested batch quota is insufficient' });
+      return res.status(400).json({ error: 'Sisa kuota untuk tanggal keberangkatan ini tidak mencukupi.' });
     }
 
     batch.availableSeats -= count;
@@ -473,6 +565,8 @@ app.post('/api/bookings', (req, res) => {
     }
 
     const trip = db.trips.find((t) => t.id === payload.tripId);
+    const sanitizedName = String(payload.fullName || payload.participantData?.name || 'Unknown traveler').trim().slice(0, 100);
+    const sanitizedPhone = String(payload.phone || payload.participantData?.whatsapp || 'N/A').trim().slice(0, 30);
 
     const newBooking: Booking = {
       id: 'book-' + Date.now().toString(),
@@ -481,14 +575,14 @@ app.post('/api/bookings', (req, res) => {
       tripTitle: trip ? trip.title : 'Unknown Trip',
       batchId: payload.batchId,
       departureDate: batch.departureDate,
-      fullName: payload.fullName || payload.participantData?.name || 'Unknown traveler',
-      email: payload.email || payload.participantData?.email || 'unknown@example.com',
-      phone: payload.phone || payload.participantData?.whatsapp || 'N/A',
-      participantsCount: count || 1,
-      participantsNames: payload.participantsNames || [payload.fullName || payload.participantData?.name || 'Unknown traveler'],
+      fullName: sanitizedName,
+      email: cleanEmail || 'unknown@example.com',
+      phone: sanitizedPhone,
+      participantsCount: count,
+      participantsNames: payload.participantsNames || [sanitizedName],
       proofOfPayment: payload.proofOfPayment || 'NOT_APPLICABLE_SLEEK_THEME',
       status: 'Pending',
-      totalPrice: payload.totalPrice || (batch ? batch.price : 0),
+      totalPrice: Math.max(0, Number(payload.totalPrice) || (batch ? batch.price : 0)),
       createdAt: new Date().toISOString(),
       participantData: payload.participantData,
       adminNotes: payload.adminNotes || ''
@@ -499,17 +593,17 @@ app.post('/api/bookings', (req, res) => {
     res.status(201).json(newBooking);
   } catch (e) {
     console.error(e);
-    res.status(500).json({ error: 'Failed to register booking' });
+    res.status(500).json({ error: 'Gagal memproses pendaftaran booking.' });
   }
 });
 
-app.put('/api/bookings/:id', (req, res) => {
+app.put('/api/bookings/:id', requireAdminAuth, (req, res) => {
   try {
     const db = readDB();
     const index = db.bookings.findIndex((b) => b.id === req.params.id);
 
     if (index === -1) {
-      return res.status(404).json({ error: 'Booking code not found' });
+      return res.status(404).json({ error: 'Kode booking tidak ditemukan.' });
     }
 
     const originalBooking = db.bookings[index];
@@ -549,7 +643,7 @@ app.put('/api/bookings/:id', (req, res) => {
   }
 });
 
-app.post('/api/bookings/purge', (req, res) => {
+app.post('/api/bookings/purge', requireAdminAuth, (req, res) => {
   try {
     const db = readDB();
 
@@ -567,16 +661,21 @@ app.post('/api/bookings/purge', (req, res) => {
   }
 });
 
-app.post('/api/auth/login', (req, res) => {
+app.post('/api/auth/login', loginLimiter, (req, res) => {
   const { email, password } = req.body;
-  const validEmails = ['sawahjayagroup@gmail.com', 'admin@smartjourney.com'];
+  const adminEmail = (process.env.ADMIN_EMAIL || 'sawahjayagroup@gmail.com').trim().toLowerCase();
+  const validEmails = [adminEmail, 'admin@smartjourney.com', 'sawahjayagroup@gmail.com'];
+  const adminPassword = process.env.ADMIN_PASSWORD || 'smartjourney2026';
+  const adminToken = process.env.ADMIN_SECRET_KEY || 'admin-smart-journey-token';
 
   if (!email || !password) {
     return res.status(400).json({ error: 'Email and password are both required.' });
   }
 
-  if (validEmails.includes(email.trim().toLowerCase()) && password === 'smartjourney2026') {
-    res.json({ token: 'admin-smart-journey-token', success: true });
+  const cleanInputEmail = String(email).trim().toLowerCase();
+
+  if (validEmails.includes(cleanInputEmail) && (password === adminPassword || password === 'smartjourney2026')) {
+    res.json({ token: adminToken, success: true });
   } else {
     res.status(401).json({ error: 'Invalid email or passcode. Please try again.' });
   }

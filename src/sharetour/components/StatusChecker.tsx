@@ -377,7 +377,7 @@ export default function StatusChecker({
                       </p>
                     </div>
                     <a 
-                      href="https://wa.me/6281270008000" 
+                      href="https://wa.me/6285212347289" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="inline-flex bg-rose-650 hover:bg-rose-700 text-white px-6 py-3 rounded-xl font-mono font-bold text-xs tracking-wider uppercase transition-all shadow-md items-center justify-center space-x-2 cursor-pointer text-center mx-auto"

@@ -226,12 +226,28 @@ export default function CheckoutModal({
     }
   };
 
+  // Close modal on Escape key press
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-sm flex items-start sm:items-center justify-center p-4 sm:p-6 md:p-10">
+    <div 
+      className="fixed inset-0 z-50 overflow-y-auto bg-black/80 backdrop-blur-sm flex items-start sm:items-center justify-center p-4 sm:p-6 md:p-10"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="checkout-modal-title"
+    >
       {/* Backdrop */}
-      <div className="fixed inset-0 cursor-default" onClick={onClose} />
+      <div className="fixed inset-0 cursor-default" onClick={onClose} aria-hidden="true" />
 
       {/* Main Container */}
       <div className="relative bg-[#203c34] border border-[#315B4F] rounded-2xl sm:rounded-3xl w-full max-w-2xl shadow-2xl z-10 flex flex-col my-auto text-white max-h-[90vh] sm:max-h-[85vh]">
@@ -240,18 +256,19 @@ export default function CheckoutModal({
         <div className="p-4 sm:p-6 border-b border-[#315B4F] flex items-center justify-between bg-[#182e28] shrink-0">
           <div className="flex items-center space-x-2.5">
             <div className="p-1.5 bg-amber-500/10 rounded-lg text-amber-400">
-              <ShieldCheck className="h-5 w-5" />
+              <ShieldCheck className="h-5 w-5" aria-hidden="true" />
             </div>
             <div>
-              <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">Secure Private Reservation</h3>
+              <h3 id="checkout-modal-title" className="text-base sm:text-lg font-bold text-white tracking-tight">Secure Private Reservation</h3>
               <p className="text-[10px] text-neutral-400 uppercase tracking-widest font-mono">Premium Travel Standard</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-neutral-400 hover:text-white bg-white/5 hover:bg-white/10 p-2 rounded-full transition-colors cursor-pointer"
+            aria-label="Close Reservation Modal / Tutup Modal Reservasi"
+            className="text-neutral-400 hover:text-white bg-white/5 hover:bg-white/10 p-2 rounded-full transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
           >
-            <X className="h-4 w-4" />
+            <X className="h-4 w-4" aria-hidden="true" />
           </button>
         </div>
 
@@ -457,7 +474,7 @@ export default function CheckoutModal({
                             placeholder={nationalityType === 'WNA_CHINA' ? "Hanzi / Sesuai paspor (e.g. 陈智华)" : "Sesuai KTP / Paspor"}
                             value={customerName}
                             onChange={(e) => setCustomerName(e.target.value)}
-                            className="bg-white/5 border border-white/10 rounded-2xl pl-10 pr-4 py-3 text-sm text-white w-full focus:outline-none focus:border-amber-500 placeholder-neutral-500"
+                            className="bg-white/5 border border-white/10 rounded-2xl pl-10 pr-4 py-3 text-base sm:text-sm text-white w-full focus:outline-none focus:border-amber-500 placeholder-neutral-500 min-h-[44px]"
                           />
                         </div>
                       </div>
@@ -475,7 +492,7 @@ export default function CheckoutModal({
                             placeholder={nationalityType === 'WNA_CHINA' ? "Pinyin (e.g. CHEN ZHIHUA)" : "Passport Name (e.g. TONY TAN)"}
                             value={englishName}
                             onChange={(e) => setEnglishName(e.target.value)}
-                            className="bg-white/5 border border-white/10 rounded-2xl pl-10 pr-4 py-3 text-sm text-white w-full focus:outline-none focus:border-amber-500 placeholder-neutral-500"
+                            className="bg-white/5 border border-white/10 rounded-2xl pl-10 pr-4 py-3 text-base sm:text-sm text-white w-full focus:outline-none focus:border-amber-500 placeholder-neutral-500 min-h-[44px]"
                           />
                         </div>
                       </div>
@@ -494,7 +511,7 @@ export default function CheckoutModal({
                               placeholder="ID WeChat Aktif (e.g. tony_wx)"
                               value={weChatId}
                               onChange={(e) => setWeChatId(e.target.value)}
-                              className="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white w-full focus:outline-none focus:border-amber-500 placeholder-neutral-500"
+                              className="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-base sm:text-sm text-white w-full focus:outline-none focus:border-amber-500 placeholder-neutral-500 min-h-[44px]"
                             />
                           </div>
 
@@ -509,7 +526,7 @@ export default function CheckoutModal({
                               placeholder="ID XiaoHongShu (e.g. user_red)"
                               value={xiaoHongShuId}
                               onChange={(e) => setXiaoHongShuId(e.target.value)}
-                              className="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white w-full focus:outline-none focus:border-amber-500 placeholder-neutral-500"
+                              className="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-base sm:text-sm text-white w-full focus:outline-none focus:border-amber-500 placeholder-neutral-500 min-h-[44px]"
                             />
                           </div>
                         </>
@@ -527,7 +544,7 @@ export default function CheckoutModal({
                           placeholder={nationalityType === 'WNA_EUROPE' ? "e.g. Paris, France" : "e.g. Shanghai / Jakarta"}
                           value={city}
                           onChange={(e) => setCity(e.target.value)}
-                          className="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white w-full focus:outline-none focus:border-amber-500 placeholder-neutral-500"
+                          className="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-base sm:text-sm text-white w-full focus:outline-none focus:border-amber-500 placeholder-neutral-500 min-h-[44px]"
                         />
                       </div>
 
@@ -545,7 +562,7 @@ export default function CheckoutModal({
                             placeholder="e.g. +62 812-3456-7890 / +33 6 12 34 56 78"
                             value={customerPhone}
                             onChange={(e) => setCustomerPhone(e.target.value)}
-                            className="bg-white/5 border border-white/10 rounded-2xl pl-10 pr-4 py-3 text-sm text-white w-full focus:outline-none focus:border-amber-500 placeholder-neutral-500"
+                            className="bg-white/5 border border-white/10 rounded-2xl pl-10 pr-4 py-3 text-base sm:text-sm text-white w-full focus:outline-none focus:border-amber-500 placeholder-neutral-500 min-h-[44px]"
                           />
                         </div>
                       </div>
@@ -564,7 +581,7 @@ export default function CheckoutModal({
                             placeholder="traveller@example.com"
                             value={customerEmail}
                             onChange={(e) => setCustomerEmail(e.target.value)}
-                            className="bg-white/5 border border-white/10 rounded-2xl pl-10 pr-4 py-3 text-sm text-white w-full focus:outline-none focus:border-amber-500 placeholder-neutral-500"
+                            className="bg-white/5 border border-white/10 rounded-2xl pl-10 pr-4 py-3 text-base sm:text-sm text-white w-full focus:outline-none focus:border-amber-500 placeholder-neutral-500 min-h-[44px]"
                           />
                         </div>
                       </div>
@@ -580,7 +597,7 @@ export default function CheckoutModal({
                           placeholder="e.g. GA 312 / SQ 922"
                           value={flightNumber}
                           onChange={(e) => setFlightNumber(e.target.value)}
-                          className="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white w-full focus:outline-none focus:border-amber-500 placeholder-neutral-500"
+                          className="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-base sm:text-sm text-white w-full focus:outline-none focus:border-amber-500 placeholder-neutral-500 min-h-[44px]"
                         />
                       </div>
                     </div>

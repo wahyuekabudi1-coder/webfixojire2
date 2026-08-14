@@ -61,14 +61,25 @@ export default function CustomerHeader({ currentView, onNavigate, isAdminLoggedI
               </button>
             </div>
 
-            {/* Currency Selector (Rupiah, Yuan & Dollar) */}
-            <div className="flex items-center bg-[#25463c] border border-[#2b5145] rounded-xl p-1" id="curr-switcher">
+            {/* Currency Selector (Dollar, Rupiah & Yuan): 3 lines high, logo only */}
+            <div className="flex flex-col items-center bg-[#25463c] border border-[#2b5145] rounded-lg p-0.5" id="curr-switcher" title="Select Currency">
+              <button
+                title="Dollar (USD)"
+                onClick={() => setCurrency("USD")}
+                className={`w-5.5 h-3.5 rounded text-[10px] font-black leading-none flex items-center justify-center transition-all duration-150 cursor-pointer ${
+                  currency === "USD"
+                    ? "bg-[#D6B16D] text-[#315B4F] shadow-sm font-black"
+                    : "text-gray-300 hover:text-white"
+                }`}
+              >
+                $
+              </button>
               <button
                 title="Rupiah (IDR)"
                 onClick={() => setCurrency("IDR")}
-                className={`px-2 py-1 rounded-lg text-[10px] font-bold tracking-tight transition-all duration-150 cursor-pointer ${
+                className={`w-5.5 h-3.5 rounded text-[8.5px] font-black leading-none flex items-center justify-center transition-all duration-150 cursor-pointer ${
                   currency === "IDR"
-                    ? "bg-[#D6B16D] text-[#315B4F] shadow-sm font-semibold"
+                    ? "bg-[#D6B16D] text-[#315B4F] shadow-sm font-black"
                     : "text-gray-300 hover:text-white"
                 }`}
               >
@@ -77,24 +88,13 @@ export default function CustomerHeader({ currentView, onNavigate, isAdminLoggedI
               <button
                 title="Yuan (CNY)"
                 onClick={() => setCurrency("CNY")}
-                className={`px-2 py-1 rounded-lg text-[10px] font-bold tracking-tight transition-all duration-150 cursor-pointer ${
+                className={`w-5.5 h-3.5 rounded text-[10px] font-black leading-none flex items-center justify-center transition-all duration-150 cursor-pointer ${
                   currency === "CNY"
-                    ? "bg-[#D6B16D] text-[#315B4F] shadow-sm font-semibold"
+                    ? "bg-[#D6B16D] text-[#315B4F] shadow-sm font-black"
                     : "text-gray-300 hover:text-white"
                 }`}
               >
                 ¥
-              </button>
-              <button
-                title="Dollar (USD)"
-                onClick={() => setCurrency("USD")}
-                className={`px-2 py-1 rounded-lg text-[10px] font-bold tracking-tight transition-all duration-150 cursor-pointer ${
-                  currency === "USD"
-                    ? "bg-[#D6B16D] text-[#315B4F] shadow-sm font-semibold"
-                    : "text-gray-300 hover:text-white"
-                }`}
-              >
-                $
               </button>
             </div>
           </div>

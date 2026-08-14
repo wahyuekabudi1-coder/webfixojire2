@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { 
   ActivePage, Booking, Tour, AirportRoute, Airport, 
   TaxiMasterArea, TaxiMasterDestination, TaxiPricingRule, TaxiAreaRule, TaxiImportHistory,
@@ -95,7 +95,7 @@ const AppContext = createContext<AppContextProps | undefined>(undefined);
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [activePage, setActivePageState] = useState<ActivePage>('home');
   const [currency, setCurrencyState] = useState<'USD' | 'IDR' | 'CNY'>(() => {
-    return (localStorage.getItem('sj_currency') as 'USD' | 'IDR' | 'CNY') || 'IDR';
+    return (localStorage.getItem('sj_currency') as 'USD' | 'IDR' | 'CNY') || 'USD';
   });
 
   const setCurrency = (curr: 'USD' | 'IDR' | 'CNY') => {
@@ -156,7 +156,21 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const stored = localStorage.getItem('smartjourney_reviews');
     if (stored) {
       try {
-        return JSON.parse(stored);
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map((item: Review) => {
+            const defaultItem = REVIEWS.find(r => r.id === item.id);
+            if (defaultItem) {
+              return {
+                ...defaultItem,
+                ...item,
+                date: defaultItem.date,
+                isLocalGuide: defaultItem.isLocalGuide
+              };
+            }
+            return item;
+          });
+        }
       } catch (e) {
         console.error('Failed to parse reviews', e);
       }
@@ -607,7 +621,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     });
   };
 
-  const formatPrice = (usdPrice: number, idrPrice: number) => {
+  const formatPrice = useCallback((usdPrice: number, idrPrice: number) => {
     if (currency === 'USD') {
       return `$${usdPrice}`;
     } else if (currency === 'CNY') {
@@ -620,7 +634,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       }
       return `IDR ${idrPrice.toLocaleString('id-ID')}`;
     }
-  };
+  }, [currency]);
 
   // --- TAXI DATABASE ENGINE (EXCEL-DRIVEN WORKFLOW) ---
   const [taxiMasterAreas, setTaxiMasterAreas] = useState<TaxiMasterArea[]>(() => {

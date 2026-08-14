@@ -277,7 +277,7 @@ export default function ComingSoonPage({ service }: ComingSoonPageProps) {
         {/* Footer Actions / Direct Booking Options */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fadeIn">
           <a
-            href="https://wa.me/628123456789" // Simulated or real business WhatsApp
+            href="https://wa.me/6285212347289" // Official Smart Journey WhatsApp
             target="_blank"
             rel="noopener noreferrer"
             className="w-full sm:w-auto px-6 py-3.5 bg-slate-900 hover:bg-slate-850 text-white font-bold border border-slate-800 rounded-2xl text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md hover:-translate-y-0.5"

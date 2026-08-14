@@ -9,11 +9,10 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { processArtoPayPayment } from '../lib/artopay';
 import CustomerReviewsSection from '../components/CustomerReviewsSection';
-import ComingSoonPage from '../components/ComingSoonPage';
+import Breadcrumbs from '../components/Breadcrumbs';
+import ServiceNavTabs from '../components/ServiceNavTabs';
 
 export default function AirportTransferView() {
-  return <ComingSoonPage service="airport" />;
-
   const { 
     formatPrice, 
     airportRoutes, 
@@ -301,16 +300,29 @@ export default function AirportTransferView() {
   };
 
   return (
-    <div id="airport-transfer-view" className="bg-[#f8fafc] text-neutral-800 min-h-screen pt-28 md:pt-32 lg:pt-36 pb-16 md:pb-24 font-sans">
+    <div id="airport-transfer-view" className="bg-[#f8fafc] text-neutral-800 min-h-screen pt-20 md:pt-24 pb-16 md:pb-24 font-sans">
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Breadcrumb Navigation */}
-        <nav className="flex items-center space-x-2 text-xs font-medium text-neutral-500 mb-6">
-          <button onClick={() => setPage('home')} className="hover:text-amber-600 transition-colors cursor-pointer">Home</button>
-          <span>/</span>
-          <span className="text-neutral-900 font-semibold">Airport Transfer</span>
-        </nav>
+      {/* Service Switcher Navigation Bar */}
+      <ServiceNavTabs />
+
+      {/* Breadcrumb Navigation */}
+      <Breadcrumbs items={[{ label: '24/7 Airport Transfer' }]} />
+
+      {/* Header Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mt-4 mb-8 space-y-3">
+        <span className="inline-flex items-center space-x-2 bg-emerald-500/10 border border-emerald-500/20 px-4 py-1.5 rounded-full text-xs font-semibold text-emerald-600 uppercase tracking-widest font-mono">
+          <Plane className="h-4 w-4" />
+          <span>Layanan Antar Jemput Bandara 24 Jam</span>
+        </span>
+        <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-neutral-900 leading-tight">
+          Transfer Bandara Juanda &amp; Ngurah Rai Privat
+        </h1>
+        <p className="text-neutral-600 text-xs sm:text-sm max-w-xl mx-auto font-medium">
+          Penjemputan tepat waktu di bandara Surabaya (SUB), Malang (MLG), Banyuwangi (BWX), dan Bali (DPS) dengan garansi driver profesional dan armada bersih.
+        </p>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
         
         {/* 1. THREE-STEP PROCESS INDICATOR */}
         <div id="process-steps-bar" className="w-full max-w-3xl mx-auto mb-10 md:mb-14">

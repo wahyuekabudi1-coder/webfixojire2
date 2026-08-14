@@ -3,26 +3,35 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { AppProvider, useApp } from './AppContext';
 import { LanguageCurrencyProvider } from './sharetour/LanguageCurrencyContext';
 import SEOHead from './components/SEOHead';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import FloatingWhatsApp from './components/FloatingWhatsApp';
-import PrivacyModal from './components/PrivacyModal';
-import TermsModal from './components/TermsModal';
 import HomeView from './views/HomeView';
-import ToursView from './views/ToursView';
-import AirportTransferView from './views/AirportTransferView';
-import TaxiView from './views/TaxiView';
-import PartnershipsView from './views/PartnershipsView';
-import BookingsView from './views/BookingsView';
-import CarRentalView from './views/CarRentalView';
-import AboutView from './views/AboutView';
-import AdminView from './views/AdminView';
-import ShareTourView from './views/ShareTourView';
 import { motion, AnimatePresence } from 'motion/react';
+
+// Code-split lazy loaded view chunks to keep initial bundle ultra-light
+const ToursView = lazy(() => import('./views/ToursView'));
+const AirportTransferView = lazy(() => import('./views/AirportTransferView'));
+const TaxiView = lazy(() => import('./views/TaxiView'));
+const PartnershipsView = lazy(() => import('./views/PartnershipsView'));
+const BookingsView = lazy(() => import('./views/BookingsView'));
+const CarRentalView = lazy(() => import('./views/CarRentalView'));
+const AboutView = lazy(() => import('./views/AboutView'));
+const AdminView = lazy(() => import('./views/AdminView'));
+const ShareTourView = lazy(() => import('./views/ShareTourView'));
+const PrivacyModal = lazy(() => import('./components/PrivacyModal'));
+const TermsModal = lazy(() => import('./components/TermsModal'));
+
+const PageFallback = () => (
+  <div className="min-h-[50vh] flex flex-col items-center justify-center p-8 text-center">
+    <div className="w-10 h-10 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+    <span className="text-xs font-mono text-neutral-500 font-bold tracking-wider uppercase">Loading Smart Journey...</span>
+  </div>
+);
 
 function AppContent() {
   const { activePage } = useApp();
@@ -67,7 +76,9 @@ function AppContent() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
             >
-              {renderView()}
+              <Suspense fallback={<PageFallback />}>
+                {renderView()}
+              </Suspense>
             </motion.div>
           </AnimatePresence>
         </main>
@@ -77,6 +88,14 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-[#F8FAF9] text-neutral-900 flex flex-col justify-between selection:bg-[#315B4F] selection:text-white">
+      {/* Skip to main content link for keyboard accessibility */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:px-4 focus:py-2.5 focus:bg-amber-500 focus:text-neutral-950 focus:font-extrabold focus:rounded-xl focus:shadow-2xl focus:outline-none focus:ring-2 focus:ring-amber-300"
+      >
+        Skip to main content / Langsung ke konten utama
+      </a>
+
       {/* Dynamic Document Title & SEO Schema Manager */}
       <SEOHead />
       
@@ -84,7 +103,7 @@ function AppContent() {
       <Header />
 
       {/* Main Dynamic View Content Container */}
-      <main className="grow">
+      <main className="grow outline-none" id="main-content" tabIndex={-1}>
         <AnimatePresence mode="wait">
           <motion.div
             key={activePage}
@@ -93,7 +112,9 @@ function AppContent() {
             exit={{ opacity: 0, y: -15 }}
             transition={{ duration: 0.35, ease: 'easeInOut' }}
           >
-            {renderView()}
+            <Suspense fallback={<PageFallback />}>
+              {renderView()}
+            </Suspense>
           </motion.div>
         </AnimatePresence>
       </main>
@@ -101,11 +122,11 @@ function AppContent() {
       {/* Floating 24/7 WhatsApp help-desk */}
       <FloatingWhatsApp />
 
-      {/* Global Privacy Policy Modal */}
-      <PrivacyModal />
-
-      {/* Global Terms and Conditions Modal */}
-      <TermsModal />
+      {/* Global Privacy Policy & Terms Modals (Lazy) */}
+      <Suspense fallback={null}>
+        <PrivacyModal />
+        <TermsModal />
+      </Suspense>
 
       {/* Sticky 4-Column Footer */}
       <Footer />

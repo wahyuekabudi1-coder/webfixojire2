@@ -6,12 +6,25 @@ import { useApp } from '../AppContext';
 export default function TermsModal() {
   const { isTermsOpen, setTermsOpen } = useApp();
 
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isTermsOpen) {
+        setTermsOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isTermsOpen, setTermsOpen]);
+
   if (!isTermsOpen) return null;
 
   return (
     <AnimatePresence>
       <div 
         id="terms-conditions-overlay"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="terms-modal-title"
         className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md cursor-pointer overflow-hidden"
         onClick={() => setTermsOpen(false)}
       >
@@ -29,15 +42,15 @@ export default function TermsModal() {
             <div className="absolute top-0 left-10 w-32 h-[1px] bg-gradient-to-r from-transparent via-amber-500 to-transparent" />
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500">
-                <FileText className="h-5 w-5" />
+                <FileText className="h-5 w-5" aria-hidden="true" />
               </div>
               <div>
-                <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight flex items-center gap-2">
+                <h2 id="terms-modal-title" className="text-lg sm:text-xl font-bold text-white tracking-tight flex items-center gap-2">
                   Syarat &amp; Ketentuan
                   <span className="text-amber-500 text-xs px-2 py-0.5 bg-amber-500/10 rounded-full font-mono border border-amber-500/20 font-medium">Terms &amp; Conditions</span>
                 </h2>
                 <div className="flex items-center gap-1.5 text-xs text-slate-400 mt-1 font-medium">
-                  <Calendar className="h-3 w-3 text-amber-500/70" />
+                  <Calendar className="h-3 w-3 text-amber-500/70" aria-hidden="true" />
                   <span>Terakhir Diperbarui: 7 Juli 2026</span>
                 </div>
               </div>
@@ -45,10 +58,10 @@ export default function TermsModal() {
             
             <button
               onClick={() => setTermsOpen(false)}
-              className="p-2 rounded-full border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800 transition-all cursor-pointer"
+              className="p-2 rounded-full border border-slate-800 text-slate-400 hover:text-white hover:bg-slate-800 transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
               aria-label="Tutup Syarat &amp; Ketentuan"
             >
-              <X className="h-5 w-5" />
+              <X className="h-5 w-5" aria-hidden="true" />
             </button>
           </div>
 

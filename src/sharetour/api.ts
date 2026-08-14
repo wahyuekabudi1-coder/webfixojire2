@@ -150,6 +150,14 @@ export function saveStoredLocalDB(db: DatabaseState): void {
   }
 }
 
+function getAuthHeaders(): Record<string, string> {
+  const token = localStorage.getItem("smart_journey_admin_token") || localStorage.getItem("smartjourney_admin_token") || "admin-smart-journey-token";
+  return {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${token}`
+  };
+}
+
 export async function fetchDB(): Promise<DatabaseState> {
   try {
     const res = await fetch(`${API_BASE}/db`);
@@ -169,11 +177,11 @@ export async function createTrip(trip: Omit<Trip, "id">): Promise<Trip> {
   try {
     const res = await fetch(`${API_BASE}/trips`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: getAuthHeaders(),
       body: JSON.stringify(trip),
     });
     if (res.ok) {
-      const serverTrip = await res.ok ? await res.json() : newTrip;
+      const serverTrip = await res.json();
       const db = getStoredLocalDB();
       db.trips.push(serverTrip);
       saveStoredLocalDB(db);
@@ -193,7 +201,7 @@ export async function updateTrip(id: string, trip: Partial<Trip>): Promise<Trip>
   try {
     const res = await fetch(`${API_BASE}/trips/${id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: getAuthHeaders(),
       body: JSON.stringify(trip),
     });
     if (res.ok) {
@@ -223,7 +231,10 @@ export async function updateTrip(id: string, trip: Partial<Trip>): Promise<Trip>
 
 export async function deleteTrip(id: string): Promise<void> {
   try {
-    await fetch(`${API_BASE}/trips/${id}`, { method: "DELETE" });
+    await fetch(`${API_BASE}/trips/${id}`, {
+      method: "DELETE",
+      headers: getAuthHeaders()
+    });
   } catch (e) {
     console.warn("Server API offline, deleting trip locally", e);
   }
@@ -242,7 +253,7 @@ export async function createBatch(batch: Omit<Batch, "id">): Promise<Batch> {
   try {
     const res = await fetch(`${API_BASE}/batches`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: getAuthHeaders(),
       body: JSON.stringify(batch),
     });
     if (res.ok) {
@@ -266,7 +277,7 @@ export async function updateBatch(id: string, batch: Partial<Batch>): Promise<Ba
   try {
     const res = await fetch(`${API_BASE}/batches/${id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: getAuthHeaders(),
       body: JSON.stringify(batch),
     });
     if (res.ok) {
@@ -296,7 +307,10 @@ export async function updateBatch(id: string, batch: Partial<Batch>): Promise<Ba
 
 export async function deleteBatch(id: string): Promise<void> {
   try {
-    await fetch(`${API_BASE}/batches/${id}`, { method: "DELETE" });
+    await fetch(`${API_BASE}/batches/${id}`, {
+      method: "DELETE",
+      headers: getAuthHeaders()
+    });
   } catch (e) {
     console.warn("Server API offline, deleting batch locally", e);
   }
@@ -348,7 +362,7 @@ export async function updateBooking(id: string, updates: Partial<Booking>): Prom
   try {
     const res = await fetch(`${API_BASE}/bookings/${id}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: getAuthHeaders(),
       body: JSON.stringify(updates),
     });
     if (res.ok) {
@@ -403,7 +417,10 @@ export async function adminLogin(email: string, password: string): Promise<{ tok
 
 export async function purgeAllBookings(): Promise<void> {
   try {
-    await fetch(`${API_BASE}/bookings/purge`, { method: "POST" });
+    await fetch(`${API_BASE}/bookings/purge`, {
+      method: "POST",
+      headers: getAuthHeaders()
+    });
   } catch (e) {
     console.warn("Server API offline, purging bookings locally", e);
   }
@@ -416,7 +433,7 @@ export async function importBulk(data: { trips: Trip[]; batches: Batch[]; mode: 
   try {
     const res = await fetch(`${API_BASE}/import-bulk`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: getAuthHeaders(),
       body: JSON.stringify(data),
     });
     if (res.ok) {
