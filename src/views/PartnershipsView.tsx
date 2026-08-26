@@ -1,163 +1,122 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../AppContext';
 import { 
-  Handshake, 
-  Globe, 
   Plus, 
   Trash2, 
-  Edit2, 
-  X, 
-  Lock, 
-  Unlock, 
-  AlertCircle, 
-  CheckCircle, 
-  Settings,
-  ArrowRight
+  Edit3, 
+  ExternalLink, 
+  Handshake, 
+  Sparkles, 
+  ShieldCheck, 
+  ArrowLeft,
+  X,
+  Save,
+  CheckCircle2
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
 import Breadcrumbs from '../components/Breadcrumbs';
-
-interface PartnerApp {
-  id: string;
-  name: string;
-  url: string;
-  logoUrl: string;
-}
-
-const DEFAULT_PARTNERS: PartnerApp[] = [
-  {
-    id: 'traveloka',
-    name: 'Traveloka',
-    url: 'https://www.traveloka.com',
-    logoUrl: 'https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?auto=format&fit=crop&w=300&q=80'
-  },
-  {
-    id: 'trip-com',
-    name: 'Trip.com',
-    url: 'https://www.trip.com',
-    logoUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=300&q=80'
-  },
-  {
-    id: 'booking-com',
-    name: 'Booking.com',
-    url: 'https://www.booking.com',
-    logoUrl: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=300&q=80'
-  },
-  {
-    id: 'marriott',
-    name: 'Marriott',
-    url: 'https://www.marriott.com',
-    logoUrl: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=300&q=80'
-  },
-  {
-    id: 'hilton',
-    name: 'Hilton',
-    url: 'https://www.hilton.com',
-    logoUrl: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=300&q=80'
-  },
-  {
-    id: 'agoda',
-    name: 'Agoda',
-    url: 'https://www.agoda.com',
-    logoUrl: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=300&q=80'
-  }
-];
+import { OFFICIAL_PARTNERS, PartnerApp } from '../data/partnersData';
 
 export default function PartnershipsView() {
   const { setPage } = useApp();
   const [partners, setPartners] = useState<PartnerApp[]>([]);
-  const [isAdminMode, setIsAdminMode] = useState(false);
-  const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [adminPassword, setAdminPassword] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  
-  // CRUD states
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  
-  // Form fields
+
+  // Form State
   const [formName, setFormName] = useState('');
   const [formUrl, setFormUrl] = useState('');
   const [formLogoUrl, setFormLogoUrl] = useState('');
-  const [formError, setFormError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  
+  // UI States
+  const [showModal, setShowModal] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Load partners on mount
+  // Notification Toast Helper
+  const triggerNotification = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3500);
+  };
+
+  // Load partners on mount - upgrade if using old unsplash placeholders
   useEffect(() => {
     const stored = localStorage.getItem('smartjourney_partners');
     if (stored) {
       try {
-        setPartners(JSON.parse(stored));
+        const parsed: PartnerApp[] = JSON.parse(stored);
+        // Check if existing data has old unsplash placeholder images or needs refresh with official SVG logos
+        const hasOutdatedLogos = parsed.some(p => p.logoUrl && p.logoUrl.includes('images.unsplash.com'));
+        if (hasOutdatedLogos || parsed.length === 0) {
+          // Merge with official logos
+          const updated = OFFICIAL_PARTNERS;
+          setPartners(updated);
+          localStorage.setItem('smartjourney_partners', JSON.stringify(updated));
+        } else {
+          setPartners(parsed);
+        }
       } catch (e) {
         console.error('Failed to parse partners', e);
-        setPartners(DEFAULT_PARTNERS);
+        setPartners(OFFICIAL_PARTNERS);
+        localStorage.setItem('smartjourney_partners', JSON.stringify(OFFICIAL_PARTNERS));
       }
     } else {
-      setPartners(DEFAULT_PARTNERS);
-      localStorage.setItem('smartjourney_partners', JSON.stringify(DEFAULT_PARTNERS));
+      setPartners(OFFICIAL_PARTNERS);
+      localStorage.setItem('smartjourney_partners', JSON.stringify(OFFICIAL_PARTNERS));
     }
   }, []);
 
-  // Save to localStorage
+  // Save to LocalStorage
   const savePartners = (updated: PartnerApp[]) => {
     setPartners(updated);
     localStorage.setItem('smartjourney_partners', JSON.stringify(updated));
   };
 
-  // Handle Admin Authorization
-  const handleAdminLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (adminPassword === 'admin' || adminPassword === 'admin123') {
-      setIsAdminMode(true);
-      setShowPasswordModal(false);
-      setAdminPassword('');
-      setPasswordError('');
-      triggerNotification('Logged in as administrator successfully!');
-    } else {
-      setPasswordError('Incorrect password! Try using "admin" or "admin123".');
+  // Handle Logo Upload via File Picker
+  const handleLogoFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Mohon pilih file gambar yang valid (PNG, JPG, SVG, WebP).');
+      return;
     }
+
+    if (file.size > 2 * 1024 * 1024) {
+      alert('Ukuran file maksimal adalah 2MB.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        setFormLogoUrl(reader.result);
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
-  // Trigger brief alert banner
-  const triggerNotification = (msg: string) => {
-    setSuccessMessage(msg);
-    setTimeout(() => setSuccessMessage(''), 4000);
-  };
-
-  // Reset form
+  // Reset Form
   const resetForm = () => {
     setFormName('');
     setFormUrl('');
     setFormLogoUrl('');
-    setFormError('');
     setIsEditing(false);
     setEditingId(null);
+    setShowModal(false);
   };
 
-  // Submit Add / Edit
-  const handleFormSubmit = (e: React.FormEvent) => {
+  // Add or Update Partner
+  const handleSavePartner = (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!formName.trim() || !formUrl.trim() || !formLogoUrl.trim()) {
-      setFormError('All fields (Name, Website URL, and Logo Image URL) are required!');
+      alert('Please fill out all required fields.');
       return;
-    }
-
-    let formattedUrl = formUrl.trim();
-    if (!/^https?:\/\//i.test(formattedUrl)) {
-      formattedUrl = 'https://' + formattedUrl;
-    }
-
-    let formattedLogo = formLogoUrl.trim();
-    if (!/^https?:\/\//i.test(formattedLogo)) {
-      formattedLogo = 'https://' + formattedLogo;
     }
 
     const partnerData: PartnerApp = {
       id: isEditing && editingId ? editingId : `partner-${Date.now()}`,
       name: formName.trim(),
-      url: formattedUrl,
-      logoUrl: formattedLogo
+      url: formUrl.trim().startsWith('http') ? formUrl.trim() : `https://${formUrl.trim()}`,
+      logoUrl: formLogoUrl.trim()
     };
 
     let updatedPartners: PartnerApp[] = [];
@@ -180,9 +139,7 @@ export default function PartnershipsView() {
     setFormName(partner.name);
     setFormUrl(partner.url);
     setFormLogoUrl(partner.logoUrl);
-    
-    const el = document.getElementById('admin-form-anchor');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    setShowModal(true);
   };
 
   // Delete Partner
@@ -191,309 +148,262 @@ export default function PartnershipsView() {
       const updated = partners.filter(p => p.id !== id);
       savePartners(updated);
       triggerNotification('Partner successfully removed.');
-      if (editingId === id) {
-        resetForm();
-      }
     }
   };
 
   return (
-    <div className="bg-[#1c3830] min-h-screen text-neutral-100 pb-24 pt-20">
-      <Breadcrumbs items={[{ label: 'B2B Partnerships & Affiliates' }]} />
+    <div className="bg-[#f8faf9] min-h-screen text-neutral-900 pb-24 pt-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Breadcrumbs items={[{ label: 'B2B Partnerships & Affiliates' }]} />
+      </div>
 
-      {/* Banner / Hero Header */}
-      <section className="relative overflow-hidden mb-12">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-amber-600/5 rounded-full blur-3xl" />
+      {/* Hero Header Section */}
+      <section className="relative overflow-hidden pt-8 pb-14 bg-gradient-to-b from-emerald-950 via-[#132c25] to-[#1a3830] text-white">
+        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#f59e0b_1px,transparent_1px)] [background-size:16px_16px]" />
         
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center space-y-4">
-          <div className="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 px-4 py-1.5 rounded-full text-amber-500 text-xs font-bold font-mono tracking-wider uppercase">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center space-y-4">
+          <div className="inline-flex items-center gap-2 bg-amber-400/10 border border-amber-400/20 px-4 py-1.5 rounded-full text-amber-400 text-xs font-bold font-mono tracking-wider uppercase">
             <Handshake className="h-4 w-4" />
-            <span>Official Integration</span>
+            <span>Digital Ecosystem &amp; Strategic Alliances</span>
           </div>
-          <h1 className="text-4xl sm:text-5xl font-black text-white tracking-tight">
+
+          <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
             Our Collaborators &amp; Partners
           </h1>
-          <p className="text-neutral-400 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
-            SmartJourney operates in synergy with leading international travel networks, global booking systems, and premier luxury hotel groups.
-          </p>
-          <div className="h-1 w-12 bg-amber-500 mx-auto rounded-full" />
           
-          {/* Admin Toggle Button */}
-          <div className="pt-2 flex justify-center gap-4">
-            {!isAdminMode ? (
-              <button
-                onClick={() => setShowPasswordModal(true)}
-                className="inline-flex items-center gap-2 bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 text-neutral-400 px-4 py-2 rounded-2xl text-xs font-bold transition-all cursor-pointer shadow-sm hover:border-amber-500/30"
-              >
-                <Lock className="h-3.5 w-3.5 text-amber-500" />
-                <span>Admin Panel</span>
-              </button>
-            ) : (
-              <div className="flex items-center gap-4">
-                <span className="inline-flex items-center gap-1.5 bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full text-xs font-semibold border border-emerald-500/20">
-                  <Unlock className="h-3 w-3 text-emerald-400" />
-                  <span>Admin Session Active</span>
-                </span>
-                <button
-                  onClick={() => {
-                    setIsAdminMode(false);
-                    resetForm();
-                    triggerNotification('Exited admin mode.');
-                  }}
-                  className="bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 text-red-400 px-3 py-1 rounded-full text-xs transition-all cursor-pointer"
-                >
-                  Exit Session
-                </button>
-              </div>
-            )}
-          </div>
+          <p className="text-neutral-300 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
+            SmartJourney operates in synergy with leading international travel networks, global booking systems, and premier luxury hotel groups across East Java &amp; Bali.
+          </p>
         </div>
       </section>
 
-      {/* Success Notification Alert */}
-      <AnimatePresence>
-        {successMessage && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="fixed top-24 left-1/2 -translate-x-1/2 z-50 bg-amber-500 text-neutral-950 px-6 py-3.5 rounded-2xl shadow-xl font-bold text-sm flex items-center gap-2 border border-amber-400"
-          >
-            <CheckCircle className="h-5 w-5" />
-            <span>{successMessage}</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Main Content Area */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 relative z-20 space-y-10">
         
-        {/* Admin Dashboard Workspace Section */}
-        {isAdminMode && (
-          <div id="admin-form-anchor" className="mb-12 bg-neutral-800/80 border border-amber-500/30 rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-lg">
-            <div className="absolute top-0 right-0 p-1 bg-amber-500 text-neutral-950 text-[10px] font-mono font-bold rounded-bl-xl uppercase tracking-widest px-3 py-1">
-              ADMIN CONTROL PANEL
-            </div>
-            
-            <div className="flex items-center gap-2 mb-6">
-              <Settings className="h-5 w-5 text-amber-500" />
-              <h2 className="text-lg font-black text-white">
-                {isEditing ? 'Modify Partner Platform' : 'Add New Partner Platform'}
-              </h2>
-            </div>
+        {/* Toast Notification */}
+        {toastMessage && (
+          <div className="fixed bottom-6 right-6 z-50 bg-neutral-900 text-white px-5 py-3 rounded-2xl shadow-2xl border border-amber-500/30 flex items-center gap-3 animate-fade-in">
+            <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0" />
+            <span className="text-xs font-semibold">{toastMessage}</span>
+          </div>
+        )}
 
-            <form onSubmit={handleFormSubmit} className="space-y-6">
-              {formError && (
-                <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl text-xs flex items-center gap-2">
-                  <AlertCircle className="h-4 w-4" />
-                  <span>{formError}</span>
+        {/* Modal for Add / Edit Partner */}
+        {showModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fade-in">
+            <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-neutral-200 overflow-hidden animate-scale-up">
+              
+              {/* Modal Header */}
+              <div className="flex items-center justify-between p-6 border-b border-neutral-100 bg-neutral-50/50">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 rounded-xl bg-amber-500/10 text-amber-600">
+                    <Handshake className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-extrabold text-neutral-900">
+                      {isEditing ? 'Modify Partner Platform' : 'Add New Partner Platform'}
+                    </h3>
+                    <p className="text-xs text-neutral-500 font-medium">Manage corporate affiliations &amp; booking channels</p>
+                  </div>
                 </div>
-              )}
+                <button
+                  type="button"
+                  onClick={resetForm}
+                  className="p-2 text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 rounded-full transition-colors"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="space-y-2">
-                  <label className="block text-xs font-bold text-neutral-400 uppercase tracking-wider">Platform Name *</label>
+              {/* Modal Form */}
+              <form onSubmit={handleSavePartner} className="p-6 space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-neutral-700 flex items-center gap-1">
+                    <span>Partner / Platform Name</span>
+                    <span className="text-red-500">*</span>
+                  </label>
                   <input
                     type="text"
                     required
                     value={formName}
                     onChange={(e) => setFormName(e.target.value)}
-                    placeholder="e.g. Traveloka"
-                    className="w-full bg-neutral-900 border border-neutral-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-500 text-white transition-all placeholder:text-neutral-600"
+                    placeholder="e.g. Traveloka, Booking.com, Marriott"
+                    className="w-full bg-neutral-50 border border-neutral-300 rounded-xl px-3.5 py-2.5 text-xs text-neutral-900 focus:outline-none focus:ring-1 focus:ring-amber-500 transition-all"
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <label className="block text-xs font-bold text-neutral-400 uppercase tracking-wider">Website URL *</label>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-neutral-700 flex items-center gap-1">
+                    <span>Platform Website URL</span>
+                    <span className="text-red-500">*</span>
+                  </label>
                   <input
                     type="text"
                     required
                     value={formUrl}
                     onChange={(e) => setFormUrl(e.target.value)}
-                    placeholder="e.g. https://www.traveloka.com"
-                    className="w-full bg-neutral-900 border border-neutral-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-500 text-white transition-all placeholder:text-neutral-600"
+                    placeholder="https://www.example.com"
+                    className="w-full bg-neutral-50 border border-neutral-300 rounded-xl px-3.5 py-2.5 text-xs text-neutral-900 focus:outline-none focus:ring-1 focus:ring-amber-500 transition-all font-mono"
                   />
                 </div>
 
+                {/* Logo Image URL & Upload */}
                 <div className="space-y-2">
-                  <label className="block text-xs font-bold text-neutral-400 uppercase tracking-wider">Logo Image URL *</label>
-                  <input
-                    type="text"
-                    required
-                    value={formLogoUrl}
-                    onChange={(e) => setFormLogoUrl(e.target.value)}
-                    placeholder="e.g. https://images.unsplash.com/photo-..."
-                    className="w-full bg-neutral-900 border border-neutral-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-500 text-white transition-all placeholder:text-neutral-600"
-                  />
-                </div>
-              </div>
+                  <label className="text-xs font-bold text-neutral-700 flex items-center justify-between">
+                    <span className="flex items-center gap-1">
+                      <span>Logo Image URL or Upload PNG</span>
+                      <span className="text-red-500">*</span>
+                    </span>
+                    <span className="text-[10px] text-neutral-400 font-mono">Transparent PNG Recommended</span>
+                  </label>
+                  
+                  <div className="flex gap-2">
+                    <input
+                      type="url"
+                      value={formLogoUrl}
+                      onChange={(e) => setFormLogoUrl(e.target.value)}
+                      placeholder="https://.../logo.png"
+                      className="w-full bg-neutral-50 border border-neutral-300 rounded-xl px-3.5 py-2.5 text-xs text-neutral-900 focus:outline-none focus:ring-1 focus:ring-amber-500 transition-all font-mono text-[11px]"
+                    />
+                    <label className="shrink-0 px-3 py-2.5 bg-neutral-100 hover:bg-neutral-200 border border-neutral-300 text-neutral-700 text-xs font-bold rounded-xl cursor-pointer flex items-center gap-1.5 transition-colors">
+                      <span>Browse...</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleLogoFileUpload}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
 
-              <div className="flex flex-wrap items-center justify-between pt-4 gap-4 border-t border-neutral-700">
-                <span className="text-xs text-neutral-400 font-mono">
-                  * All fields are required. Changes are persisted instantly.
-                </span>
-                <div className="flex items-center gap-3">
-                  {isEditing && (
-                    <button
-                      type="button"
-                      onClick={resetForm}
-                      className="bg-neutral-700 hover:bg-neutral-600 text-white px-5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer"
-                    >
-                      Cancel
-                    </button>
+                  {/* Logo Preview */}
+                  {formLogoUrl && (
+                    <div className="p-3 bg-neutral-50 rounded-xl border border-neutral-200 flex items-center gap-3">
+                      <div className="w-16 h-12 bg-white rounded-lg border border-neutral-200 p-1 flex items-center justify-center overflow-hidden">
+                        <img 
+                          src={formLogoUrl} 
+                          alt="Logo Preview" 
+                          className="max-h-full max-w-full object-contain"
+                          onError={(e) => {
+                            (e.target as any).src = 'https://images.unsplash.com/photo-1557200134-90327ee9fafa?auto=format&fit=crop&w=150&q=80';
+                          }}
+                        />
+                      </div>
+                      <div className="text-[11px] text-neutral-500 overflow-hidden text-ellipsis whitespace-nowrap">
+                        Logo preview ready
+                      </div>
+                    </div>
                   )}
+                </div>
+
+                {/* Form Buttons */}
+                <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-neutral-100">
+                  <button
+                    type="button"
+                    onClick={resetForm}
+                    className="px-4 py-2.5 text-xs font-semibold text-neutral-600 hover:bg-neutral-100 rounded-xl transition-colors cursor-pointer"
+                  >
+                    Cancel
+                  </button>
                   <button
                     type="submit"
-                    className="bg-amber-500 hover:bg-amber-400 text-neutral-950 px-6 py-2.5 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 shadow-md shadow-amber-500/10"
+                    className="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold text-xs rounded-xl flex items-center gap-1.5 transition-colors shadow-sm cursor-pointer"
                   >
-                    <Plus className="h-4 w-4" />
-                    <span>{isEditing ? 'Update Logo' : 'Add Logo'}</span>
+                    <Save className="h-4 w-4" />
+                    <span>{isEditing ? 'Save Changes' : 'Add Platform'}</span>
                   </button>
                 </div>
-              </div>
-            </form>
+              </form>
+
+            </div>
           </div>
         )}
 
         {/* Clean, Premium Partner Grid - Simple Layout containing only Logos */}
-        <div className="space-y-8">
+        <div className="bg-white border border-neutral-200/80 rounded-3xl p-6 sm:p-10 shadow-sm">
           {partners.length === 0 ? (
-            <div className="text-center py-20 bg-neutral-800/20 border border-neutral-800 rounded-3xl space-y-4">
-              <Handshake className="h-12 w-12 text-neutral-600 mx-auto" />
+            <div className="text-center py-16 space-y-3">
+              <Handshake className="h-12 w-12 text-neutral-300 mx-auto" />
               <h3 className="text-lg font-bold text-neutral-400">No partner logos registered yet</h3>
-              {!isAdminMode && (
-                <button
-                  onClick={() => setShowPasswordModal(true)}
-                  className="bg-neutral-800 hover:bg-neutral-700 text-amber-500 px-5 py-2.5 rounded-xl text-xs font-bold transition-all border border-neutral-700 cursor-pointer"
-                >
-                  Activate Admin
-                </button>
-              )}
+              <p className="text-xs text-neutral-400 max-w-sm mx-auto">Collaborating partner platforms and verified booking channels.</p>
+              <button
+                onClick={() => {
+                  resetForm();
+                  setShowModal(true);
+                }}
+                className="mt-2 inline-flex items-center gap-1.5 bg-amber-500 text-neutral-950 px-4 py-2 rounded-xl text-xs font-bold"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Add First Partner</span>
+              </button>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-6">
               {partners.map((partner) => (
                 <div
                   key={partner.id}
-                  className="bg-neutral-800/40 border border-neutral-800/80 hover:border-amber-500/40 rounded-2xl h-28 flex items-center justify-center relative overflow-hidden group transition-all duration-300 shadow-sm hover:shadow-md cursor-pointer"
+                  className="group relative bg-neutral-50/70 hover:bg-white border border-neutral-200 hover:border-amber-400/60 rounded-2xl h-28 flex flex-col items-center justify-center p-4 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5"
                 >
-                  {/* Admin Actions Overlay on Card Corner */}
-                  {isAdminMode && (
-                    <div className="absolute top-2 right-2 flex items-center gap-1 bg-neutral-950/90 backdrop-blur-sm p-1 rounded-lg border border-neutral-700 z-10">
-                      <button
-                        onClick={(e) => { e.stopPropagation(); startEdit(partner); }}
-                        className="p-1 hover:bg-amber-500 hover:text-neutral-950 text-neutral-400 rounded transition-all cursor-pointer"
-                      >
-                        <Edit2 className="h-3 w-3" />
-                      </button>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); handleDeletePartner(partner.id); }}
-                        className="p-1 hover:bg-red-500 hover:text-white text-neutral-400 rounded transition-all cursor-pointer"
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </button>
-                    </div>
-                  )}
+                  {/* Action Buttons for quick edit / delete on hover */}
+                  <div className="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 bg-white/90 backdrop-blur-xs p-1 rounded-lg border border-neutral-200 shadow-sm z-10">
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); startEdit(partner); }}
+                      title="Edit Logo"
+                      className="p-1 hover:bg-amber-50 text-neutral-600 hover:text-amber-600 rounded transition-colors"
+                    >
+                      <Edit3 className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); handleDeletePartner(partner.id); }}
+                      title="Delete Logo"
+                      className="p-1 hover:bg-red-50 text-neutral-600 hover:text-red-600 rounded transition-colors"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
 
-                  {/* Clean Logo Container */}
+                  {/* Partner Clickable Link & Logo */}
                   <a
                     href={partner.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full h-full flex flex-col items-center justify-center p-4 relative"
+                    className="w-full h-full flex items-center justify-center cursor-pointer"
                   >
-                    <div className="w-full h-full flex items-center justify-center relative z-10">
-                      <img
-                        src={partner.logoUrl}
-                        alt={partner.name}
-                        className="max-h-full max-w-full object-contain filter grayscale group-hover:grayscale-0 transition-all duration-500 rounded-lg"
-                        referrerPolicy="no-referrer"
-                        onError={(e) => {
-                          (e.target as any).src = 'https://images.unsplash.com/photo-1557200134-90327ee9fafa?auto=format&fit=crop&w=150&q=80';
-                        }}
-                      />
-                    </div>
-                    {/* Subtle Overlay Label */}
-                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-neutral-950/90 px-2 py-0.5 rounded text-[9px] text-amber-500 font-semibold tracking-wider uppercase whitespace-nowrap z-20 pointer-events-none">
-                      {partner.name}
-                    </div>
+                    <img
+                      src={partner.logoUrl}
+                      alt={partner.name}
+                      className="max-h-12 max-w-[85%] object-contain group-hover:scale-105 transition-all duration-300"
+                      referrerPolicy="no-referrer"
+                      onError={(e) => {
+                        (e.target as any).src = 'https://images.unsplash.com/photo-1557200134-90327ee9fafa?auto=format&fit=crop&w=150&q=80';
+                      }}
+                    />
                   </a>
+                  
+                  {/* Subtle Label on Bottom */}
+                  <span className="text-[10px] font-bold text-neutral-500 group-hover:text-amber-600 transition-colors mt-1 truncate max-w-full">
+                    {partner.name}
+                  </span>
                 </div>
               ))}
             </div>
           )}
         </div>
 
+        {/* Back to Home CTA */}
+        <div className="text-center pt-4">
+          <button
+            onClick={() => setPage('home')}
+            className="text-xs font-bold text-neutral-500 hover:text-amber-600 transition-colors inline-flex items-center gap-1.5 cursor-pointer"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Return to Main Homepage</span>
+          </button>
+        </div>
+
       </div>
-
-      {/* Admin Password Modal */}
-      <AnimatePresence>
-        {showPasswordModal && (
-          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-neutral-800 border border-neutral-700 rounded-3xl p-6 sm:p-8 w-full max-w-md relative space-y-6 shadow-2xl"
-            >
-              <button
-                onClick={() => {
-                  setShowPasswordModal(false);
-                  setAdminPassword('');
-                  setPasswordError('');
-                }}
-                className="absolute top-4 right-4 text-neutral-500 hover:text-white transition-colors p-1"
-              >
-                <X className="h-5 w-5" />
-              </button>
-
-              <div className="text-center space-y-2">
-                <div className="bg-amber-500/10 text-amber-500 p-3 rounded-full w-fit mx-auto">
-                  <Lock className="h-6 w-6" />
-                </div>
-                <h3 className="text-lg font-black text-white">Administrator Access Required</h3>
-                <p className="text-xs text-neutral-400">
-                  Enter your password to activate content modification options.
-                </p>
-              </div>
-
-              <form onSubmit={handleAdminLogin} className="space-y-4">
-                {passwordError && (
-                  <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-xl text-xs flex items-center gap-2">
-                    <AlertCircle className="h-4 w-4" />
-                    <span>{passwordError}</span>
-                  </div>
-                )}
-
-                <div className="space-y-2">
-                  <label className="block text-xs font-bold text-neutral-400 uppercase tracking-wider">Admin Password</label>
-                  <input
-                    type="password"
-                    required
-                    value={adminPassword}
-                    onChange={(e) => setAdminPassword(e.target.value)}
-                    placeholder="Enter security password (admin / admin123)"
-                    className="w-full bg-neutral-900 border border-neutral-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-500 text-white transition-all placeholder:text-neutral-600 font-mono"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full bg-amber-500 hover:bg-amber-400 text-neutral-950 py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all cursor-pointer shadow-md shadow-amber-500/10"
-                >
-                  Verify &amp; Authenticate
-                </button>
-              </form>
-
-              <div className="text-center">
-                <span className="text-[10px] text-neutral-500">
-                  Reviewer Tip: Type <strong className="text-amber-500/80 font-mono">admin</strong> or <strong className="text-amber-500/80 font-mono font-bold">admin123</strong> to login.
-                </span>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

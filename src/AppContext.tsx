@@ -25,9 +25,11 @@ interface AppContextProps {
   updateBookingStatus: (id: string, status: 'Pending' | 'Confirmed' | 'Completed' | 'Cancelled' | 'Refunded', paymentStatus?: 'Unpaid' | 'Paid' | 'Pending') => void;
   formatPrice: (usdPrice: number, idrPrice: number) => string;
   tours: Tour[];
-  addTour: (tour: Tour) => void;
-  updateTour: (tour: Tour) => void;
-  deleteTour: (id: string) => void;
+  addTour: (tour: Tour) => Promise<void> | void;
+  updateTour: (tour: Tour) => Promise<void> | void;
+  deleteTour: (id: string) => Promise<void> | void;
+  setTourStatus: (id: string, status: 'published' | 'draft' | 'unpublished') => Promise<void> | void;
+  refreshTours: () => Promise<void>;
   schedules: any[];
   addSchedule: (schedule: any) => void;
   updateSchedule: (schedule: any) => void;
@@ -355,19 +357,57 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const [searchParams, setSearchParams] = useState<any>({});
   
-  // Custom states for Admin Panel (Synchronized instantly for customer-facing live publication)
+  // Custom states for Admin Panel (Synchronized with Server-Side Authoritative Source)
   const [tours, setTours] = useState<Tour[]>(() => {
     const stored = localStorage.getItem('smartjourney_tours');
     if (stored) {
       try {
-        return JSON.parse(stored);
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
       } catch (e) {
-        console.error('Failed to parse tours', e);
+        console.error('Failed to parse tours from cache', e);
       }
     }
-    localStorage.setItem('smartjourney_tours', JSON.stringify(TOURS));
     return TOURS;
   });
+
+  // Server fetch and sync for Main Website Tours
+  const refreshTours = useCallback(async () => {
+    try {
+      const res = await fetch('/api/main-tours?all=true');
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          setTours(data);
+          localStorage.setItem('smartjourney_tours', JSON.stringify(data));
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn('Could not fetch tours from server API:', err);
+    }
+
+    // Fallback: if server is empty, check if we need to sync local tours to server
+    const stored = localStorage.getItem('smartjourney_tours');
+    if (stored) {
+      try {
+        const localTours = JSON.parse(stored);
+        if (Array.isArray(localTours) && localTours.length > 0) {
+          fetch('/api/main-tours/sync-local', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ localTours })
+          }).catch(e => console.warn('One-time sync warning:', e));
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    refreshTours();
+  }, [refreshTours]);
 
   const [schedules, setSchedules] = useState<any[]>(() => {
     const stored = localStorage.getItem('smartjourney_schedules');
@@ -546,26 +586,79 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     addLog(`Booking ${id} status updated to ${status}${paymentStatus ? ` (${paymentStatus})` : ''}`);
   };
 
-  // Tours actions
-  const addTour = (tour: Tour) => {
-    const updated = [tour, ...tours];
-    setTours(updated);
-    localStorage.setItem('smartjourney_tours', JSON.stringify(updated));
-    addLog(`New trip package created: ${tour.name} (${tour.id})`);
+  // Tours actions with Server-Side Authoritative Persistence
+  const addTour = async (tour: Tour) => {
+    const tourWithStatus: Tour = {
+      ...tour,
+      status: tour.status || 'published',
+      createdAt: tour.createdAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    
+    // Optimistic UI state
+    setTours(prev => [tourWithStatus, ...prev.filter(t => t.id !== tourWithStatus.id)]);
+    localStorage.setItem('smartjourney_tours', JSON.stringify([tourWithStatus, ...tours.filter(t => t.id !== tourWithStatus.id)]));
+    addLog(`Paket tour baru dibuat: ${tour.name} (${tour.id})`);
+
+    try {
+      const res = await fetch('/api/main-tours', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(tourWithStatus)
+      });
+      if (res.ok) {
+        const saved: Tour = await res.json();
+        setTours(prev => [saved, ...prev.filter(t => t.id !== saved.id)]);
+      }
+    } catch (err) {
+      console.error('Failed to persist new tour to server:', err);
+    }
   };
 
-  const updateTour = (updatedTour: Tour) => {
-    const updated = tours.map(t => t.id === updatedTour.id ? updatedTour : t);
-    setTours(updated);
-    localStorage.setItem('smartjourney_tours', JSON.stringify(updated));
-    addLog(`Trip package ${updatedTour.id} updated details by admin`);
+  const updateTour = async (updatedTour: Tour) => {
+    const tourWithTimestamp: Tour = {
+      ...updatedTour,
+      updatedAt: new Date().toISOString()
+    };
+
+    setTours(prev => prev.map(t => t.id === tourWithTimestamp.id ? tourWithTimestamp : t));
+    localStorage.setItem('smartjourney_tours', JSON.stringify(tours.map(t => t.id === tourWithTimestamp.id ? tourWithTimestamp : t)));
+    addLog(`Paket tour ${tourWithTimestamp.id} (${tourWithTimestamp.name}) diperbarui`);
+
+    try {
+      const res = await fetch(`/api/main-tours/${encodeURIComponent(tourWithTimestamp.id)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(tourWithTimestamp)
+      });
+      if (res.ok) {
+        const saved: Tour = await res.json();
+        setTours(prev => prev.map(t => t.id === saved.id ? saved : t));
+      }
+    } catch (err) {
+      console.error('Failed to update tour on server:', err);
+    }
   };
 
-  const deleteTour = (id: string) => {
-    const updated = tours.filter(t => t.id !== id);
-    setTours(updated);
-    localStorage.setItem('smartjourney_tours', JSON.stringify(updated));
-    addLog(`Trip package ${id} removed from the inventory`);
+  const deleteTour = async (id: string) => {
+    setTours(prev => prev.filter(t => t.id !== id));
+    localStorage.setItem('smartjourney_tours', JSON.stringify(tours.filter(t => t.id !== id)));
+    addLog(`Paket tour ${id} dihapus dari inventaris`);
+
+    try {
+      await fetch(`/api/main-tours/${encodeURIComponent(id)}`, {
+        method: 'DELETE'
+      });
+    } catch (err) {
+      console.error('Failed to delete tour on server:', err);
+    }
+  };
+
+  const setTourStatus = async (id: string, status: 'published' | 'draft' | 'unpublished') => {
+    const target = tours.find(t => t.id === id);
+    if (!target) return;
+    const updated: Tour = { ...target, status, updatedAt: new Date().toISOString() };
+    await updateTour(updated);
   };
 
   // Schedules
@@ -1232,6 +1325,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         addTour,
         updateTour,
         deleteTour,
+        setTourStatus,
+        refreshTours,
         schedules,
         addSchedule,
         updateSchedule,

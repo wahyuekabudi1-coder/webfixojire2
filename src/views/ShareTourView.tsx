@@ -9,7 +9,7 @@ export default function ShareTourView() {
     <LanguageCurrencyProvider>
       <div className="bg-[#f8fafc] min-h-screen pt-20 md:pt-24 pb-16">
         <ServiceNavTabs />
-        <Breadcrumbs items={[{ label: 'Share Tour / Open Trip' }]} />
+        <Breadcrumbs items={[{ label: 'Open Trip / Join Share Tour' }]} />
         <ShareTourMain />
       </div>
     </LanguageCurrencyProvider>

@@ -8,7 +8,10 @@ import {
   Heart, Mail, Send, CheckCircle2 
 } from 'lucide-react';
 import CheckoutModal from '../components/CheckoutModal';
+import PartnerLogos from '../components/PartnerLogos';
+import SocialMediaButtons from '../components/SocialMediaButtons';
 import { motion, AnimatePresence } from 'motion/react';
+import { OFFICIAL_PARTNERS, PartnerApp } from '../data/partnersData';
 
 const WHY_US_ICONS: Record<number, React.ReactNode> = {
   1: <Users className="h-5 w-5 sm:h-6 sm:w-6" />,
@@ -76,44 +79,27 @@ export default function HomeView() {
   }, [heroSlides.length]);
   
   // Partnerships State
-  const [partners, setPartners] = useState<any[]>([]);
+  const [partners, setPartners] = useState<PartnerApp[]>([]);
   React.useEffect(() => {
     const stored = localStorage.getItem('smartjourney_partners');
     if (stored) {
       try {
-        setPartners(JSON.parse(stored));
+        const parsed: PartnerApp[] = JSON.parse(stored);
+        const hasOutdatedLogos = parsed.some(p => p.logoUrl && p.logoUrl.includes('images.unsplash.com'));
+        if (hasOutdatedLogos || parsed.length === 0) {
+          setPartners(OFFICIAL_PARTNERS);
+          localStorage.setItem('smartjourney_partners', JSON.stringify(OFFICIAL_PARTNERS));
+        } else {
+          setPartners(parsed);
+        }
       } catch (e) {
         console.error('Failed to parse partners in HomeView', e);
+        setPartners(OFFICIAL_PARTNERS);
+        localStorage.setItem('smartjourney_partners', JSON.stringify(OFFICIAL_PARTNERS));
       }
     } else {
-      const defaultPartners = [
-        {
-          id: 'traveloka',
-          name: 'Traveloka',
-          description: 'Southeast Asia’s leading travel platform, enabling users to discover and purchase a wide range of flights, accommodations, local experiences, and financial services.',
-          url: 'https://www.traveloka.com',
-          category: 'Travel Platform',
-          logoUrl: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=150&q=80'
-        },
-        {
-          id: 'trip-com',
-          name: 'Trip.com',
-          description: 'A global travel service provider offering flight tickets, hotel reservations, train tickets, car rentals, and tour guides in over 200 countries.',
-          url: 'https://www.trip.com',
-          category: 'Travel Platform',
-          logoUrl: 'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=150&q=80'
-        },
-        {
-          id: 'booking-com',
-          name: 'Booking.com',
-          description: 'One of the world’s leading digital travel companies, connecting travelers with the largest selection of incredible places to stay, from homes to hotels.',
-          url: 'https://www.booking.com',
-          category: 'Accommodation',
-          logoUrl: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=150&q=80'
-        }
-      ];
-      setPartners(defaultPartners);
-      localStorage.setItem('smartjourney_partners', JSON.stringify(defaultPartners));
+      setPartners(OFFICIAL_PARTNERS);
+      localStorage.setItem('smartjourney_partners', JSON.stringify(OFFICIAL_PARTNERS));
     }
   }, []);
   
@@ -593,6 +579,23 @@ export default function HomeView() {
               );
             })}
           </div>
+
+          {/* Official Partner Platforms & Social Media Row (Kotak kecil-kecil, logo saja) */}
+          <div className="mt-8 pt-6 border-t border-neutral-200/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 font-mono shrink-0">
+                {language === 'zh' ? '官方合作平台' : language === 'id' ? 'Partner Resmi Platform' : 'Official Partners'}
+              </span>
+              <PartnerLogos size="md" />
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 font-mono shrink-0">
+                {language === 'zh' ? '关注我们' : language === 'id' ? 'Media Sosial' : 'Social Channels'}
+              </span>
+              <SocialMediaButtons size="md" />
+            </div>
+          </div>
         </div>
       </section>
 
@@ -783,7 +786,7 @@ export default function HomeView() {
                 <div className="absolute bottom-6 left-6 right-6">
                   <span className="text-[11px] text-amber-400 font-bold uppercase tracking-wider font-mono bg-neutral-950/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-neutral-700/80 shadow-md">
                     {activeService === 'tours' && (language === 'zh' ? '东爪哇精选私人定制' : language === 'id' ? 'Tur Terkurasi Jawa Timur' : 'East Java Curated Tours')}
-                    {activeService === 'share-tour' && (language === 'zh' ? '高性价比拼团 (Share Tour / Open Trip)' : language === 'id' ? 'Share Tour / Open Trip' : 'Share Tour / Open Trip')}
+                    {activeService === 'share-tour' && (language === 'zh' ? '高性价比拼团 (Open Trip / Join Share Tour)' : language === 'id' ? 'Open Trip / Join Share Tour' : 'Open Trip / Join Share Tour')}
                     {activeService === 'airport' && (language === 'zh' ? '24小时专业机场接送' : language === 'id' ? 'Transfer Bandara 24/7' : '24/7 Airport Transfer')}
                     {activeService === 'taxi' && (language === 'zh' ? '跨城透明一口价专车' : language === 'id' ? 'Taksi Eksekutif Flat-Rate' : 'Flat-Rate Executive Taxi')}
                     {activeService === 'car-rental' && (language === 'zh' ? '包车带司机自由行' : language === 'id' ? 'Sewa Mobil + Driver Privat' : 'Private Car & Driver')}
@@ -796,7 +799,7 @@ export default function HomeView() {
                 <div className="space-y-4">
                   <h3 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight leading-snug">
                     {activeService === 'tours' && (language === 'zh' ? '布罗莫火山与宜珍神秘蓝火私人探险' : language === 'id' ? 'Petualangan Privat Gunung Bromo & Kawah Ijen' : 'Private Mount Bromo & Ijen Crater Adventures')}
-                    {activeService === 'share-tour' && (language === 'zh' ? '单人及情侣出游精明之选：Share Tour / Open Trip 拼团' : language === 'id' ? 'Share Tour / Open Trip untuk Solo & Small Group' : 'Share Tour / Open Trip for Smart Solo & Small Group Travelers')}
+                    {activeService === 'share-tour' && (language === 'zh' ? '单人及情侣出游精明之选：Open Trip / Join Share Tour 拼团' : language === 'id' ? 'Open Trip / Join Share Tour untuk Solo & Small Group' : 'Open Trip / Join Share Tour for Smart Solo & Small Group Travelers')}
                     {activeService === 'airport' && (language === 'zh' ? '无缝省心机场接机与航站楼送机' : language === 'id' ? 'Antar Jemput Bandara Nyaman & Bebas Ribet' : 'Seamless Airport Pickups & Transfers')}
                     {activeService === 'taxi' && (language === 'zh' ? '点对点跨城尊贵行政出租车' : language === 'id' ? 'Taksi Antarkota Point-to-Point Eksekutif' : 'Point-to-Point Executive Intercity Taxi')}
                     {activeService === 'car-rental' && (language === 'zh' ? '配备资深双语司机的全天候包车' : language === 'id' ? 'Rental Mobil Premium Bersama Driver Berpengalaman' : 'Premium Car Rental with Professional Local Driver')}
@@ -1137,11 +1140,11 @@ export default function HomeView() {
                     rel="noopener noreferrer"
                     className="bg-white border border-neutral-200 hover:border-amber-500/40 rounded-2xl h-24 flex items-center justify-center p-4 relative group transition-all duration-300 shadow-sm hover:shadow-md cursor-pointer overflow-hidden"
                   >
-                    <div className="w-full h-full flex items-center justify-center">
+                    <div className="w-full h-full flex items-center justify-center p-2">
                       <img
                         src={partner.logoUrl}
                         alt={partner.name}
-                        className="max-h-full max-w-full object-contain filter grayscale group-hover:grayscale-0 transition-all duration-500 rounded-lg"
+                        className="max-h-11 max-w-[85%] object-contain group-hover:scale-105 transition-all duration-300 rounded"
                         referrerPolicy="no-referrer"
                         onError={(e) => {
                           (e.target as any).src = 'https://images.unsplash.com/photo-1557200134-90327ee9fafa?auto=format&fit=crop&w=150&q=80';

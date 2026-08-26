@@ -8,13 +8,15 @@ import {
   Mail, Phone, ChevronDown, CheckCircle2, AlertTriangle, FileText, 
   ArrowUpRight, BarChart3, Database, Save, Eye, EyeOff, Building, 
   FileCheck, ShieldCheck, Download, CalendarDays, RefreshCw, CreditCard, DollarSign,
-  Plane, Plus, Trash2, Edit, Check, Copy, Clock, Image, Upload, ChevronUp, GripVertical, History, Car, Map, Star
+  Plane, Plus, Trash2, Edit, Check, Copy, Clock, Image, Upload, ChevronUp, GripVertical, History, Car, Map, Star, ExternalLink
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Airport } from '../types';
 import TaxiExcelManager from '../components/admin/TaxiExcelManager';
 import RentalAdminWorkspace from '../components/admin/RentalAdminWorkspace';
 import AirportBookingCalendar from '../components/admin/AirportBookingCalendar';
+import { OFFICIAL_PARTNERS } from '../data/partnersData';
+import { SocialMediaItem, getStoredSocialMedia, saveStoredSocialMedia } from '../data/socialMediaData';
 
 interface ItineraryFormItem {
   id: string;
@@ -367,49 +369,19 @@ export default function AdminView() {
     const stored = localStorage.getItem('smartjourney_partners');
     if (stored) {
       try {
-        return JSON.parse(stored);
+        const parsed = JSON.parse(stored);
+        const hasOutdatedLogos = parsed.some((p: any) => p.logoUrl && p.logoUrl.includes('images.unsplash.com'));
+        if (hasOutdatedLogos || parsed.length === 0) {
+          localStorage.setItem('smartjourney_partners', JSON.stringify(OFFICIAL_PARTNERS));
+          return OFFICIAL_PARTNERS;
+        }
+        return parsed;
       } catch (e) {
         console.error(e);
       }
     }
-    return [
-      {
-        id: 'traveloka',
-        name: 'Traveloka',
-        url: 'https://www.traveloka.com',
-        logoUrl: 'https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?auto=format&fit=crop&w=300&q=80'
-      },
-      {
-        id: 'trip-com',
-        name: 'Trip.com',
-        url: 'https://www.trip.com',
-        logoUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=300&q=80'
-      },
-      {
-        id: 'booking-com',
-        name: 'Booking.com',
-        url: 'https://www.booking.com',
-        logoUrl: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=300&q=80'
-      },
-      {
-        id: 'marriott',
-        name: 'Marriott',
-        url: 'https://www.marriott.com',
-        logoUrl: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=300&q=80'
-      },
-      {
-        id: 'hilton',
-        name: 'Hilton',
-        url: 'https://www.hilton.com',
-        logoUrl: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=300&q=80'
-      },
-      {
-        id: 'agoda',
-        name: 'Agoda',
-        url: 'https://www.agoda.com',
-        logoUrl: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=300&q=80'
-      }
-    ];
+    localStorage.setItem('smartjourney_partners', JSON.stringify(OFFICIAL_PARTNERS));
+    return OFFICIAL_PARTNERS;
   });
 
   const [partnerForm, setPartnerForm] = useState({ id: '', name: '', url: '', logoUrl: '' });
@@ -462,6 +434,21 @@ export default function AdminView() {
       saveAdminPartners(updated);
       triggerToast(`Partner ${name} berhasil dihapus.`);
     }
+  };
+
+  // Social Media Management State (IG, TikTok, Rednote, LinkedIn)
+  const [adminSocials, setAdminSocials] = useState<SocialMediaItem[]>(() => getStoredSocialMedia());
+
+  const handleUpdateSocial = (id: string, field: 'handle' | 'url', value: string) => {
+    setAdminSocials(prev => {
+      const updated = prev.map(s => s.id === id ? { ...s, [field]: value } : s);
+      return updated;
+    });
+  };
+
+  const handleSaveSocials = () => {
+    saveStoredSocialMedia(adminSocials);
+    triggerToast('Pengaturan Media Sosial (IG, TikTok, Rednote, LinkedIn) berhasil disimpan!');
   };
 
   // Account View Tab
@@ -7589,16 +7576,96 @@ export default function AdminView() {
                   )}
 
                   {activeCmsTab === 'contact' && (
-                    <div className="space-y-4">
-                      <h4 className="text-xs font-black uppercase tracking-widest font-mono text-amber-500">Global Contact / Footer Info</h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-1">
-                          <label className="text-[10px] font-black text-neutral-500 uppercase">Nomor WhatsApp Support Utama</label>
-                          <input type="text" defaultValue="+62 813-1122-3344" className={`w-full ${theme.input} border rounded-xl px-3 py-2 text-xs`} />
+                    <div className="space-y-6">
+                      <div className="space-y-4">
+                        <h4 className="text-xs font-black uppercase tracking-widest font-mono text-amber-500">Global Contact / Footer Info</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-black text-neutral-500 uppercase">Nomor WhatsApp Support Utama</label>
+                            <input type="text" defaultValue="+62 852-1234-7289" className={`w-full ${theme.input} border rounded-xl px-3 py-2 text-xs`} />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-black text-neutral-500 uppercase">Alamat Email Korespondensi</label>
+                            <input type="email" defaultValue="sawahjayatrans@gmail.com" className={`w-full ${theme.input} border rounded-xl px-3 py-2 text-xs`} />
+                          </div>
                         </div>
-                        <div className="space-y-1">
-                          <label className="text-[10px] font-black text-neutral-500 uppercase">Alamat Email Korespondensi</label>
-                          <input type="email" defaultValue="sawahjayagroup@gmail.com" className={`w-full ${theme.input} border rounded-xl px-3 py-2 text-xs`} />
+                      </div>
+
+                      {/* Social Media Settings (IG, TikTok, Rednote, LinkedIn) */}
+                      <div className="space-y-4 pt-4 border-t border-neutral-800">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h4 className="text-xs font-black uppercase tracking-widest font-mono text-amber-500">
+                              Integrasi Media Sosial Resmi (IG, TikTok, Rednote, LinkedIn)
+                            </h4>
+                            <p className={`text-[11px] mt-0.5 ${theme.textSecondary}`}>
+                              Kelola tautan dan tombol direct media sosial yang tampil di Footer dan Halaman Tentang Kami.
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={handleSaveSocials}
+                            className="bg-amber-500 hover:bg-amber-400 text-neutral-950 px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 shadow-sm cursor-pointer"
+                          >
+                            <Save className="h-3.5 w-3.5" />
+                            <span>Simpan Sosmed</span>
+                          </button>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {adminSocials.map((social) => (
+                            <div 
+                              key={social.id} 
+                              className={`p-4 rounded-2xl border ${theme.card} space-y-3 relative overflow-hidden`}
+                            >
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <div 
+                                    className="w-7 h-7 rounded-lg flex items-center justify-center text-white text-xs font-black"
+                                    style={{ backgroundColor: social.color }}
+                                  >
+                                    {social.shortName.slice(0, 2)}
+                                  </div>
+                                  <div>
+                                    <span className="text-xs font-bold text-neutral-200 block">{social.name}</span>
+                                    <span className="text-[10px] text-neutral-400 font-mono">{social.category}</span>
+                                  </div>
+                                </div>
+                                <a
+                                  href={social.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-[11px] font-bold text-amber-500 hover:text-amber-400 flex items-center gap-1 bg-amber-500/10 px-2.5 py-1 rounded-lg transition-colors"
+                                >
+                                  <span>Buka Tautan</span>
+                                  <ExternalLink className="h-3 w-3" />
+                                </a>
+                              </div>
+
+                              <div className="space-y-2">
+                                <div className="space-y-1">
+                                  <label className="text-[10px] font-bold text-neutral-400 uppercase">Username / ID Handle</label>
+                                  <input
+                                    type="text"
+                                    value={social.handle}
+                                    onChange={(e) => handleUpdateSocial(social.id, 'handle', e.target.value)}
+                                    placeholder="e.g. @sawahjayatrans"
+                                    className={`w-full ${theme.input} border rounded-xl px-3 py-2 text-xs`}
+                                  />
+                                </div>
+                                <div className="space-y-1">
+                                  <label className="text-[10px] font-bold text-neutral-400 uppercase">Target URL Direct Link</label>
+                                  <input
+                                    type="url"
+                                    value={social.url}
+                                    onChange={(e) => handleUpdateSocial(social.id, 'url', e.target.value)}
+                                    placeholder="https://..."
+                                    className={`w-full ${theme.input} border rounded-xl px-3 py-2 text-xs font-mono`}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     </div>
@@ -7607,7 +7674,10 @@ export default function AdminView() {
                   {/* Save CMS Changes */}
                   <div className="pt-4 border-t border-neutral-850 flex justify-end">
                     <button 
-                      onClick={() => triggerToast('Draf CMS Berhasil Disimpan (Placeholder)')}
+                      onClick={() => {
+                        handleSaveSocials();
+                        triggerToast('Pengaturan CMS & Media Sosial Berhasil Dipublikasikan!');
+                      }}
                       className="bg-amber-500 hover:bg-amber-600 text-neutral-950 font-black text-xs px-5 py-2.5 rounded-xl transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
                     >
                       <Save className="h-4 w-4" />

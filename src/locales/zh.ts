@@ -5,7 +5,7 @@ export const zhTranslations = {
     services: '特色服务',
     tours: '精品旅游套餐',
     toursSubtitle: '精选经典旅游目的地与路线',
-    shareTour: '拼团游 (Share Tour / Open Trip)',
+    shareTour: '拼团游 (Open Trip / Join Share Tour)',
     shareTourSubtitle: '加入拼团游，高性价比结伴同行',
     newBadge: '最新',
     airport: '机场专车接送',
@@ -112,7 +112,7 @@ export const zhTranslations = {
     heroTitleSuffix: '享受尊贵舒适的专属旅程',
     heroSubtitle: '专注火山探险私人定制游、正规营运牌照包车、24小时机场无缝接送及城际专车。专业双语司导，让您的印尼之旅安心无忧。',
     heroCtaTour: '探索火山旅游套餐',
-    heroCtaShare: '参加特惠拼团游 (Share Tour / Open Trip)',
+    heroCtaShare: '参加特惠拼团游 (Open Trip / Join Share Tour)',
     heroGuarantee1: '严选现代化干净车队',
     heroGuarantee2: '英语/中文沟通专业司导',
     heroGuarantee3: '价格透明绝无隐形消费',
@@ -269,9 +269,9 @@ export const zhTranslations = {
     depositPolicy: '押金在验车无误还车后即刻全额原路退还。',
   },
 
-  // Share Tour / Open Trip
+  // Open Trip / Join Share Tour
   shareTour: {
-    title: '特惠拼团游 (Share Tour / Open Trip)',
+    title: '特惠拼团游 (Open Trip / Join Share Tour)',
     subtitle: '高性价比小团拼车，每天/每周固定排期，结伴同行领略自然之美。',
     openBatches: '开放招募批次',
     quotaRemaining: '剩余名额',

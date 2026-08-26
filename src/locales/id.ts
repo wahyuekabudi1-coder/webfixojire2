@@ -5,7 +5,7 @@ export const idTranslations = {
     services: 'Layanan',
     tours: 'Paket Tour',
     toursSubtitle: 'Jelajahi destinasi wisata terbaik',
-    shareTour: 'Share Tour / Open Trip',
+    shareTour: 'Open Trip / Join Share Tour',
     shareTourSubtitle: 'Gabung open trip hemat & seru',
     newBadge: 'BARU',
     airport: 'Transfer Bandara',
@@ -112,7 +112,7 @@ export const idTranslations = {
     heroTitleSuffix: 'dengan Kenyamanan Terbaik',
     heroSubtitle: 'Spesialis paket tour privat gunung berapi, sewa mobil berizin resmi, transfer bandara 24 jam, dan taksi antar kota dengan driver ramah berpengalaman.',
     heroCtaTour: 'Jelajahi Paket Wisata',
-    heroCtaShare: 'Ikut Share Tour / Open Trip',
+    heroCtaShare: 'Open Trip / Join Share Tour',
     heroGuarantee1: 'Armada Terbaru & Bersih',
     heroGuarantee2: 'Driver Berbahasa Inggris',
     heroGuarantee3: 'Harga Transparan Tanpa Tipuan',
@@ -269,9 +269,9 @@ export const idTranslations = {
     depositPolicy: 'Deposit jaminan dikembalikan penuh saat unit mobil kembali dalam keadaan baik.',
   },
 
-  // Share Tour / Open Trip
+  // Open Trip / Join Share Tour
   shareTour: {
-    title: 'Share Tour / Open Trip',
+    title: 'Open Trip / Join Share Tour',
     subtitle: 'Solusi hemat bergabung dalam grup kecil dengan jadwal keberangkatan pasti setiap hari/minggu.',
     openBatches: 'Batch Dibuka',
     quotaRemaining: 'Sisa Kuota',

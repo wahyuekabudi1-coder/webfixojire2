@@ -9,7 +9,7 @@ export default function ServiceNavTabs() {
 
   const services = [
     { id: 'tours', label: t('nav.tours') || 'Private Tours', icon: Compass },
-    { id: 'share-tour', label: t('nav.shareTour') || 'Share Tour / Open Trip', badge: 'Open Trip', icon: Users },
+    { id: 'share-tour', label: t('nav.shareTour') || 'Open Trip / Join Share Tour', badge: 'Open Trip', icon: Users },
     { id: 'airport', label: t('nav.airport') || 'Airport Transfer', icon: Plane },
     { id: 'taxi', label: t('nav.taxi') || 'City Taxi', icon: Route },
     { id: 'car-rental', label: t('nav.carRental') || 'Rental Car', icon: Car },

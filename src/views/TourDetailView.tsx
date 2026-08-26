@@ -1920,7 +1920,7 @@ export default function TourDetailView({ tourId, onBack }: TourDetailViewProps) 
               className="bg-amber-400 hover:bg-amber-300 active:bg-amber-500 text-neutral-950 font-black px-3.5 py-2.5 sm:px-5 sm:py-3 rounded-xl text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-lg transition-all cursor-pointer border border-amber-300 min-h-[44px]"
             >
               <Users className="h-4 w-4 shrink-0" />
-              <span>Share Tour / Open Trip</span>
+              <span>Open Trip / Join Share Tour</span>
             </button>
           </div>
         </div>

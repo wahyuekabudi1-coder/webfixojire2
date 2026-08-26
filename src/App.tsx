@@ -87,7 +87,7 @@ function AppContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAF9] text-neutral-900 flex flex-col justify-between selection:bg-[#315B4F] selection:text-white">
+    <div className="min-h-screen w-full overflow-x-hidden bg-[#F8FAF9] text-neutral-900 flex flex-col justify-between selection:bg-[#315B4F] selection:text-white">
       {/* Skip to main content link for keyboard accessibility */}
       <a
         href="#main-content"
@@ -103,7 +103,7 @@ function AppContent() {
       <Header />
 
       {/* Main Dynamic View Content Container */}
-      <main className="grow outline-none" id="main-content" tabIndex={-1}>
+      <main className="grow outline-none w-full overflow-x-hidden" id="main-content" tabIndex={-1}>
         <AnimatePresence mode="wait">
           <motion.div
             key={activePage}

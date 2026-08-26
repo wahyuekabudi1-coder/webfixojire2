@@ -5,7 +5,7 @@ export const enTranslations = {
     services: 'Services',
     tours: 'Tour Packages',
     toursSubtitle: 'Explore curated travel destinations',
-    shareTour: 'Share Tour / Open Trip',
+    shareTour: 'Open Trip / Join Share Tour',
     shareTourSubtitle: 'Join open group trips & split costs',
     newBadge: 'NEW',
     airport: 'Airport Transfer',
@@ -112,7 +112,7 @@ export const enTranslations = {
     heroTitleSuffix: 'in Supreme Comfort',
     heroSubtitle: 'Specialists in private volcanic expeditions, officially licensed car rentals, 24/7 airport transfers, and intercity private taxis with friendly English-speaking drivers.',
     heroCtaTour: 'Explore Tour Packages',
-    heroCtaShare: 'Join Share Tour / Open Trip',
+    heroCtaShare: 'Open Trip / Join Share Tour',
     heroGuarantee1: 'Spotless Modern Fleet',
     heroGuarantee2: 'English-Speaking Drivers',
     heroGuarantee3: '100% Transparent Pricing',
@@ -269,9 +269,9 @@ export const enTranslations = {
     depositPolicy: 'Security deposit is refunded 100% immediately upon safe vehicle return.',
   },
 
-  // Share Tour / Open Trip
+  // Open Trip / Join Share Tour
   shareTour: {
-    title: 'Share Tour / Open Trip',
+    title: 'Open Trip / Join Share Tour',
     subtitle: 'Budget-friendly shared micro-expeditions with guaranteed scheduled departures every day/week.',
     openBatches: 'Batches Open',
     quotaRemaining: 'Remaining Slots',

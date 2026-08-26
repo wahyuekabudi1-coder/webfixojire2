@@ -31,6 +31,7 @@ import {
 } from 'lucide-react';
 import { BLOG_POSTS, BlogPost } from '../blogData';
 import Breadcrumbs from '../components/Breadcrumbs';
+import SocialMediaButtons from '../components/SocialMediaButtons';
 
 interface StatCardProps {
   key?: React.Key;
@@ -1418,6 +1419,25 @@ export default function AboutView() {
               </div>
             </div>
 
+          </div>
+
+          {/* Official Social Media Channels (IG, TikTok, Rednote, LinkedIn) */}
+          <div className="mt-14 pt-10 border-t border-slate-200/80">
+            <div className="text-center max-w-xl mx-auto space-y-2 mb-6">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-amber-600 font-extrabold bg-amber-500/10 px-3 py-1 rounded-full">
+                Connect With Us
+              </span>
+              <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                Media Sosial Resmi
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-500">
+                Ikuti kanal resmi kami untuk dokumentasi perjalanan, tips wisata terkini, dan interaksi langsung.
+              </p>
+            </div>
+
+            <div className="flex justify-center">
+              <SocialMediaButtons size="lg" className="p-2 bg-slate-100/80 rounded-2xl border border-slate-200/60" />
+            </div>
           </div>
         </div>
       </section>

@@ -15,6 +15,9 @@ export interface Tour {
   excludes?: string[];
   gallery?: string[];
   whatToBring?: string[];
+  status?: 'published' | 'draft' | 'unpublished';
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Vehicle {

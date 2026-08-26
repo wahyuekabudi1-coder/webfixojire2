@@ -3,6 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import dotenv from 'dotenv';
 import type { Trip, Batch, Booking, DatabaseState } from './src/sharetour/types.ts';
+import type { Tour } from './src/types.ts';
 
 // Load environment variables
 dotenv.config();
@@ -198,6 +199,52 @@ function writeDB(data: DatabaseState) {
   }
 }
 
+// -------------------------------------------------------------
+// SYSTEM 1: MAIN SMART JOURNEY WEBSITE TOURS DATA PERSISTENCE
+// Strictly separate from System 2 (Share Tour / Open Trip)
+// -------------------------------------------------------------
+const MAIN_TOURS_PATH = path.join(process.cwd(), 'src', 'data', 'main_tours.json');
+let memoryMainTours: Tour[] | null = null;
+
+function readMainTours(): Tour[] {
+  if (memoryMainTours) {
+    return memoryMainTours;
+  }
+
+  try {
+    if (fs.existsSync(MAIN_TOURS_PATH)) {
+      const raw = fs.readFileSync(MAIN_TOURS_PATH, 'utf8');
+      const parsed = JSON.parse(raw) as Tour[];
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        memoryMainTours = parsed;
+        return memoryMainTours;
+      }
+    }
+  } catch (error) {
+    console.error('Error reading main tours database file:', error);
+  }
+
+  // Fallback if file not found or corrupted
+  memoryMainTours = [];
+  return memoryMainTours;
+}
+
+function writeMainTours(tours: Tour[]) {
+  memoryMainTours = tours;
+
+  try {
+    if (!process.env.VERCEL) {
+      const dir = path.dirname(MAIN_TOURS_PATH);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      fs.writeFileSync(MAIN_TOURS_PATH, JSON.stringify(tours, null, 2), 'utf8');
+    }
+  } catch (error) {
+    console.error('Error writing main tours database file:', error);
+  }
+}
+
 const app = express();
 
 // Security Headers & CORS Middleware
@@ -326,12 +373,24 @@ app.get('/sitemap.xml', (req, res) => {
       tripsXml = db.trips
         .map((t: any) => `
 <url>
-<loc>${baseUrl}/#/tours?id=${t.id || t.slug}</loc>
+<loc>${baseUrl}/#/share-tour?id=${t.id || t.slug}</loc>
 <lastmod>${currentDate}</lastmod>
 <changefreq>daily</changefreq>
 <priority>0.8</priority>
 </url>`)
         .join('');
+    }
+
+    const mainTours = readMainTours();
+    if (mainTours && mainTours.length > 0) {
+      const publishedTours = mainTours.filter(t => t.status !== 'draft' && t.status !== 'unpublished');
+      tripsXml += publishedTours.map((t: any) => `
+<url>
+<loc>${baseUrl}/#/tours?id=${t.id}</loc>
+<lastmod>${currentDate}</lastmod>
+<changefreq>daily</changefreq>
+<priority>0.85</priority>
+</url>`).join('');
     }
   } catch {
     // ignore
@@ -398,6 +457,163 @@ xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitem
 </urlset>`;
 
   res.send(sitemapContent);
+});
+
+// -------------------------------------------------------------
+// SYSTEM 1: MAIN SMART JOURNEY WEBSITE TOUR REST ENDPOINTS
+// Shared Server-Side Authoritative Source
+// -------------------------------------------------------------
+
+// 1. Get all tours (filtered by status for public customer front-end, or all for admin)
+app.get('/api/main-tours', (req, res) => {
+  try {
+    const tours = readMainTours();
+    const showAll = req.query.all === 'true' || req.headers.authorization || req.headers['x-secret-key'];
+    
+    if (showAll) {
+      return res.json(tours);
+    }
+
+    // Public front-end: only return published tours
+    const published = tours.filter(t => t.status !== 'draft' && t.status !== 'unpublished');
+    res.json(published);
+  } catch (error) {
+    console.error('Error fetching main tours:', error);
+    res.status(500).json({ error: 'Gagal mengambil data paket tour utama.' });
+  }
+});
+
+// 2. Get single tour by ID
+app.get('/api/main-tours/:id', (req, res) => {
+  try {
+    const tours = readMainTours();
+    const tour = tours.find(t => t.id === req.params.id);
+    
+    if (!tour) {
+      return res.status(404).json({ error: 'Paket tour tidak ditemukan.' });
+    }
+    
+    res.json(tour);
+  } catch (error) {
+    console.error('Error fetching single main tour:', error);
+    res.status(500).json({ error: 'Gagal mengambil detail paket tour.' });
+  }
+});
+
+// 3. Create new main tour
+app.post('/api/main-tours', (req, res) => {
+  try {
+    const tours = readMainTours();
+    const payload = req.body;
+
+    if (!payload.name) {
+      return res.status(400).json({ error: 'Nama paket tour wajib diisi.' });
+    }
+
+    const newTour: Tour = {
+      ...payload,
+      id: payload.id || `tour-${Date.now()}`,
+      status: payload.status || 'published',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    // Check if ID already exists
+    const existingIndex = tours.findIndex(t => t.id === newTour.id);
+    if (existingIndex !== -1) {
+      tours[existingIndex] = { ...tours[existingIndex], ...newTour };
+    } else {
+      tours.unshift(newTour);
+    }
+
+    writeMainTours(tours);
+    res.status(201).json(newTour);
+  } catch (error) {
+    console.error('Error creating main tour:', error);
+    res.status(500).json({ error: 'Gagal menambahkan paket tour baru.' });
+  }
+});
+
+// 4. Update existing main tour
+app.put('/api/main-tours/:id', (req, res) => {
+  try {
+    const tours = readMainTours();
+    const tourId = req.params.id;
+    const index = tours.findIndex(t => t.id === tourId);
+
+    if (index === -1) {
+      return res.status(404).json({ error: 'Paket tour tidak ditemukan untuk diperbarui.' });
+    }
+
+    const updatedTour: Tour = {
+      ...tours[index],
+      ...req.body,
+      id: tourId,
+      updatedAt: new Date().toISOString()
+    };
+
+    tours[index] = updatedTour;
+    writeMainTours(tours);
+    res.json(updatedTour);
+  } catch (error) {
+    console.error('Error updating main tour:', error);
+    res.status(500).json({ error: 'Gagal memperbarui paket tour.' });
+  }
+});
+
+// 5. Delete main tour
+app.delete('/api/main-tours/:id', (req, res) => {
+  try {
+    const tours = readMainTours();
+    const tourId = req.params.id;
+    const filtered = tours.filter(t => t.id !== tourId);
+
+    if (filtered.length === tours.length) {
+      return res.status(404).json({ error: 'Paket tour tidak ditemukan.' });
+    }
+
+    writeMainTours(filtered);
+    res.json({ success: true, id: tourId });
+  } catch (error) {
+    console.error('Error deleting main tour:', error);
+    res.status(500).json({ error: 'Gagal menghapus paket tour.' });
+  }
+});
+
+// 6. One-time migration / Local storage sync endpoint
+app.post('/api/main-tours/sync-local', (req, res) => {
+  try {
+    const { localTours } = req.body;
+    if (!Array.isArray(localTours) || localTours.length === 0) {
+      return res.json({ success: true, message: 'Tidak ada data lokal yang perlu disinkronkan.', count: 0 });
+    }
+
+    const serverTours = readMainTours();
+    let addedCount = 0;
+
+    localTours.forEach((localTour: Tour) => {
+      if (localTour && localTour.id) {
+        const exists = serverTours.some(st => st.id === localTour.id);
+        if (!exists) {
+          serverTours.push({
+            ...localTour,
+            status: localTour.status || 'published',
+            createdAt: localTour.createdAt || new Date().toISOString()
+          });
+          addedCount++;
+        }
+      }
+    });
+
+    if (addedCount > 0) {
+      writeMainTours(serverTours);
+    }
+
+    res.json({ success: true, message: `Berhasil menyinkronkan ${addedCount} paket dari penyimpanan lokal ke server.`, addedCount, totalCount: serverTours.length });
+  } catch (error) {
+    console.error('Error syncing local tours:', error);
+    res.status(500).json({ error: 'Gagal melakukan sinkronisasi data tour lokal.' });
+  }
 });
 
 // -------------------------------------------------------------

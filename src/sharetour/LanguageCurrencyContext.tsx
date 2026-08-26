@@ -60,9 +60,9 @@ const dictionary: Record<string, Partial<Record<Language, string>>> = {
     zh: "精选经典旅游目的地与路线"
   },
   "nav.shareTour": {
-    en: "Share Tour / Open Trip",
-    id: "Share Tour / Open Trip",
-    zh: "拼团游 (Share Tour / Open Trip)"
+    en: "Open Trip / Join Share Tour",
+    id: "Open Trip / Join Share Tour",
+    zh: "拼团游 (Open Trip / Join Share Tour)"
   },
   "nav.shareTourSubtitle": {
     en: "Join open group trips & split costs",
@@ -149,6 +149,11 @@ const dictionary: Record<string, Partial<Record<Language, string>>> = {
     id: "100% AMAN & TERPERCAYA",
     zh: "100% 安全可靠"
   },
+  "footer.secureSubtitle": {
+    en: "Your payment is safe and secure with us.",
+    id: "Pembayaran Anda aman bersama kami.",
+    zh: "您的支付与预订全程受加密安全保护。"
+  },
   "footer.licensed": {
     en: "OFFICIAL TRANSPORT LICENSE",
     id: "IZIN ANGKUTAN RESMI",
@@ -156,8 +161,8 @@ const dictionary: Record<string, Partial<Record<Language, string>>> = {
   },
   "footer.paymentMethods": {
     en: "ACCEPTED PAYMENT METHODS",
-    id: "METODE PEMBAYARAN RESMI",
-    zh: "支持的支付方式"
+    id: "METODE PEMBAYARAN YANG DITERIMA",
+    zh: "支持的付款方式"
   },
   "footer.privacyPolicy": {
     en: "Privacy Policy",
@@ -173,6 +178,21 @@ const dictionary: Record<string, Partial<Record<Language, string>>> = {
     en: "Contact Us",
     id: "Hubungi Kami",
     zh: "联系我们"
+  },
+  "footer.adminAccess": {
+    en: "Admin Access",
+    id: "Akses Admin",
+    zh: "后台管理"
+  },
+  "footer.adminWebsite": {
+    en: "Admin Smart Journey",
+    id: "Admin Smart Journey",
+    zh: "主网站后台管理"
+  },
+  "footer.adminShareTour": {
+    en: "Admin Share Tour",
+    id: "Admin Share Tour",
+    zh: "拼团/拼车后台管理"
   },
   "footer.allRightsReserved": {
     en: "All rights reserved",
@@ -215,9 +235,9 @@ const dictionary: Record<string, Partial<Record<Language, string>>> = {
     zh: "特色出行信息与预订"
   },
   "Share Tour": {
-    en: "Share Tour / Open Trip",
-    id: "Share Tour / Open Trip",
-    zh: "拼团游 (Share Tour / Open Trip)"
+    en: "Open Trip / Join Share Tour",
+    id: "Open Trip / Join Share Tour",
+    zh: "拼团游 (Open Trip / Join Share Tour)"
   },
   "Curated micro-expeditions for environment advocates and outdoor explorers.": {
     en: "Curated micro-expeditions for environment advocates and outdoor explorers.",

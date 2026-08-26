@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../AppContext';
 import { useLanguageCurrency } from '../sharetour/LanguageCurrencyContext';
-import { Compass, Mail, MapPin, Phone, Clock, MessageSquare, Instagram, Facebook, Youtube, Share2, Sparkles, QrCode, Copy, Check, X, ShieldCheck, FileText, Lock, Eye, EyeOff } from 'lucide-react';
+import { Mail, MapPin, Phone, Clock, MessageSquare, Instagram, Facebook, Youtube, Share2, Sparkles, QrCode, Copy, Check, X, ShieldCheck, FileText, Lock, Eye, EyeOff, ExternalLink } from 'lucide-react';
 
 function WeChatIcon({ className = "h-4 w-4" }: { className?: string }) {
   return (
@@ -22,7 +22,6 @@ export default function Footer() {
   const { t } = useLanguageCurrency();
   const [emailSubscribed, setEmailSubscribed] = useState(false);
   const [email, setEmail] = useState('');
-  const [imageFailed, setImageFailed] = useState(false);
   const [isWeChatModalOpen, setIsWeChatModalOpen] = useState(false);
   const [copiedWeChat, setCopiedWeChat] = useState(false);
   const [qrImageError, setQrImageError] = useState(false);
@@ -83,84 +82,14 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mb-12">
           
-          {/* Column 1: Brand Info */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2.5 cursor-pointer" onClick={() => setPage('home')}>
-              {!imageFailed ? (
-                <img 
-                  src="/logo.png" 
-                  alt="Smart Journey Logo" 
-                  className="h-10 w-auto max-w-[160px] object-contain hover:scale-105 transition-transform duration-300"
-                  onError={() => setImageFailed(true)}
-                />
-              ) : (
-                <div className="bg-amber-500 text-neutral-950 p-2 rounded-xl">
-                  <Compass className="h-5 w-5" />
-                </div>
-              )}
-              <div className="flex flex-col justify-center">
-                <span className="text-lg font-bold tracking-tight text-neutral-900 leading-tight">
-                  Smart<span className="text-amber-500"> Journey</span>
-                </span>
-                <span className="text-[10px] font-semibold text-amber-500 tracking-widest uppercase font-mono mt-0.5 leading-none">
-                  Go Beyond.
-                </span>
-              </div>
-            </div>
+          {/* Column 1: About Info */}
+          <div className="space-y-3">
+            <h3 className="text-neutral-900 font-bold text-xs tracking-wider uppercase mb-4 border-l-2 border-amber-500 pl-2.5">
+              Smart Journey
+            </h3>
             <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">
               {t('footer.aboutText')}
             </p>
-            
-            {/* Social Media Links under description */}
-            <div className="flex items-center gap-2 pt-1">
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noreferrer"
-                aria-label="Instagram Smart Journey"
-                className="bg-white border border-neutral-200 text-neutral-500 hover:border-amber-500 hover:text-amber-500 p-2 rounded-lg transition-all duration-300 shadow-sm hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
-                title="Instagram"
-              >
-                <Instagram className="h-4 w-4" aria-hidden="true" />
-              </a>
-              <a
-                href="https://facebook.com"
-                target="_blank"
-                rel="noreferrer"
-                aria-label="Facebook Smart Journey"
-                className="bg-white border border-neutral-200 text-neutral-500 hover:border-amber-500 hover:text-amber-500 p-2 rounded-lg transition-all duration-300 shadow-sm hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
-                title="Facebook"
-              >
-                <Facebook className="h-4 w-4" aria-hidden="true" />
-              </a>
-              <a
-                href="https://youtube.com"
-                target="_blank"
-                rel="noreferrer"
-                aria-label="YouTube Smart Journey"
-                className="bg-white border border-neutral-200 text-neutral-500 hover:border-amber-500 hover:text-amber-500 p-2 rounded-lg transition-all duration-300 shadow-sm hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
-                title="YouTube"
-              >
-                <Youtube className="h-4 w-4" aria-hidden="true" />
-              </a>
-              <a
-                href="https://tiktok.com"
-                target="_blank"
-                rel="noreferrer"
-                aria-label="TikTok Smart Journey"
-                className="bg-white border border-neutral-200 text-neutral-500 hover:border-amber-500 hover:text-amber-500 p-2 rounded-lg transition-all duration-300 shadow-sm hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
-                title="TikTok"
-              >
-                <Share2 className="h-4 w-4" aria-hidden="true" />
-              </a>
-            </div>
-
-            <div className="pt-1">
-              <span className="inline-flex items-center gap-1.5 bg-emerald-500/10 text-emerald-600 px-2.5 py-1 rounded-full text-[11px] font-semibold">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                {t('footer.officialOperator')}
-              </span>
-            </div>
           </div>
  
           {/* Column 2: Services & Quick Links */}
@@ -263,88 +192,95 @@ export default function Footer() {
  
         </div>
  
-        {/* 2. SECURE PAYMENT SEGMENT (Above Copyright) */}
-        <div className="bg-[#315B4F] text-white py-4 px-6 rounded-2xl border border-[#467b6b] my-6 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4 max-w-3xl mx-auto w-full">
-          {/* Label + Badge Container */}
-          <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
-            <span className="text-[9px] font-extrabold uppercase tracking-widest text-emerald-100 font-sans shrink-0">
+        {/* 2. DESAIN 4: SECURITY & PAYMENT METHODS STRIP (Website Green Theme & Multi-Language) */}
+        <div className="bg-[#203c34] text-white py-5 px-6 lg:px-8 rounded-2xl border border-[#315B4F] my-8 shadow-lg max-w-5xl mx-auto w-full flex flex-col md:flex-row md:items-center md:justify-between gap-6 md:gap-8">
+          
+          {/* LEFT: Security Section */}
+          <div className="flex items-center gap-3.5 shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-[#315B4F] border border-[#467b6b] flex items-center justify-center text-amber-300 shrink-0 shadow-xs">
+              <ShieldCheck className="h-5 w-5" />
+            </div>
+            <div className="flex flex-col text-left">
+              <span className="text-xs font-black tracking-wider text-white uppercase font-sans">
+                {t('footer.secure')}
+              </span>
+              <p className="text-[11px] text-emerald-100/90 font-normal leading-tight mt-0.5">
+                {t('footer.secureSubtitle')}
+              </p>
+            </div>
+          </div>
+
+          {/* Vertical Divider (Desktop Only) */}
+          <div className="hidden md:block w-px h-10 bg-[#315B4F] shrink-0 self-center" />
+
+          {/* RIGHT: Payment Methods Section */}
+          <div className="flex flex-col md:items-end gap-2.5 shrink-0">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-200/90 font-mono">
               {t('footer.paymentMethods')}
             </span>
-            {/* Cards Row */}
-            <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
+            
+            {/* Single Row of Payment Pills on Desktop */}
+            <div className="flex flex-wrap md:flex-nowrap items-center gap-2">
               {/* VISA */}
-              <div className="w-[54px] h-[26px] sm:w-[60px] sm:h-[28px] bg-white rounded-md flex items-center justify-center select-none shrink-0 border border-neutral-200 shadow-sm transition-all duration-300 hover:scale-105">
-                <span className="text-[#1A1F71] font-black italic tracking-wide text-[10px] sm:text-xs">VISA</span>
+              <div className="w-[58px] h-[30px] bg-white rounded-lg flex items-center justify-center select-none shrink-0 border border-slate-200/90 shadow-xs hover:scale-105 transition-transform" title="VISA">
+                <span className="text-[#1A1F71] font-black italic tracking-wide text-xs font-sans">VISA</span>
               </div>
 
               {/* Mastercard */}
-              <div className="w-[54px] h-[26px] sm:w-[60px] sm:h-[28px] bg-white rounded-md flex items-center justify-center select-none shrink-0 border border-neutral-200 shadow-sm transition-all duration-300 hover:scale-105">
-                <div className="flex items-center justify-center">
-                  <div className="relative w-6 h-4 flex items-center justify-center">
-                    <div className="absolute left-0.5 w-[11px] h-[11px] sm:w-[13px] sm:h-[13px] rounded-full bg-[#EB001B] opacity-95" />
-                    <div className="absolute right-0.5 w-[11px] h-[11px] sm:w-[13px] sm:h-[13px] rounded-full bg-[#F79E1B] opacity-90 mix-blend-multiply" />
-                  </div>
+              <div className="w-[58px] h-[30px] bg-white rounded-lg flex items-center justify-center select-none shrink-0 border border-slate-200/90 shadow-xs hover:scale-105 transition-transform" title="Mastercard">
+                <div className="relative w-6 h-4 flex items-center justify-center">
+                  <div className="absolute left-0.5 w-[13px] h-[13px] rounded-full bg-[#EB001B] opacity-95" />
+                  <div className="absolute right-0.5 w-[13px] h-[13px] rounded-full bg-[#F79E1B] opacity-90 mix-blend-multiply" />
                 </div>
               </div>
 
               {/* JCB */}
-              <div className="w-[54px] h-[26px] sm:w-[60px] sm:h-[28px] bg-white rounded-md flex items-center justify-center select-none shrink-0 border border-neutral-200 shadow-sm transition-all duration-300 hover:scale-105">
+              <div className="w-[58px] h-[30px] bg-white rounded-lg flex items-center justify-center select-none shrink-0 border border-slate-200/90 shadow-xs hover:scale-105 transition-transform" title="JCB">
                 <div className="flex items-center gap-0.5 font-sans">
-                  <span className="text-[#004193] font-black tracking-tight text-[10px] sm:text-xs italic">J</span>
-                  <span className="text-[#D31115] font-black tracking-tight text-[10px] sm:text-xs italic">C</span>
-                  <span className="text-[#008938] font-black tracking-tight text-[10px] sm:text-xs italic">B</span>
+                  <span className="text-[#004193] font-black tracking-tight text-xs italic">J</span>
+                  <span className="text-[#D31115] font-black tracking-tight text-xs italic">C</span>
+                  <span className="text-[#008938] font-black tracking-tight text-xs italic">B</span>
                 </div>
               </div>
 
               {/* QRIS */}
-              <div className="w-[54px] h-[26px] sm:w-[60px] sm:h-[28px] bg-white rounded-md flex items-center justify-center select-none shrink-0 border border-neutral-200 shadow-sm transition-all duration-300 hover:scale-105">
-                <span className="text-[#012d5e] font-black tracking-tight text-[10px] sm:text-xs font-sans">QRIS</span>
+              <div className="w-[58px] h-[30px] bg-white rounded-lg flex items-center justify-center select-none shrink-0 border border-slate-200/90 shadow-xs hover:scale-105 transition-transform" title="QRIS">
+                <span className="text-[#012d5e] font-black tracking-tight text-xs font-sans">QRIS</span>
               </div>
 
               {/* Alipay */}
-              <div className="w-[54px] h-[26px] sm:w-[60px] sm:h-[28px] bg-white rounded-md flex items-center justify-center select-none shrink-0 border border-neutral-200 shadow-sm transition-all duration-300 hover:scale-105">
-                <span className="text-[#00A1E9] font-extrabold text-[10px] sm:text-xs tracking-tight font-sans">Alipay</span>
+              <div className="w-[58px] h-[30px] bg-white rounded-lg flex items-center justify-center select-none shrink-0 border border-slate-200/90 shadow-xs hover:scale-105 transition-transform" title="Alipay">
+                <span className="text-[#00A1E9] font-extrabold text-xs tracking-tight font-sans">Alipay</span>
               </div>
 
               {/* PayPal */}
-              <div className="w-[54px] h-[26px] sm:w-[60px] sm:h-[28px] bg-white rounded-md flex items-center justify-center select-none shrink-0 border border-neutral-200 shadow-sm transition-all duration-300 hover:scale-105">
-                <div className="flex items-center justify-center font-sans tracking-tight font-black italic text-[10px] sm:text-xs">
+              <div className="w-[58px] h-[30px] bg-white rounded-lg flex items-center justify-center select-none shrink-0 border border-slate-200/90 shadow-xs hover:scale-105 transition-transform" title="PayPal">
+                <div className="flex items-center justify-center font-sans tracking-tight font-black italic text-xs">
                   <span className="text-[#003087]">Pay</span>
                   <span className="text-[#0079C1]">Pal</span>
                 </div>
               </div>
             </div>
           </div>
-
-          {/* Secure & Licensed Badge Container */}
-          <div className="inline-flex items-center gap-2.5 bg-[#203c34] border border-[#3e6f62] rounded-full px-3.5 py-1.5 text-[9px] sm:text-[10px] text-emerald-100 font-semibold select-none shadow-inner shrink-0">
-            <div className="flex items-center gap-1.5 hover:text-white transition-colors duration-200">
-              <ShieldCheck className="h-3.5 w-3.5 text-amber-300" />
-              <span>{t('footer.secure')}</span>
-            </div>
-            <div className="h-3 w-[1px] bg-[#315B4F]" />
-            <div className="flex items-center gap-1.5 hover:text-white transition-colors duration-200">
-              <FileText className="h-3.5 w-3.5 text-amber-300" />
-              <span>{t('footer.licensed')}</span>
-            </div>
-          </div>
         </div>
- 
-        {/* 3. POLICY LINKS SEGMENT (Above Copyright) */}
-        <div className="border-t border-neutral-200 mt-8 pt-6 flex justify-center text-xs text-neutral-500">
-          <div className="flex space-x-6 text-neutral-500 items-center">
+
+        {/* 3. POLICY & CONTACT NAVIGATION (Horizontal & Center Aligned) */}
+        <div className="border-t border-neutral-200/80 mt-8 pt-6 flex justify-center text-xs text-neutral-500">
+          <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-6 text-neutral-500 text-xs font-medium">
             <button 
               onClick={() => setPrivacyOpen(true)} 
-              className="hover:text-neutral-800 transition-colors cursor-pointer"
+              className="hover:text-neutral-900 transition-colors cursor-pointer"
             >
               {t('footer.privacyPolicy')}
             </button>
+            <span className="text-neutral-300 select-none">•</span>
             <button 
               onClick={() => setTermsOpen(true)} 
-              className="hover:text-neutral-800 transition-colors cursor-pointer"
+              className="hover:text-neutral-900 transition-colors cursor-pointer"
             >
               {t('footer.termsConditions')}
             </button>
+            <span className="text-neutral-300 select-none">•</span>
             <button 
               onClick={() => {
                 const element = document.getElementById('footer-contact-column');
@@ -356,41 +292,40 @@ export default function Footer() {
                   }, 2000);
                 }
               }} 
-              className="hover:text-neutral-800 transition-colors cursor-pointer"
+              className="hover:text-neutral-900 transition-colors cursor-pointer"
             >
               {t('footer.contactUs')}
             </button>
           </div>
         </div>
- 
-        {/* 4. COPYRIGHT & DEV ADMIN ACCESS BUTTONS */}
-        <div className="border-t border-neutral-200 mt-6 pt-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-neutral-500 font-medium">
-          <div>
-            © 2026 <span className="font-semibold text-neutral-700">PT Sawah Jaya Trans</span>. {t('footer.allRightsReserved')}.
-          </div>
 
-          {/* Development / Testing Admin Quick Access Buttons */}
-          <div className="flex flex-wrap items-center justify-center gap-2.5">
-            <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-600 bg-amber-500/10 border border-amber-500/20 px-2 py-1 rounded-md">
-              ADMIN DEV ACCESS
-            </span>
+        {/* 4. COPYRIGHT & TEMPORARY ADMIN ACCESS BUTTONS */}
+        <div className="mt-4 pb-2 flex flex-col items-center justify-center gap-2.5 text-center text-xs text-neutral-500 font-normal">
+          <p>
+            © {new Date().getFullYear()} <span className="font-semibold text-neutral-700">PT Sawah Jaya Trans</span>. {t('footer.allRightsReserved')}.
+          </p>
+
+          {/* Both Admin Access Buttons */}
+          <div className="mt-1 flex flex-wrap items-center justify-center gap-2.5">
+            {/* 1. Admin Website (Smart Journey) */}
             <button
-              id="btn-admin-smart-journey"
+              id="btn-admin-smart-journey-footer"
               type="button"
               onClick={() => {
                 window.location.hash = '';
                 setPage('admin');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-neutral-900 hover:bg-neutral-800 text-amber-400 font-mono text-xs font-bold rounded-xl border border-neutral-800 transition-all shadow-sm hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#203c34] hover:bg-[#315B4F] text-amber-300 hover:text-amber-200 text-[11px] font-mono font-semibold rounded-lg border border-[#315B4F] hover:border-[#467b6b] transition-all shadow-xs hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
               title="Akses Dashboard Admin Smart Journey (/admin)"
             >
-              <Lock className="w-3.5 h-3.5 text-amber-400" />
-              <span>Admin Smart Journey</span>
+              <Lock className="w-3 h-3 text-amber-300" />
+              <span>{t('footer.adminWebsite')}</span>
             </button>
 
+            {/* 2. Admin Share Tour */}
             <button
-              id="btn-admin-share-tour"
+              id="btn-admin-share-tour-footer"
               type="button"
               onClick={() => {
                 setPage('share-tour');
@@ -398,11 +333,11 @@ export default function Footer() {
                 window.dispatchEvent(new HashChangeEvent('hashchange'));
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-emerald-400 font-mono text-xs font-bold rounded-xl border border-slate-800 transition-all shadow-sm hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
-              title="Akses Dashboard Admin Share Tour (/share-tour/admin)"
+              className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#203c34] hover:bg-[#315B4F] text-emerald-300 hover:text-emerald-200 text-[11px] font-mono font-semibold rounded-lg border border-[#315B4F] hover:border-[#467b6b] transition-all shadow-xs hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+              title="Akses Dashboard Admin Share Tour (/share-tour#admin)"
             >
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Admin Share Tour</span>
+              <ShieldCheck className="w-3 h-3 text-emerald-300" />
+              <span>{t('footer.adminShareTour')}</span>
             </button>
           </div>
         </div>
