@@ -41,8 +41,8 @@ export default function App() {
       setBookings(db.bookings || []);
       setErrorMsg("");
     } catch (err: any) {
-      console.error("Database sync error, using local fallback state", err);
-      setErrorMsg("");
+      console.error("Database sync error:", err);
+      setErrorMsg(err.message || "Failed to connect to ShareTour server database.");
     } finally {
       setLoading(false);
     }
@@ -122,7 +122,7 @@ export default function App() {
           </div>
         ) : errorMsg ? (
           <div className="max-w-md mx-auto bg-rose-50 border border-rose-100 p-8 rounded-2xl text-center shadow-lg space-y-4 my-10" id="db-error-panel">
-            <h1 className="font-display font-bold text-rose-800 text-lg">Cross-Origin Query Mismatch</h1>
+            <h1 className="font-display font-bold text-rose-800 text-lg">Database Connection Error</h1>
             <p className="text-xs text-rose-700 leading-relaxed font-sans">{errorMsg}</p>
             <button
               onClick={() => { setLoading(true); refreshDatabase(); }}

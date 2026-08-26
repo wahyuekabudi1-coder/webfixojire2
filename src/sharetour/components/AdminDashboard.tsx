@@ -18,12 +18,13 @@ interface AdminDashboardProps {
   bookings: Booking[];
   onRefreshDB: () => void;
   onLogout: () => void;
+  embedded?: boolean;
 }
 
 type AdminTab = "analytics" | "verification" | "catalog" | "batches" | "participants" | "excel-import";
 type TripFormTab = "basic" | "facilities" | "itinerary" | "media-faq";
 
-export default function AdminDashboard({ trips, batches, bookings, onRefreshDB, onLogout }: AdminDashboardProps) {
+export default function AdminDashboard({ trips, batches, bookings, onRefreshDB, onLogout, embedded = false }: AdminDashboardProps) {
   const [activeTab, setActiveTab] = useState<AdminTab>("analytics");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -778,93 +779,139 @@ Sunset Lovina & Dolphin Cruise\t2026-08-01\t10\t195\tOpen`;
   });
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen bg-[#F8FAFC] text-slate-800" id="smart-journey-dashboard-wrapper">
+    <div className={embedded ? "w-full space-y-6" : "flex flex-col lg:flex-row min-h-screen bg-[#F8FAFC] text-slate-800"} id="smart-journey-dashboard-wrapper">
       
-      {/* SIDEBAR NAVIGATION (Desktop: Persistent list, Mobile: Slide overlay) */}
-      <aside className={`fixed inset-y-0 left-0 bg-emerald-950 text-slate-100 w-72 p-6 flex flex-col z-40 transition-transform duration-300 lg:translate-x-0 lg:static lg:h-screen lg:flex-1-0 ${
-        mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
-      }`} id="admin-dashboard-sidebar">
-        <div className="flex items-center justify-between pb-8 border-b border-emerald-900">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-emerald-900 rounded-lg text-[#D6B16D]">
-              <Sparkles className="w-5 h-5" />
-            </div>
-            <div>
-              <h1 className="font-display font-extrabold text-sm tracking-widest text-[#D6B16D] uppercase">Smart Journey</h1>
-              <p className="text-[10px] font-mono text-emerald-300 tracking-wider">ADMIN DECISION HUB</p>
-            </div>
+      {/* If embedded in main admin shell, render sleek top tab pills */}
+      {embedded ? (
+        <div className="bg-white rounded-2xl border border-slate-200 p-2 shadow-sm flex flex-wrap items-center justify-between gap-2">
+          <div className="flex flex-wrap items-center gap-1.5">
+            {[
+              { id: "analytics", label: "Analytics & KPI", icon: BarChart2 },
+              { id: "verification", label: `Audit Queue (${pendingBookings.length})`, icon: FileCheck, badge: pendingBookings.length > 0 },
+              { id: "catalog", label: "Trip Blueprints", icon: Compass },
+              { id: "batches", label: "Departure Calendar", icon: Calendar },
+              { id: "participants", label: "Grouped Customers", icon: Users },
+              { id: "excel-import", label: "Excel / CSV Importer", icon: Layers }
+            ].map(item => {
+              const IconComponent = item.icon;
+              const isSelected = activeTab === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => switchTab(item.id as AdminTab)}
+                  className={`flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs font-display font-bold transition-all cursor-pointer ${
+                    isSelected 
+                      ? "bg-amber-500 text-neutral-950 font-black shadow-sm" 
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                  }`}
+                >
+                  <IconComponent className={`w-3.5 h-3.5 ${isSelected ? "text-neutral-950" : "text-slate-500"}`} />
+                  <span>{item.label}</span>
+                </button>
+              );
+            })}
           </div>
-          <button onClick={() => setMobileMenuOpen(false)} className="lg:hidden p-1 bg-emerald-900 rounded-md text-emerald-100 hover:text-white">
-            <X className="w-5 h-5" />
-          </button>
-        </div>
 
-        <nav className="mt-8 space-y-1.5 flex-1">
-          {[
-            { id: "analytics", label: "Dashboard Analytics", icon: BarChart2 },
-            { id: "verification", label: `Audit Queue (${pendingBookings.length})`, icon: FileCheck },
-            { id: "catalog", label: "Trip Blueprints", icon: Compass },
-            { id: "batches", label: "Departure Calendar", icon: Calendar },
-            { id: "participants", label: "Grouped Customers", icon: Users },
-            { id: "excel-import", label: "Excel / CSV Importer", icon: Layers }
-          ].map(item => {
-            const IconComponent = item.icon;
-            const isSelected = activeTab === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => switchTab(item.id as AdminTab)}
-                className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-display font-bold transition-all ${
-                  isSelected 
-                    ? "bg-[#D6B16D] text-emerald-950 shadow-md font-bold" 
-                    : "text-emerald-150 hover:bg-emerald-900/50 hover:text-white"
-                }`}
-              >
-                <IconComponent className={`w-4 h-4 ${isSelected ? "text-emerald-950" : "text-emerald-400"}`} />
-                <span>{item.label}</span>
+          <div className="flex items-center space-x-2">
+            <button 
+              onClick={() => { onRefreshDB(); }}
+              className="p-2 py-1.5 px-3 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl text-xs font-bold inline-flex items-center space-x-1.5 transition text-slate-700 cursor-pointer"
+              title="Refresh database state"
+            >
+              <RotateCcw className="w-3.5 h-3.5 text-slate-600" />
+              <span className="hidden sm:inline">Sync Cloud</span>
+            </button>
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* SIDEBAR NAVIGATION (Desktop: Persistent list, Mobile: Slide overlay) */}
+          <aside className={`fixed inset-y-0 left-0 bg-emerald-950 text-slate-100 w-72 p-6 flex flex-col z-40 transition-transform duration-300 lg:translate-x-0 lg:static lg:h-screen lg:flex-1-0 ${
+            mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+          }`} id="admin-dashboard-sidebar">
+            <div className="flex items-center justify-between pb-8 border-b border-emerald-900">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-emerald-900 rounded-lg text-[#D6B16D]">
+                  <Sparkles className="w-5 h-5" />
+                </div>
+                <div>
+                  <h1 className="font-display font-extrabold text-sm tracking-widest text-[#D6B16D] uppercase">Smart Journey</h1>
+                  <p className="text-[10px] font-mono text-emerald-300 tracking-wider">ADMIN DECISION HUB</p>
+                </div>
+              </div>
+              <button onClick={() => setMobileMenuOpen(false)} className="lg:hidden p-1 bg-emerald-900 rounded-md text-emerald-100 hover:text-white">
+                <X className="w-5 h-5" />
               </button>
-            );
-          })}
-        </nav>
-
-        <div className="pt-6 border-t border-emerald-900 space-y-3 mt-auto">
-          <div className="bg-emerald-900/40 p-3.5 rounded-2xl border border-emerald-900/60 flex items-center space-x-3">
-            <div className="w-7 h-7 bg-emerald-800 text-teal-100 rounded-full flex items-center justify-center font-bold text-xs uppercase shadow-sm">SM</div>
-            <div className="truncate">
-              <span className="text-[10px] font-mono text-emerald-400 block uppercase font-bold">Authorized Session</span>
-              <p className="text-xs font-bold text-slate-100 truncate">sawahjayagroup@gmail.com</p>
             </div>
-          </div>
-          <button 
-            onClick={onLogout}
-            className="w-full flex items-center justify-center space-x-2 bg-rose-950 hover:bg-rose-900 py-2.5 rounded-xl text-xs font-display font-bold text-rose-300 transition-all cursor-pointer border border-rose-900/30"
-          >
-            <LogOut className="w-4 h-4" />
-            <span>Terminate Session</span>
-          </button>
-        </div>
-      </aside>
 
-      {/* MOBILE TRIGGER NAV BAR */}
-      <div className="lg:hidden bg-emerald-950 text-slate-100 p-4 shrink-0 flex items-center justify-between border-b border-emerald-900">
-        <div className="flex items-center space-x-2.5">
-          <div id="logo-icon-mob" className="p-1.5 bg-emerald-900 rounded-lg text-[#D6B16D]"><Sparkles className="w-4 h-4" /></div>
-          <div>
-            <h1 className="font-display font-bold tracking-widest text-[#D6B16D] text-xs uppercase">Smart Journey</h1>
-            <p className="text-[9px] text-emerald-300 font-mono">Mobile Admin Portal</p>
+            <nav className="mt-8 space-y-1.5 flex-1">
+              {[
+                { id: "analytics", label: "Dashboard Analytics", icon: BarChart2 },
+                { id: "verification", label: `Audit Queue (${pendingBookings.length})`, icon: FileCheck },
+                { id: "catalog", label: "Trip Blueprints", icon: Compass },
+                { id: "batches", label: "Departure Calendar", icon: Calendar },
+                { id: "participants", label: "Grouped Customers", icon: Users },
+                { id: "excel-import", label: "Excel / CSV Importer", icon: Layers }
+              ].map(item => {
+                const IconComponent = item.icon;
+                const isSelected = activeTab === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => switchTab(item.id as AdminTab)}
+                    className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-xs font-display font-bold transition-all ${
+                      isSelected 
+                        ? "bg-[#D6B16D] text-emerald-950 shadow-md font-bold" 
+                        : "text-emerald-150 hover:bg-emerald-900/50 hover:text-white"
+                    }`}
+                  >
+                    <IconComponent className={`w-4 h-4 ${isSelected ? "text-emerald-950" : "text-emerald-400"}`} />
+                    <span>{item.label}</span>
+                  </button>
+                );
+              })}
+            </nav>
+
+            <div className="pt-6 border-t border-emerald-900 space-y-3 mt-auto">
+              <div className="bg-emerald-900/40 p-3.5 rounded-2xl border border-emerald-900/60 flex items-center space-x-3">
+                <div className="w-7 h-7 bg-emerald-800 text-teal-100 rounded-full flex items-center justify-center font-bold text-xs uppercase shadow-sm">SM</div>
+                <div className="truncate">
+                  <span className="text-[10px] font-mono text-emerald-400 block uppercase font-bold">Authorized Session</span>
+                  <p className="text-xs font-bold text-slate-100 truncate">sawahjayagroup@gmail.com</p>
+                </div>
+              </div>
+              <button 
+                onClick={onLogout}
+                className="w-full flex items-center justify-center space-x-2 bg-rose-950 hover:bg-rose-900 py-2.5 rounded-xl text-xs font-display font-bold text-rose-300 transition-all cursor-pointer border border-rose-900/30"
+              >
+                <LogOut className="w-4 h-4" />
+                <span>Terminate Session</span>
+              </button>
+            </div>
+          </aside>
+
+          {/* MOBILE TRIGGER NAV BAR */}
+          <div className="lg:hidden bg-emerald-950 text-slate-100 p-4 shrink-0 flex items-center justify-between border-b border-emerald-900">
+            <div className="flex items-center space-x-2.5">
+              <div id="logo-icon-mob" className="p-1.5 bg-emerald-900 rounded-lg text-[#D6B16D]"><Sparkles className="w-4 h-4" /></div>
+              <div>
+                <h1 className="font-display font-bold tracking-widest text-[#D6B16D] text-xs uppercase">Smart Journey</h1>
+                <p className="text-[9px] text-emerald-300 font-mono">Mobile Admin Portal</p>
+              </div>
+            </div>
+            <button 
+              onClick={() => setMobileMenuOpen(true)}
+              className="p-2 bg-emerald-900 rounded-xl text-emerald-200 hover:text-white transition duration-200"
+              id="mob-hamburger-drawer-btn"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
           </div>
-        </div>
-        <button 
-          onClick={() => setMobileMenuOpen(true)}
-          className="p-2 bg-emerald-900 rounded-xl text-emerald-200 hover:text-white transition duration-200"
-          id="mob-hamburger-drawer-btn"
-        >
-          <Menu className="w-5 h-5" />
-        </button>
-      </div>
+        </>
+      )}
 
       {/* CONTENT RUNTIME AREA */}
-      <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-10 max-h-screen">
+      <main className={embedded ? "w-full space-y-6" : "flex-1 overflow-y-auto p-4 sm:p-6 lg:p-10 max-h-screen"}>
         
         {/* SUBHEADER INDICATORS BAR */}
         <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-slate-200 pb-5 mb-8 gap-4">

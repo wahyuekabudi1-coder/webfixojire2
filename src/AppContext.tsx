@@ -220,139 +220,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const stored = localStorage.getItem('smartjourney_bookings');
     if (stored) {
       try {
-        return JSON.parse(stored);
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) return parsed;
       } catch (e) {
         console.error('Failed to parse bookings', e);
       }
     }
-    const seedBookings: Booking[] = [
-      {
-        id: 'SJ-2026-9823',
-        type: 'tour',
-        serviceName: 'Mount Bromo Midnight Sunrise Tour',
-        details: {
-          date: '2026-07-15',
-          guests: 2,
-          vehicleName: 'Toyota Innova Reborn',
-          pickupLocation: 'Surabaya Hotel'
-        },
-        totalPrice: 98,
-        totalPriceIDR: 1500000,
-        customerName: 'Alex Carter',
-        customerEmail: 'alex.carter@gmail.com',
-        customerPhone: '+61 412 345 678',
-        bookingDate: '2026-07-05 20:15:00',
-        status: 'Confirmed',
-        paymentStatus: 'Unpaid'
-      },
-      {
-        id: 'TX-2026-0012',
-        type: 'taxi',
-        serviceName: 'Taksi Servis (Juanda Airport ⇄ Malang City)',
-        details: {
-          date: '2026-07-13',
-          time: '09:00',
-          pickupLocation: 'Juanda International Airport (SUB), Terminal 1',
-          destination: 'Malang City Center, East Java',
-          vehicleName: 'Toyota Innova Reborn',
-          guests: 4
-        },
-        totalPrice: 60,
-        totalPriceIDR: 910000,
-        customerName: 'Budi Hartono',
-        customerEmail: 'budi.hartono@yahoo.com',
-        customerPhone: '+62 812 3456 7890',
-        bookingDate: '2026-07-11 10:30:00',
-        status: 'Confirmed',
-        paymentStatus: 'Paid'
-      },
-      {
-        id: 'TX-2026-0013',
-        type: 'taxi',
-        serviceName: 'Taksi Servis (Juanda Airport ⇄ Mount Bromo)',
-        details: {
-          date: '2026-07-14',
-          time: '23:30',
-          pickupLocation: 'Juanda International Airport (SUB), Terminal 2',
-          destination: 'Cemoro Lawang, Mount Bromo',
-          vehicleName: 'Toyota Avanza',
-          guests: 3
-        },
-        totalPrice: 65,
-        totalPriceIDR: 990000,
-        customerName: 'Siti Aminah',
-        customerEmail: 'siti.aminah@gmail.com',
-        customerPhone: '+62 878 1234 5678',
-        bookingDate: '2026-07-12 15:45:00',
-        status: 'Confirmed',
-        paymentStatus: 'Paid'
-      },
-      {
-        id: 'TX-2026-0014',
-        type: 'taxi',
-        serviceName: 'Taksi Servis (Malang City ⇄ Juanda Airport)',
-        details: {
-          date: '2026-07-15',
-          time: '14:00',
-          pickupLocation: 'Hotel Tugu Malang',
-          destination: 'Juanda International Airport (SUB)',
-          vehicleName: 'Toyota Alphard',
-          guests: 2
-        },
-        totalPrice: 150,
-        totalPriceIDR: 2280000,
-        customerName: 'Melanie Tan',
-        customerEmail: 'melanie.tan@outlook.com',
-        customerPhone: '+65 9123 4567',
-        bookingDate: '2026-07-13 11:20:00',
-        status: 'Pending',
-        paymentStatus: 'Pending'
-      },
-      {
-        id: 'TX-2026-0015',
-        type: 'taxi',
-        serviceName: 'Taksi Servis (Yogyakarta Airport ⇄ Jogja Center)',
-        details: {
-          date: '2026-07-15',
-          time: '08:15',
-          pickupLocation: 'Yogyakarta International Airport (YIA)',
-          destination: 'Malioboro City Hotel, Yogyakarta',
-          vehicleName: 'Toyota Avanza',
-          guests: 3
-        },
-        totalPrice: 40,
-        totalPriceIDR: 600000,
-        customerName: 'Robert Wilson',
-        customerEmail: 'robert.wilson@domain.com',
-        customerPhone: '+44 7123 456789',
-        bookingDate: '2026-07-10 09:00:00',
-        status: 'Completed',
-        paymentStatus: 'Paid'
-      },
-      {
-        id: 'TX-2026-0016',
-        type: 'taxi',
-        serviceName: 'Taksi Servis (Ngurah Rai Airport ⇄ Seminyak)',
-        details: {
-          date: '2026-07-20',
-          time: '18:30',
-          pickupLocation: 'Ngurah Rai International Airport (DPS), Bali',
-          destination: 'The Seminyak Beach Resort & Spa, Bali',
-          vehicleName: 'Toyota HiAce',
-          guests: 8
-        },
-        totalPrice: 45,
-        totalPriceIDR: 685000,
-        customerName: 'Yuki Takahashi',
-        customerEmail: 'yuki.t@gmail.com',
-        customerPhone: '+81 90 1234 5678',
-        bookingDate: '2026-07-12 16:15:00',
-        status: 'Confirmed',
-        paymentStatus: 'Paid'
-      }
-    ];
-    localStorage.setItem('smartjourney_bookings', JSON.stringify(seedBookings));
-    return seedBookings;
+    return [];
   });
 
   const [searchParams, setSearchParams] = useState<any>({});
@@ -363,12 +237,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed)) return parsed;
       } catch (e) {
         console.error('Failed to parse tours from cache', e);
       }
     }
-    return TOURS;
+    return [];
   });
 
   // Server fetch and sync for Main Website Tours
@@ -377,7 +251,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       const res = await fetch('/api/main-tours?all=true');
       if (res.ok) {
         const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) {
+        if (Array.isArray(data)) {
           setTours(data);
           localStorage.setItem('smartjourney_tours', JSON.stringify(data));
           return;
@@ -385,23 +259,6 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       }
     } catch (err) {
       console.warn('Could not fetch tours from server API:', err);
-    }
-
-    // Fallback: if server is empty, check if we need to sync local tours to server
-    const stored = localStorage.getItem('smartjourney_tours');
-    if (stored) {
-      try {
-        const localTours = JSON.parse(stored);
-        if (Array.isArray(localTours) && localTours.length > 0) {
-          fetch('/api/main-tours/sync-local', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ localTours })
-          }).catch(e => console.warn('One-time sync warning:', e));
-        }
-      } catch (e) {
-        // ignore
-      }
     }
   }, []);
 
@@ -413,18 +270,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     const stored = localStorage.getItem('smartjourney_schedules');
     if (stored) {
       try {
-        return JSON.parse(stored);
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) return parsed;
       } catch (e) {
         console.error('Failed to parse schedules', e);
       }
     }
-    const defaultSchedules = [
-      { id: 'sc-1', date: '2026-07-10', type: 'peak', surcharge: 20, note: 'Idul Adha Peak Holiday' },
-      { id: 'sc-2', date: '2026-07-15', type: 'allocation', tourId: 'bromo', driver: 'Budi Santoso', vehicle: 'Innova Reborn (L 1289 AA)' },
-      { id: 'sc-3', date: '2026-07-20', type: 'blocked', note: 'Kawah Ijen Closed for Monthly Conservation Maintenance' }
-    ];
-    localStorage.setItem('smartjourney_schedules', JSON.stringify(defaultSchedules));
-    return defaultSchedules;
+    return [];
   });
 
   const [logs, setLogs] = useState<any[]>(() => {
@@ -485,8 +337,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   useEffect(() => {
     const handleHashChange = () => {
-      const hash = window.location.hash.split('?')[0].replace('#/', '');
-      const validPages: ActivePage[] = ['home', 'tours', 'airport', 'taxi', 'partnerships', 'contact', 'bookings', 'car-rental', 'about', 'admin'];
+      const hash = window.location.hash.split('?')[0].replace(/^#\/?/, '');
+      const validPages: ActivePage[] = ['home', 'tours', 'share-tour', 'airport', 'taxi', 'partnerships', 'contact', 'bookings', 'car-rental', 'about', 'admin'];
       if (validPages.includes(hash as ActivePage)) {
         setActivePageState(hash as ActivePage);
         window.scrollTo({ top: 0, behavior: 'smooth' });

@@ -15,6 +15,9 @@ import { Airport } from '../types';
 import TaxiExcelManager from '../components/admin/TaxiExcelManager';
 import RentalAdminWorkspace from '../components/admin/RentalAdminWorkspace';
 import AirportBookingCalendar from '../components/admin/AirportBookingCalendar';
+import ShareTourAdminDashboard from '../sharetour/components/AdminDashboard';
+import { fetchDB as fetchShareTourDB } from '../sharetour/api';
+import { Trip as ShareTourTrip, Batch as ShareTourBatch, Booking as ShareTourBooking } from '../sharetour/types';
 import { OFFICIAL_PARTNERS } from '../data/partnersData';
 import { SocialMediaItem, getStoredSocialMedia, saveStoredSocialMedia } from '../data/socialMediaData';
 
@@ -98,10 +101,42 @@ export default function AdminView() {
   const [showPassword, setShowPassword] = useState(false);
 
   // Navigation States
-  const [activeModule, setActiveModule] = useState<'dashboard' | 'tours' | 'availability' | 'airport' | 'taxi' | 'rental' | 'cms' | 'account'>('dashboard');
+  const [activeModule, setActiveModule] = useState<'dashboard' | 'tours' | 'sharetour' | 'bookings' | 'reports' | 'airport' | 'taxi' | 'rental' | 'cms' | 'account'>('dashboard');
   const [activeSubTab, setActiveSubTab] = useState<'dashboard' | 'management' | 'calendar' | 'blackout' | 'schedule' | 'booking' | 'customer' | 'payment' | 'finance' | 'reports' | 'settings' | 'master-data' | 'pricing-engine' | 'excel-import' | 'excel-export' | 'import-history'>('dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [reviewsFilter, setReviewsFilter] = useState<'all' | 'pending' | 'approved'>('all');
+
+  // ShareTour / Open Trip Data State
+  const [shareTourTrips, setShareTourTrips] = useState<ShareTourTrip[]>([]);
+  const [shareTourBatches, setShareTourBatches] = useState<ShareTourBatch[]>([]);
+  const [shareTourBookings, setShareTourBookings] = useState<ShareTourBooking[]>([]);
+  const [shareTourLoading, setShareTourLoading] = useState(false);
+
+  const loadShareTourData = async () => {
+    setShareTourLoading(true);
+    try {
+      const db = await fetchShareTourDB();
+      setShareTourTrips(db.trips || []);
+      setShareTourBatches(db.batches || []);
+      setShareTourBookings(db.bookings || []);
+    } catch (err) {
+      console.error("Error fetching ShareTour database in AdminView:", err);
+    } finally {
+      setShareTourLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isAdminUnlocked) {
+      loadShareTourData();
+    }
+  }, [isAdminUnlocked]);
+
+  // Master Unified Bookings State
+  const [bookingChannelFilter, setBookingChannelFilter] = useState<'all' | 'tour' | 'sharetour' | 'airport' | 'taxi' | 'car-rental'>('all');
+  const [bookingStatusFilter, setBookingStatusFilter] = useState<'all' | 'Confirmed' | 'Pending' | 'Completed' | 'Cancelled'>('all');
+  const [bookingSearchQuery, setBookingSearchQuery] = useState('');
+  const [selectedBookingModal, setSelectedBookingModal] = useState<any | null>(null);
 
   // Custom states for Tours Administration
   const [isTourFormOpen, setIsTourFormOpen] = useState(false);
@@ -485,11 +520,7 @@ export default function AdminView() {
     if (saved) {
       try { return JSON.parse(saved); } catch (e) {}
     }
-    return [
-      { id: 'ld-1', date: '2026-07-15', type: 'expense', category: 'Operational', amountIDR: 250000, amountUSD: 16, description: 'BBM Toyota Innova Reborn Bromo', bookingId: 'SJ-2026-9823' },
-      { id: 'ld-2', date: '2026-07-15', type: 'expense', category: 'Ticket/Permit', amountIDR: 440000, amountUSD: 29, description: 'Tiket Masuk TN Bromo (2 Pax)', bookingId: 'SJ-2026-9823' },
-      { id: 'ld-3', date: '2026-07-13', type: 'expense', category: 'Driver/Crew Fee', amountIDR: 350000, amountUSD: 23, description: 'Uang Makan & Fee Supir Budi', bookingId: 'general' }
-    ];
+    return [];
   });
   const [ledgerDateInput, setLedgerDateInput] = useState<string>('2026-07-15');
   const [ledgerTypeInput, setLedgerTypeInput] = useState<'income' | 'expense'>('expense');
@@ -566,25 +597,13 @@ export default function AdminView() {
   const getUniqueCustomers = () => {
     const customerMap = new Map<string, { name: string; email: string; phone: string; trips: number; badge: string }>();
 
-    const seeds = [
-      { name: 'Alex Carter', email: 'alex.carter@gmail.com', phone: '+61 412 345 678', trips: 12, badge: 'Platinum VIP' },
-      { name: 'Sophie Laurent', email: 'sophie@yahoo.fr', phone: '+33 612 3456', trips: 4, badge: 'Gold Member' },
-      { name: 'Hendra Wijaya', email: 'hendra@gmail.com', phone: '+62 812-9900-1122', trips: 2, badge: 'Silver Member' }
-    ];
-
-    seeds.forEach(s => {
-      customerMap.set(s.email.toLowerCase(), { ...s });
-    });
-
     (bookings || []).forEach(b => {
       if (!b.customerName || !b.customerEmail) return;
       const emailKey = b.customerEmail.toLowerCase();
       const existing = customerMap.get(emailKey);
 
       if (existing) {
-        if (b.id !== 'SJ-2026-9823') {
-          existing.trips += 1;
-        }
+        existing.trips += 1;
         if (b.customerPhone) existing.phone = b.customerPhone;
         if (b.customerName) existing.name = b.customerName;
       } else {
@@ -5462,13 +5481,19 @@ export default function AdminView() {
 
               <div className={`${theme.card} border rounded-2xl p-6 space-y-4`}>
                 <h4 className="text-xs font-black uppercase tracking-widest font-mono text-amber-500 border-b border-neutral-850 pb-2">
-                  Operational System Log (Mocked)
+                  Operational System Log
                 </h4>
                 <div className="space-y-2 font-mono text-[10px] leading-relaxed pt-2">
-                  <div className="text-emerald-400">[21:14:02] API WEBHOOK: Incoming booking payload accepted from SawahJaya-Client-SPA</div>
-                  <div className="text-amber-500">[21:15:33] SYSTEM: Checking available vehicle capacity for Car Rental schedule #CR-904</div>
-                  <div className="text-neutral-400">[21:15:58] NOTIFICATION: Email invoice dispatched to user sophie.laurent@yahoo.fr</div>
-                  <div className="text-neutral-500">[21:16:10] CRON: Auto-checked tour availability calendars. 0 conflicts found.</div>
+                  {bookings.length === 0 ? (
+                    <div className="text-neutral-500 py-2 text-center">No active operational logs. System is running and awaiting incoming bookings.</div>
+                  ) : (
+                    bookings.slice(0, 4).map((b, idx) => (
+                      <div key={idx} className="text-neutral-300">
+                        <span className="text-emerald-400">[{b.createdAt ? new Date(b.createdAt).toLocaleTimeString() : 'ACTIVE'}]</span>{' '}
+                        <span className="text-amber-500">BOOKING:</span> {b.customerName || b.fullName || 'Customer'} - {b.tourName || b.tripTitle || 'Tour Service'} ({b.bookingCode || b.id}) - <span className="text-emerald-400">{b.paymentStatus || b.status}</span>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
             </div>
@@ -5934,7 +5959,7 @@ export default function AdminView() {
             <div className="space-y-1.5">
               {!sidebarCollapsed && (
                 <span className="text-[10px] font-black text-neutral-500 uppercase tracking-widest px-2.5">
-                  Overview
+                  Executive
                 </span>
               )}
               <button
@@ -5953,16 +5978,18 @@ export default function AdminView() {
               </button>
             </div>
 
-            {/* Category: Business Management */}
+            {/* Category: Tour Management & Channels */}
             <div className="space-y-1.5">
               {!sidebarCollapsed && (
                 <span className="text-[10px] font-black text-neutral-500 uppercase tracking-widest px-2.5">
-                  Business Channels
+                  Tours &amp; Services
                 </span>
               )}
               <div className="space-y-1">
                 {[
-                  { id: 'tours', label: 'Tour Packages', icon: Compass },
+                  { id: 'tours', label: 'Private Tours', icon: Compass },
+                  { id: 'sharetour', label: 'Share Tour / Open Trip', icon: Users, badge: shareTourBookings.filter(b => b.status === 'Pending').length },
+                  { id: 'bookings', label: 'All Bookings', icon: ClipboardList, badge: bookings.filter(b => b.status === 'Pending').length + shareTourBookings.filter(b => b.status === 'Pending').length },
                   { id: 'airport', label: 'Airport Transfer', icon: Globe },
                   { id: 'taxi', label: 'Taxi Service', icon: MapPin },
                   { id: 'rental', label: 'Car Rental', icon: Truck }
@@ -6027,13 +6054,20 @@ export default function AdminView() {
                       >
                         <Icon className="h-4.5 w-4.5 shrink-0" />
                         {!sidebarCollapsed && (
-                          <span className="truncate flex-grow text-left">
-                            {item.label}
-                          </span>
+                          <div className="flex items-center justify-between flex-grow truncate">
+                            <span className="truncate text-left">
+                              {item.label}
+                            </span>
+                            {item.badge !== undefined && item.badge > 0 && (
+                              <span className="ml-1.5 px-1.5 py-0.5 rounded-full text-[9px] font-black bg-amber-500 text-neutral-950">
+                                {item.badge}
+                              </span>
+                            )}
+                          </div>
                         )}
                       </button>
                       
-                      {isActive && !sidebarCollapsed && (
+                      {isActive && !sidebarCollapsed && subTabs.length > 0 && (
                         <div className="pl-4 ml-4 border-l border-neutral-800 space-y-0.5 mt-1">
                           {subTabs.map((sub) => {
                             const SubIcon = sub.icon;
@@ -6064,13 +6098,29 @@ export default function AdminView() {
               </div>
             </div>
 
-            {/* Category: Website CMS */}
+            {/* Category: Analytics & CMS */}
             <div className="space-y-1.5">
               {!sidebarCollapsed && (
                 <span className="text-[10px] font-black text-neutral-500 uppercase tracking-widest px-2.5">
-                  Content Management
+                  Analytics &amp; CMS
                 </span>
               )}
+              
+              <button
+                onClick={() => {
+                  setActiveModule('reports');
+                  setActiveSubTab('dashboard');
+                }}
+                className={`w-full flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-xs font-bold transition-all relative cursor-pointer ${
+                  activeModule === 'reports' 
+                    ? 'bg-amber-500/10 border border-amber-500/20 text-amber-500 font-extrabold' 
+                    : `text-neutral-400 hover:text-white ${theme.hover} border border-transparent`
+                }`}
+              >
+                <BarChart3 className="h-4.5 w-4.5" />
+                {!sidebarCollapsed && <span className="truncate flex-grow text-left">Reports &amp; Finance</span>}
+              </button>
+
               <button
                 onClick={() => {
                   setActiveModule('cms');
@@ -6106,7 +6156,7 @@ export default function AdminView() {
                 }`}
               >
                 <Settings className="h-4.5 w-4.5" />
-                {!sidebarCollapsed && <span className="truncate flex-grow text-left">Account</span>}
+                {!sidebarCollapsed && <span className="truncate flex-grow text-left">Settings</span>}
               </button>
             </div>
           </nav>
@@ -7688,7 +7738,428 @@ export default function AdminView() {
               </motion.div>
             )}
 
-            {/* 7. VIEW: ACCOUNT PAGE */}
+            {/* 6. VIEW: SHARE TOUR / OPEN TRIP BACK-OFFICE MODULE */}
+            {activeModule === 'sharetour' && (
+              <motion.div
+                key="sharetour-module"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="space-y-6"
+              >
+                {shareTourLoading ? (
+                  <div className="flex flex-col items-center justify-center py-20 space-y-4">
+                    <RefreshCw className="w-8 h-8 text-amber-500 animate-spin" />
+                    <p className={`text-xs font-mono ${theme.textSecondary}`}>Memuat Database Share Tour / Open Trip...</p>
+                  </div>
+                ) : (
+                  <ShareTourAdminDashboard
+                    trips={shareTourTrips}
+                    batches={shareTourBatches}
+                    bookings={shareTourBookings}
+                    onRefreshDB={loadShareTourData}
+                    onLogout={handleLogout}
+                    embedded={true}
+                  />
+                )}
+              </motion.div>
+            )}
+
+            {/* 7. VIEW: UNIFIED ALL-CHANNELS BOOKINGS MASTER */}
+            {activeModule === 'bookings' && (
+              <motion.div
+                key="unified-bookings-module"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="space-y-6 text-left"
+              >
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div className="space-y-1">
+                    <h2 className="text-xl font-black tracking-tight font-mono text-amber-500 flex items-center gap-2">
+                      <ClipboardList className="h-5 w-5" />
+                      <span>MASTER BOOKINGS &amp; ORDERS CONTROL</span>
+                    </h2>
+                    <p className={`text-xs ${theme.textSecondary}`}>
+                      Pusat kendali seluruh transaksi pemesanan lintas saluran: Private Tour, Share Tour, Airport Transfer, Taxi Service, dan Car Rental.
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => {
+                        const csvContent = "data:text/csv;charset=utf-8," + 
+                          ["ID,Service,Guest Name,Phone,Email,Date,Pax,Amount,Status",
+                            ...bookings.map(b => `"${b.id}","${b.type}","${b.guestDetails?.name || ''}","${b.guestDetails?.phone || ''}","${b.guestDetails?.email || ''}","${b.details?.date || b.bookingDate || ''}","${b.details?.passengers || 1}","${b.pricing?.totalPrice || 0}","${b.status}"`),
+                            ...shareTourBookings.map(sb => `"${sb.bookingCode}","share-tour","${sb.leadFullName}","${sb.phoneNumber}","${sb.email}","${sb.createdAt}","${sb.participantCount}","${sb.totalAmountIDR}","${sb.status}"`)
+                          ].join("\n");
+                        const encodedUri = encodeURI(csvContent);
+                        const link = document.createElement("a");
+                        link.setAttribute("href", encodedUri);
+                        link.setAttribute("download", `smartjourney_master_bookings_${new Date().toISOString().slice(0,10)}.csv`);
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        triggerToast('Master CSV Bookings berhasil diunduh');
+                      }}
+                      className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-neutral-950 font-black text-xs transition-all shadow-md flex items-center gap-2 cursor-pointer"
+                    >
+                      <Download className="h-4 w-4" />
+                      <span>Export Master CSV</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* KPI Summary Cards */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  {[
+                    { label: 'Total Pemesanan', count: bookings.length + shareTourBookings.length, icon: ClipboardList, color: 'text-blue-500' },
+                    { label: 'Perlu Konfirmasi', count: bookings.filter(b => b.status === 'Pending').length + shareTourBookings.filter(b => b.status === 'Pending').length, icon: AlertTriangle, color: 'text-amber-500' },
+                    { label: 'Terkonfirmasi (Aktif)', count: bookings.filter(b => b.status === 'Confirmed').length + shareTourBookings.filter(b => b.status === 'Confirmed').length, icon: CheckCircle2, color: 'text-emerald-500' },
+                    { label: 'Selesai Beroperasi', count: bookings.filter(b => b.status === 'Completed').length + shareTourBookings.filter(b => b.status === 'Completed').length, icon: ShieldCheck, color: 'text-purple-500' }
+                  ].map((stat, idx) => (
+                    <div key={idx} className={`${theme.innerCard} border rounded-2xl p-4 space-y-1`}>
+                      <span className={`text-[10px] font-mono font-bold ${theme.textSecondary} uppercase block`}>{stat.label}</span>
+                      <div className="flex items-center justify-between">
+                        <span className="text-2xl font-black font-mono">{stat.count}</span>
+                        <stat.icon className={`h-5 w-5 ${stat.color}`} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Filter & Search Bar */}
+                <div className={`${theme.card} border rounded-2xl p-4 space-y-4`}>
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    {/* Search Field */}
+                    <div className="relative flex-grow max-w-md">
+                      <Search className="h-4 w-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-500" />
+                      <input
+                        type="text"
+                        value={bookingSearchQuery}
+                        onChange={(e) => setBookingSearchQuery(e.target.value)}
+                        placeholder="Cari ID booking, nama tamu, no. telepon, atau email..."
+                        className={`w-full ${theme.input} pl-10 pr-4 py-2.5 rounded-xl text-xs focus:outline-none focus:border-amber-500`}
+                      />
+                    </div>
+
+                    {/* Status Filter */}
+                    <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+                      <span className="text-[10px] font-mono text-neutral-500 font-bold uppercase shrink-0">Status:</span>
+                      {(['all', 'Confirmed', 'Pending', 'Completed', 'Cancelled'] as const).map((st) => (
+                        <button
+                          key={st}
+                          onClick={() => setBookingStatusFilter(st)}
+                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                            bookingStatusFilter === st
+                              ? 'bg-amber-500 text-neutral-950 font-black'
+                              : `${theme.innerCard} border text-neutral-400 hover:text-white`
+                          }`}
+                        >
+                          {st === 'all' ? 'Semua' : st}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Channel Filter Pills */}
+                  <div className="flex items-center gap-2 border-t border-neutral-850 pt-3 overflow-x-auto no-scrollbar">
+                    <span className="text-[10px] font-mono text-neutral-500 font-bold uppercase shrink-0">Saluran:</span>
+                    {[
+                      { id: 'all', label: 'Semua Saluran' },
+                      { id: 'tour', label: 'Private Tour' },
+                      { id: 'sharetour', label: 'Share Tour / Open Trip' },
+                      { id: 'airport', label: 'Airport Transfer' },
+                      { id: 'taxi', label: 'Taxi Service' },
+                      { id: 'car-rental', label: 'Car Rental' }
+                    ].map((ch) => (
+                      <button
+                        key={ch.id}
+                        onClick={() => setBookingChannelFilter(ch.id as any)}
+                        className={`px-3 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer whitespace-nowrap ${
+                          bookingChannelFilter === ch.id
+                            ? 'bg-amber-500/15 border border-amber-500/30 text-amber-500 font-extrabold'
+                            : 'text-neutral-400 hover:text-neutral-200'
+                        }`}
+                      >
+                        {ch.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Master Bookings Table */}
+                <div className={`${theme.card} border rounded-2xl overflow-hidden shadow-sm`}>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs">
+                      <thead className={`${theme.innerCard} border-b text-[10px] font-mono uppercase text-neutral-400 font-black`}>
+                        <tr>
+                          <th className="p-3.5">ID / Kode</th>
+                          <th className="p-3.5">Layanan</th>
+                          <th className="p-3.5">Nama Tamu</th>
+                          <th className="p-3.5">Kontak</th>
+                          <th className="p-3.5">Tanggal Operasional</th>
+                          <th className="p-3.5 text-right">Nilai Transaksi</th>
+                          <th className="p-3.5 text-center">Status</th>
+                          <th className="p-3.5 text-right">Aksi</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-neutral-850">
+                        {(() => {
+                          // Combine AppContext bookings and ShareTour bookings into unified list
+                          const unifiedList = [
+                            ...bookings.map(b => ({
+                              source: 'main' as const,
+                              id: b.id,
+                              channel: b.type === 'tour' ? 'Private Tour' : b.type === 'airport' ? 'Airport Transfer' : b.type === 'taxi' ? 'Taxi Service' : b.type === 'car-rental' ? 'Car Rental' : b.type,
+                              channelRaw: b.type,
+                              guestName: b.guestDetails?.name || 'Anonim',
+                              phone: b.guestDetails?.phone || '-',
+                              email: b.guestDetails?.email || '-',
+                              date: b.details?.date || b.bookingDate,
+                              amount: b.pricing?.totalPrice ? formatPrice(b.pricing.totalPrice) : '-',
+                              status: b.status,
+                              original: b
+                            })),
+                            ...shareTourBookings.map(sb => ({
+                              source: 'sharetour' as const,
+                              id: sb.bookingCode,
+                              channel: 'Share Tour / Open Trip',
+                              channelRaw: 'sharetour',
+                              guestName: sb.leadFullName,
+                              phone: sb.phoneNumber || '-',
+                              email: sb.email || '-',
+                              date: sb.createdAt ? new Date(sb.createdAt).toLocaleDateString() : '-',
+                              amount: `Rp ${sb.totalAmountIDR?.toLocaleString('id-ID')}`,
+                              status: sb.status,
+                              original: sb
+                            }))
+                          ];
+
+                          const filtered = unifiedList.filter(item => {
+                            const matchQuery = !bookingSearchQuery || 
+                              item.id.toLowerCase().includes(bookingSearchQuery.toLowerCase()) ||
+                              item.guestName.toLowerCase().includes(bookingSearchQuery.toLowerCase()) ||
+                              item.phone.toLowerCase().includes(bookingSearchQuery.toLowerCase()) ||
+                              item.email.toLowerCase().includes(bookingSearchQuery.toLowerCase());
+                            
+                            const matchStatus = bookingStatusFilter === 'all' || item.status === bookingStatusFilter;
+                            
+                            const matchChannel = bookingChannelFilter === 'all' || 
+                              (bookingChannelFilter === 'tour' && item.channelRaw === 'tour') ||
+                              (bookingChannelFilter === 'sharetour' && item.channelRaw === 'sharetour') ||
+                              (bookingChannelFilter === 'airport' && item.channelRaw === 'airport') ||
+                              (bookingChannelFilter === 'taxi' && item.channelRaw === 'taxi') ||
+                              (bookingChannelFilter === 'car-rental' && item.channelRaw === 'car-rental');
+
+                            return matchQuery && matchStatus && matchChannel;
+                          });
+
+                          if (filtered.length === 0) {
+                            return (
+                              <tr>
+                                <td colSpan={8} className="p-8 text-center text-neutral-500 font-mono">
+                                  Tidak ada data pemesanan yang cocok dengan kriteria filter.
+                                </td>
+                              </tr>
+                            );
+                          }
+
+                          return filtered.map((item, idx) => (
+                            <tr key={idx} className={`${theme.hover} transition-colors`}>
+                              <td className="p-3.5 font-mono font-bold text-amber-500">
+                                #{item.id.slice(-8)}
+                              </td>
+                              <td className="p-3.5">
+                                <span className={`px-2 py-0.5 rounded text-[10px] font-bold font-mono ${
+                                  item.channelRaw === 'tour' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
+                                  item.channelRaw === 'sharetour' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
+                                  item.channelRaw === 'airport' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' :
+                                  item.channelRaw === 'taxi' ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' :
+                                  'bg-purple-500/10 text-purple-400 border border-purple-500/20'
+                                }`}>
+                                  {item.channel}
+                                </span>
+                              </td>
+                              <td className="p-3.5 font-bold">
+                                {item.guestName}
+                              </td>
+                              <td className="p-3.5 text-[11px] font-mono text-neutral-400">
+                                <div>{item.phone}</div>
+                                <div className="text-[10px] text-neutral-500">{item.email}</div>
+                              </td>
+                              <td className="p-3.5 font-mono text-neutral-300">
+                                {item.date}
+                              </td>
+                              <td className="p-3.5 font-mono font-black text-right text-neutral-100">
+                                {item.amount}
+                              </td>
+                              <td className="p-3.5 text-center">
+                                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold font-mono uppercase ${
+                                  item.status === 'Confirmed' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
+                                  item.status === 'Pending' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20 animate-pulse' :
+                                  item.status === 'Completed' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' :
+                                  'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+                                }`}>
+                                  {item.status}
+                                </span>
+                              </td>
+                              <td className="p-3.5 text-right space-x-1.5">
+                                {item.source === 'main' ? (
+                                  <>
+                                    {item.status === 'Pending' && (
+                                      <button
+                                        onClick={() => {
+                                          updateBookingStatus(item.id, 'Confirmed');
+                                          triggerToast(`Booking #${item.id.slice(-6)} telah dikonfirmasi`);
+                                        }}
+                                        className="p-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 cursor-pointer"
+                                        title="Konfirmasi Booking"
+                                      >
+                                        <Check className="h-3.5 w-3.5" />
+                                      </button>
+                                    )}
+                                    {item.status === 'Confirmed' && (
+                                      <button
+                                        onClick={() => {
+                                          updateBookingStatus(item.id, 'Completed');
+                                          triggerToast(`Booking #${item.id.slice(-6)} ditandai selesai`);
+                                        }}
+                                        className="p-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/30 cursor-pointer"
+                                        title="Tandai Selesai"
+                                      >
+                                        <ShieldCheck className="h-3.5 w-3.5" />
+                                      </button>
+                                    )}
+                                  </>
+                                ) : (
+                                  <button
+                                    onClick={() => {
+                                      setActiveModule('sharetour');
+                                      triggerToast('Beralih ke Audit Queue Share Tour');
+                                    }}
+                                    className="p-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 cursor-pointer"
+                                    title="Audit di Modul Share Tour"
+                                  >
+                                    <FileCheck className="h-3.5 w-3.5" />
+                                  </button>
+                                )}
+                              </td>
+                            </tr>
+                          ));
+                        })()}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* 8. VIEW: FINANCIAL & OPERATIONAL REPORTS */}
+            {activeModule === 'reports' && (
+              <motion.div
+                key="reports-analytics-module"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="space-y-6 text-left"
+              >
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div className="space-y-1">
+                    <h2 className="text-xl font-black tracking-tight font-mono text-amber-500 flex items-center gap-2">
+                      <BarChart3 className="h-5 w-5" />
+                      <span>FINANCIAL &amp; BUSINESS INTELLIGENCE REPORTS</span>
+                    </h2>
+                    <p className={`text-xs ${theme.textSecondary}`}>
+                      Ringkasan analitik pendapatan kotor, volume penumpang, utilisasi armada, dan buku besar keuangan Smart Journey.
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => triggerToast('Laporan PDF Keuangan sedang di-generate...')}
+                      className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-neutral-950 font-black text-xs transition-all shadow-md flex items-center gap-2 cursor-pointer"
+                    >
+                      <Download className="h-4 w-4" />
+                      <span>Unduh Laporan Keuangan</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Revenue Overview KPIs */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                  <div className={`${theme.card} border rounded-2xl p-6 space-y-2`}>
+                    <span className="text-[10px] font-mono font-bold text-neutral-500 uppercase tracking-wider block">
+                      Total Estimasi Omset (Semua Saluran)
+                    </span>
+                    <div className="text-3xl font-black font-mono text-amber-500">
+                      {formatPrice(bookings.reduce((sum, b) => sum + (b.pricing?.totalPrice || 0), 0) + (shareTourBookings.filter(b => b.status === 'Confirmed').reduce((sum, b) => sum + (b.totalAmountIDR || 0), 0) / 15000))}
+                    </div>
+                    <p className={`text-[11px] ${theme.textSecondary}`}>
+                      Akumulasi omset dari Private Tours, Share Tour, Airport Transfer, Taxi, dan Rental.
+                    </p>
+                  </div>
+
+                  <div className={`${theme.card} border rounded-2xl p-6 space-y-2`}>
+                    <span className="text-[10px] font-mono font-bold text-neutral-500 uppercase tracking-wider block">
+                      Tingkat Keberhasilan Konfirmasi
+                    </span>
+                    <div className="text-3xl font-black font-mono text-emerald-400">
+                      {(() => {
+                        const total = bookings.length + shareTourBookings.length;
+                        if (total === 0) return '100%';
+                        const confirmed = bookings.filter(b => b.status === 'Confirmed' || b.status === 'Completed').length + shareTourBookings.filter(b => b.status === 'Confirmed' || b.status === 'Completed').length;
+                        return `${Math.round((confirmed / total) * 100)}%`;
+                      })()}
+                    </div>
+                    <p className={`text-[11px] ${theme.textSecondary}`}>
+                      Persentase booking yang berstatus terkonfirmasi dan berhasil beroperasi.
+                    </p>
+                  </div>
+
+                  <div className={`${theme.card} border rounded-2xl p-6 space-y-2`}>
+                    <span className="text-[10px] font-mono font-bold text-neutral-500 uppercase tracking-wider block">
+                      Total Tamu &amp; Penumpang
+                    </span>
+                    <div className="text-3xl font-black font-mono text-purple-400">
+                      {bookings.reduce((sum, b) => sum + (b.details?.passengers || 1), 0) + shareTourBookings.reduce((sum, b) => sum + (b.participantCount || 1), 0)} Pax
+                    </div>
+                    <p className={`text-[11px] ${theme.textSecondary}`}>
+                      Jumlah wisatawan dan pengguna jasa transportasi yang telah dilayani.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Channel Breakdown Breakdown Bars */}
+                <div className={`${theme.card} border rounded-2xl p-6 space-y-6`}>
+                  <h4 className="text-xs font-black uppercase tracking-widest font-mono text-amber-500 border-b border-neutral-850 pb-3">
+                    Distribusi Kontribusi Saluran Bisnis
+                  </h4>
+
+                  <div className="space-y-4">
+                    {[
+                      { name: 'Private Tour Packages', count: bookings.filter(b => b.type === 'tour').length, percent: '45%', color: 'bg-amber-500' },
+                      { name: 'Share Tour / Open Trip', count: shareTourBookings.length, percent: '30%', color: 'bg-emerald-500' },
+                      { name: 'Airport Transfer (DPS/SUB/YIA/CGK)', count: bookings.filter(b => b.type === 'airport').length, percent: '15%', color: 'bg-blue-500' },
+                      { name: 'Car Rental & Charter', count: bookings.filter(b => b.type === 'car-rental').length, percent: '7%', color: 'bg-purple-500' },
+                      { name: 'Taxi Direct Service', count: bookings.filter(b => b.type === 'taxi').length, percent: '3%', color: 'bg-indigo-500' }
+                    ].map((item, idx) => (
+                      <div key={idx} className="space-y-1.5">
+                        <div className="flex justify-between text-xs font-bold">
+                          <span className="text-neutral-200">{item.name}</span>
+                          <span className="font-mono text-neutral-400">{item.count} Transaksi ({item.percent})</span>
+                        </div>
+                        <div className="h-2 w-full bg-neutral-850 rounded-full overflow-hidden">
+                          <div className={`h-full ${item.color} rounded-full`} style={{ width: item.percent }} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* 9. VIEW: ACCOUNT PAGE */}
             {activeModule === 'account' && (
               <motion.div 
                 key="account-page"

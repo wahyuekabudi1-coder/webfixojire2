@@ -62,43 +62,43 @@ export default function ResourcesManager({
   const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
   const [vehicleForm, setVehicleForm] = useState({
     id: '',
-    brandModel: 'Toyota Innova Zenix Hybrid',
-    plateNumber: 'N 1827 AA',
-    capacity: 6,
-    fuelType: 'Hybrid Gasoline',
-    nextService: '2026-08-15',
+    brandModel: '',
+    plateNumber: '',
+    capacity: 4,
+    fuelType: 'Gasoline',
+    nextService: '',
     status: 'Available' as any
   });
 
   const [isDriverModalOpen, setIsDriverModalOpen] = useState(false);
   const [driverForm, setDriverForm] = useState({
     id: '',
-    name: 'Mochammad Rizky',
-    phone: '+62 812-3344-5566',
-    licenseNumber: 'SIM A - 98217312',
-    rating: 4.9,
-    tripsCount: 142,
+    name: '',
+    phone: '',
+    licenseNumber: '',
+    rating: 5.0,
+    tripsCount: 0,
     status: 'Online' as any
   });
 
   const [isGuideModalOpen, setIsGuideModalOpen] = useState(false);
   const [guideForm, setGuideForm] = useState({
     id: '',
-    name: 'Wayan Juniarta',
-    phone: '+62 813-1122-3344',
-    languages: 'English, Indonesian',
-    rating: 4.9,
+    name: '',
+    phone: '',
+    languages: '',
+    rating: 5.0,
     status: 'Available' as any
   });
 
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
   const [customerForm, setCustomerForm] = useState({
     id: '',
-    name: 'Alex Carter',
-    email: 'alex.carter@gmail.com',
-    phone: '+61 412 345 678',
-    membershipLevel: 'Platinum' as any,
-    tripsCount: 12
+    name: '',
+    email: '',
+    phone: '',
+    membershipLevel: 'Silver' as any,
+    tripsCount: 0
   });
 
   // Load Database
@@ -108,14 +108,7 @@ export default function ResourcesManager({
     if (storedVehicles) {
       try { setVehicles(JSON.parse(storedVehicles)); } catch(e){}
     } else {
-      const defaultVehicles: FleetVehicle[] = [
-        { id: 'v-1', brandModel: 'Toyota Innova Reborn', plateNumber: 'L 1289 AA', capacity: 6, fuelType: 'Diesel', nextService: '2026-07-20', status: 'Available' },
-        { id: 'v-2', brandModel: 'Toyota Avanza Veloz', plateNumber: 'N 8821 AB', capacity: 4, fuelType: 'Gasoline', nextService: '2026-08-01', status: 'Available' },
-        { id: 'v-3', brandModel: 'Toyota HiAce Commuter', plateNumber: 'N 7041 AA', capacity: 12, fuelType: 'Diesel', nextService: '2026-07-15', status: 'Available' },
-        { id: 'v-4', brandModel: 'Mitsubishi Pajero Sport 4x4', plateNumber: 'L 9901 CP', capacity: 5, fuelType: 'Diesel', nextService: '2026-07-28', status: 'Available' }
-      ];
-      setVehicles(defaultVehicles);
-      localStorage.setItem('sj_fleet_vehicles', JSON.stringify(defaultVehicles));
+      setVehicles([]);
     }
 
     // Drivers
@@ -123,14 +116,7 @@ export default function ResourcesManager({
     if (storedDrivers) {
       try { setDrivers(JSON.parse(storedDrivers)); } catch(e){}
     } else {
-      const defaultDrivers: DriverProfile[] = [
-        { id: 'd-1', name: 'Budi Santoso', phone: '+62 812-7890-1234', licenseNumber: 'SIM A - 99182312', rating: 4.9, tripsCount: 382, status: 'Online' },
-        { id: 'd-2', name: 'Made Wijaya', phone: '+62 813-5678-9012', licenseNumber: 'SIM A - 82716312', rating: 4.8, tripsCount: 219, status: 'Online' },
-        { id: 'd-3', name: 'Agus Setiawan', phone: '+62 811-2345-6789', licenseNumber: 'SIM B1 - 10293123', rating: 5.0, tripsCount: 512, status: 'On Trip' },
-        { id: 'd-4', name: 'Siti Aminah', phone: '+62 812-3456-7890', licenseNumber: 'SIM A - 45192312', rating: 4.7, tripsCount: 110, status: 'Offline' }
-      ];
-      setDrivers(defaultDrivers);
-      localStorage.setItem('sj_driver_profiles', JSON.stringify(defaultDrivers));
+      setDrivers([]);
     }
 
     // Guides
@@ -138,13 +124,7 @@ export default function ResourcesManager({
     if (storedGuides) {
       try { setGuides(JSON.parse(storedGuides)); } catch(e){}
     } else {
-      const defaultGuides: TourGuide[] = [
-        { id: 'g-1', name: 'Wayan Juniarta', phone: '+62 813-1122-3344', languages: ['English', 'Indonesian'], rating: 4.9, status: 'Available' },
-        { id: 'g-2', name: 'Rahmat Hidayat', phone: '+62 812-3344-5555', languages: ['English', 'Mandarin', 'Indonesian'], rating: 5.0, status: 'Available' },
-        { id: 'g-3', name: 'Putu Swastika', phone: '+62 811-5566-7788', languages: ['English', 'Japanese'], rating: 4.8, status: 'Available' }
-      ];
-      setGuides(defaultGuides);
-      localStorage.setItem('sj_tour_guides', JSON.stringify(defaultGuides));
+      setGuides([]);
     }
 
     // Customers
@@ -152,13 +132,7 @@ export default function ResourcesManager({
     if (storedCustomers) {
       try { setCustomers(JSON.parse(storedCustomers)); } catch(e){}
     } else {
-      const defaultCustomers: CustomerProfile[] = [
-        { id: 'c-1', name: 'Alex Carter', email: 'alex.carter@gmail.com', phone: '+61 412 345 678', tripsCount: 12, membershipLevel: 'Platinum' },
-        { id: 'c-2', name: 'Sophie Laurent', email: 'sophie@yahoo.fr', phone: '+33 612 3456', tripsCount: 4, membershipLevel: 'Gold' },
-        { id: 'c-3', name: 'Hendra Wijaya', email: 'hendra@gmail.com', phone: '+62 812-9900-1122', tripsCount: 2, membershipLevel: 'Silver' }
-      ];
-      setCustomers(defaultCustomers);
-      localStorage.setItem('sj_customer_profiles', JSON.stringify(defaultCustomers));
+      setCustomers([]);
     }
   }, []);
 

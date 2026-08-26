@@ -50,17 +50,17 @@ export default function BusinessFinance({
   // Forms
   const [isCouponModalOpen, setIsCouponModalOpen] = useState(false);
   const [couponForm, setCouponForm] = useState({
-    code: 'SMARTJ77',
+    code: '',
     discountType: 'Percentage' as 'Percentage' | 'Flat',
-    amount: 15,
-    maxDiscount: 150000,
+    amount: 10,
+    maxDiscount: 100000,
     status: 'Active' as any
   });
 
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
   const [expenseForm, setExpenseForm] = useState({
-    description: 'Beli Bahan Bakar Pertamax Innova Bromo',
-    amount: 350000,
+    description: '',
+    amount: 0,
     type: 'Debit' as 'Credit' | 'Debit'
   });
 
@@ -74,36 +74,18 @@ export default function BusinessFinance({
     if (storedCoupons) {
       try { setCoupons(JSON.parse(storedCoupons)); } catch(e){}
     } else {
-      const defaultCoupons: PromoCoupon[] = [
-        { id: 'c-1', code: 'SMART77', discountType: 'Percentage', amount: 15, maxDiscount: 150000, status: 'Active' },
-        { id: 'c-2', code: 'BALISUN', discountType: 'Percentage', amount: 10, maxDiscount: 100000, status: 'Active' },
-        { id: 'c-3', code: 'PROMOBROMO', discountType: 'Flat', amount: 50000, status: 'Active' }
-      ];
-      setCoupons(defaultCoupons);
-      localStorage.setItem('sj_promo_coupons', JSON.stringify(defaultCoupons));
+      setCoupons([]);
     }
 
     // Webhooks
-    const defaultWebhooks: WebhookLog[] = [
-      { id: 'wh-1', orderId: 'SJ-2026-9823', paymentType: 'bank_transfer (BCA)', grossAmount: 1500000, transactionStatus: 'settlement', timestamp: '2026-07-08 09:30:15', payloadPreview: '{\n  "transaction_time": "2026-07-08 09:30:00",\n  "transaction_status": "settlement",\n  "status_message": "artopay payment successful",\n  "payment_type": "bank_transfer",\n  "order_id": "SJ-2026-9823",\n  "gross_amount": "1500000.00",\n  "fraud_status": "accept"\n}' },
-      { id: 'wh-2', orderId: 'SJ-2026-1149', paymentType: 'qris (Gopay)', grossAmount: 450000, transactionStatus: 'settlement', timestamp: '2026-07-08 08:15:22', payloadPreview: '{\n  "transaction_time": "2026-07-08 08:15:00",\n  "transaction_status": "settlement",\n  "status_message": "artopay QRIS settlement",\n  "payment_type": "qris",\n  "order_id": "SJ-2026-1149",\n  "gross_amount": "450000.00"\n}' },
-      { id: 'wh-3', orderId: 'SJ-2026-2281', paymentType: 'credit_card', grossAmount: 650000, transactionStatus: 'pending', timestamp: '2026-07-07 19:40:02', payloadPreview: '{\n  "transaction_time": "2026-07-07 19:38:00",\n  "transaction_status": "pending",\n  "status_message": "waiting credit card secure 3D verification",\n  "payment_type": "credit_card",\n  "order_id": "SJ-2026-2281",\n  "gross_amount": "650000.00"\n}' }
-    ];
-    setWebhooks(defaultWebhooks);
+    setWebhooks([]);
 
     // Ledger Cashbook
     const storedLedger = localStorage.getItem('sj_finance_ledger');
     if (storedLedger) {
       try { setLedger(JSON.parse(storedLedger)); } catch(e){}
     } else {
-      const defaultLedger: LedgerItem[] = [
-        { id: 'l-1', date: '2026-07-08 09:30', description: 'Pendapatan Bromo Midnight Sunrise Tour (SJ-2026-9823)', type: 'Credit', amount: 1500000, loggedBy: 'System Auto-ArtoPay' },
-        { id: 'l-2', date: '2026-07-08 08:15', description: 'Pendapatan Airport Transfer Juanda ➔ Malang (SJ-2026-1149)', type: 'Credit', amount: 450000, loggedBy: 'System Auto-ArtoPay' },
-        { id: 'l-3', date: '2026-07-07 14:00', description: 'Pengisian Pertamax Toyota Innova (L 1289 AA)', type: 'Debit', amount: 350000, loggedBy: 'Driver Budi Santoso' },
-        { id: 'l-4', date: '2026-07-06 17:30', description: 'Komisi Tour Guide Wayan Juniarta (Paket Bromo)', type: 'Debit', amount: 400000, loggedBy: 'Admin Keuangan' }
-      ];
-      setLedger(defaultLedger);
-      localStorage.setItem('sj_finance_ledger', JSON.stringify(defaultLedger));
+      setLedger([]);
     }
   }, []);
 
