@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Phone, Mail, MapPin, MessageSquare, ShieldCheck, FileText } from "lucide-react";
 import WeChatModal from "./WeChatModal";
 import SawahJayaLogo from "./SawahJayaLogo";
+import SocialMediaButtons from "../../components/SocialMediaButtons";
 
 interface CustomerFooterProps {
   onNavigate?: (view: string) => void;
@@ -53,6 +54,11 @@ export default function CustomerFooter({ onNavigate }: CustomerFooterProps) {
               <p className="text-sm text-gray-300 leading-relaxed max-w-md">
                 Premium eco-tourism experiences across Indonesia with trusted local expertise and unforgettable journeys.
               </p>
+              
+              {/* Official Social Media */}
+              <div className="pt-2">
+                <SocialMediaButtons size="sm" />
+              </div>
             </div>
 
             {/* Stats Row */}

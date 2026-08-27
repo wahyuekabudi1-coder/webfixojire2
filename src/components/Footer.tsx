@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../AppContext';
 import { useLanguageCurrency } from '../sharetour/LanguageCurrencyContext';
 import SocialMediaButtons from './SocialMediaButtons';
-import { Mail, MapPin, Phone, Clock, MessageSquare, Instagram, Facebook, Youtube, Share2, Sparkles, QrCode, Copy, Check, X, ShieldCheck, FileText, Lock, Eye, EyeOff, ExternalLink } from 'lucide-react';
+import { Mail, MapPin, Phone, Clock, MessageSquare, Instagram, Facebook, Youtube, Share2, Sparkles, QrCode, Copy, Check, X, ShieldCheck, FileText, Lock, ExternalLink, Compass, Timer } from 'lucide-react';
 
 function WeChatIcon({ className = "h-4 w-4" }: { className?: string }) {
   return (
@@ -26,41 +26,42 @@ export default function Footer() {
   const [isWeChatModalOpen, setIsWeChatModalOpen] = useState(false);
   const [copiedWeChat, setCopiedWeChat] = useState(false);
   const [qrImageError, setQrImageError] = useState(false);
+  const [footerLogoError, setFooterLogoError] = useState(false);
 
   const [clickCount, setClickCount] = useState(0);
-  const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [password, setPassword] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const [showPasswordText, setShowPasswordText] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(180); // 3 minutes = 180 seconds
+
+  // Auto-hide countdown timer (3 minutes / 180 seconds)
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (clickCount >= 8 && clickCount <= 12) {
+      interval = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            setClickCount(0); // auto-hide when 3 minutes expire
+            return 180;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } else {
+      setTimeLeft(180);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [clickCount]);
 
   const handleSecretClick = () => {
     const nextCount = clickCount + 1;
-    if (nextCount >= 8 && nextCount <= 10) {
-      setClickCount(nextCount);
-      setShowPasswordModal(true);
-      console.log(`Secret portal click inside range (8-10): ${nextCount}`);
-    } else if (nextCount >= 11) {
+    if (nextCount > 12) {
       setClickCount(0);
-      setShowPasswordModal(false);
-      setPassword('');
-      setPasswordError('');
-      console.log(`Secret portal click reached 11, resetting to 0.`);
+      setTimeLeft(180);
     } else {
+      if (nextCount === 8) {
+        setTimeLeft(180);
+      }
       setClickCount(nextCount);
-      console.log(`Secret portal click: ${nextCount}/8`);
-    }
-  };
-
-  const handlePasswordSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (password === 'sawahjaya2026') {
-      setShowPasswordModal(false);
-      setClickCount(0);
-      setPassword('');
-      setPasswordError('');
-      setPage('admin');
-    } else {
-      setPasswordError('Kunci akses salah. Silakan hubungi tim IT Smart Journey.');
     }
   };
 
@@ -83,12 +84,40 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mb-12">
           
-          {/* Column 1: About Info & Official Social Channels */}
+          {/* Column 1: About Info, Brand Logo & Official Social Channels */}
           <div className="space-y-4">
+            {/* Brand Logo */}
+            <div 
+              id="footer-brand-logo"
+              onClick={() => {
+                setPage('home');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              className="inline-flex items-center space-x-2.5 cursor-pointer group select-none"
+            >
+              {!footerLogoError ? (
+                <img 
+                  src="/logo.png" 
+                  alt="Smart Journey Logo" 
+                  className="h-10 sm:h-11 w-auto max-w-[160px] object-contain group-hover:scale-105 transition-transform duration-300"
+                  onError={() => setFooterLogoError(true)}
+                />
+              ) : (
+                <div className="bg-amber-500 text-neutral-950 p-2 rounded-xl flex items-center justify-center shadow-md shadow-amber-500/20 group-hover:scale-105 transition-transform duration-300">
+                  <Compass className="h-5 w-5 animate-spin-slow" />
+                </div>
+              )}
+              <div>
+                <span className="text-base sm:text-lg font-bold tracking-tight text-neutral-900 group-hover:text-amber-600 transition-colors duration-200 block">
+                  Smart<span className="text-amber-500"> Journey</span>
+                </span>
+                <span className="text-[10px] text-neutral-400 font-mono tracking-wider uppercase font-semibold block">
+                  PT Sawah Jaya Trans
+                </span>
+              </div>
+            </div>
+
             <div>
-              <h3 className="text-neutral-900 font-bold text-xs tracking-wider uppercase mb-3 border-l-2 border-amber-500 pl-2.5">
-                Smart Journey
-              </h3>
               <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">
                 {t('footer.aboutText')}
               </p>
@@ -310,47 +339,69 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* 4. COPYRIGHT & TEMPORARY ADMIN ACCESS BUTTONS */}
-        <div className="mt-4 pb-2 flex flex-col items-center justify-center gap-2.5 text-center text-xs text-neutral-500 font-normal">
+        {/* 4. COPYRIGHT & CONDITIONAL ADMIN ACCESS BUTTONS (Revealed on 8-12 clicks on PT Sawah Jaya Trans) */}
+        <div className="mt-4 pb-2 flex flex-col items-center justify-center gap-2.5 text-center text-xs text-neutral-500 font-normal select-none">
           <p>
-            © {new Date().getFullYear()} <span className="font-semibold text-neutral-700">PT Sawah Jaya Trans</span>. {t('footer.allRightsReserved')}.
+            © {new Date().getFullYear()}{' '}
+            <span 
+              id="secret-admin-copyright-trigger"
+              onClick={handleSecretClick}
+              className="font-semibold text-neutral-700 hover:text-neutral-900 cursor-pointer transition-colors"
+              title=""
+            >
+              PT Sawah Jaya Trans
+            </span>
+            . {t('footer.allRightsReserved')}.
           </p>
 
-          {/* Both Admin Access Buttons */}
-          <div className="mt-1 flex flex-wrap items-center justify-center gap-2.5">
-            {/* 1. Admin Website (Smart Journey) */}
-            <button
-              id="btn-admin-smart-journey-footer"
-              type="button"
-              onClick={() => {
-                window.location.hash = '';
-                setPage('admin');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#203c34] hover:bg-[#315B4F] text-amber-300 hover:text-amber-200 text-[11px] font-mono font-semibold rounded-lg border border-[#315B4F] hover:border-[#467b6b] transition-all shadow-xs hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
-              title="Akses Dashboard Admin Smart Journey (/admin)"
-            >
-              <Lock className="w-3 h-3 text-amber-300" />
-              <span>{t('footer.adminWebsite')}</span>
-            </button>
+          {/* Admin Access Buttons (Visible strictly when clicked 8 to 12 times; disappears automatically if > 12 or after 3 minutes) */}
+          {clickCount >= 8 && clickCount <= 12 && (
+            <div className="mt-1 flex flex-wrap items-center justify-center gap-2.5 animate-fade-in">
+              {/* 1. Admin Website (Smart Journey) */}
+              <button
+                id="btn-admin-smart-journey-footer"
+                type="button"
+                onClick={() => {
+                  window.location.hash = '';
+                  setPage('admin');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#203c34] hover:bg-[#315B4F] text-amber-300 hover:text-amber-200 text-[11px] font-mono font-semibold rounded-lg border border-[#315B4F] hover:border-[#467b6b] transition-all shadow-xs hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                title="Akses Dashboard Admin Smart Journey (/admin)"
+              >
+                <Lock className="w-3 h-3 text-amber-300" />
+                <span>{t('footer.adminWebsite')}</span>
+              </button>
 
-            {/* 2. Admin Share Tour */}
-            <button
-              id="btn-admin-share-tour-footer"
-              type="button"
-              onClick={() => {
-                setPage('share-tour');
-                window.location.hash = '#admin';
-                window.dispatchEvent(new HashChangeEvent('hashchange'));
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#203c34] hover:bg-[#315B4F] text-emerald-300 hover:text-emerald-200 text-[11px] font-mono font-semibold rounded-lg border border-[#315B4F] hover:border-[#467b6b] transition-all shadow-xs hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
-              title="Akses Dashboard Admin Share Tour (/share-tour#admin)"
-            >
-              <ShieldCheck className="w-3 h-3 text-emerald-300" />
-              <span>{t('footer.adminShareTour')}</span>
-            </button>
-          </div>
+              {/* 2. Admin Share Tour */}
+              <button
+                id="btn-admin-share-tour-footer"
+                type="button"
+                onClick={() => {
+                  setPage('share-tour');
+                  window.location.hash = '#admin';
+                  window.dispatchEvent(new HashChangeEvent('hashchange'));
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#203c34] hover:bg-[#315B4F] text-emerald-300 hover:text-emerald-200 text-[11px] font-mono font-semibold rounded-lg border border-[#315B4F] hover:border-[#467b6b] transition-all shadow-xs hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                title="Akses Dashboard Admin Share Tour (/share-tour#admin)"
+              >
+                <ShieldCheck className="w-3 h-3 text-emerald-300" />
+                <span>{t('footer.adminShareTour')}</span>
+              </button>
+
+              {/* 3-Minute Auto-Hide Countdown Badge */}
+              <div 
+                className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 border border-amber-300/80 text-amber-800 text-[10px] font-mono font-bold rounded-lg shadow-xs"
+                title="Akses admin akan tertutup otomatis saat durasi habis (maks. 3 menit)"
+              >
+                <Timer className="w-3 h-3 text-amber-600 animate-pulse" />
+                <span>
+                  {Math.floor(timeLeft / 60)}:{timeLeft % 60 < 10 ? '0' : ''}{timeLeft % 60}
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -456,111 +507,6 @@ export default function Footer() {
             >
               {t('wechat.done')}
             </button>
-          </div>
-        </div>
-      )}
-
-      {/* Hidden Admin Access Password Modal */}
-      {showPasswordModal && (
-        <div 
-          className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in"
-          onClick={() => {
-            setShowPasswordModal(false);
-            setClickCount(0);
-          }}
-        >
-          <div 
-            className="relative w-full max-w-[400px] bg-neutral-900 border border-neutral-800 text-neutral-100 rounded-3xl shadow-2xl p-6 space-y-5 animate-scale-up cursor-default"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
-              <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-amber-500/10 text-amber-500">
-                  <Lock className="h-5 w-5" />
-                </div>
-                <div>
-                  <h4 className="font-extrabold text-sm tracking-tight text-neutral-100">Kunci Akses Admin</h4>
-                  <p className="text-[10px] text-neutral-400 font-medium font-sans">SMARTJOURNEY SECURITY GATEWAY</p>
-                </div>
-              </div>
-              <button 
-                onClick={() => {
-                  setShowPasswordModal(false);
-                  setClickCount(0);
-                }}
-                className="p-1.5 rounded-full text-neutral-500 hover:text-neutral-200 hover:bg-neutral-800 transition-all"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            {/* Modal Content / Form */}
-            <form onSubmit={handlePasswordSubmit} className="space-y-4">
-              <div className="space-y-1.5">
-                <div className="flex justify-between items-center mb-1">
-                  <label className="text-xs font-bold text-neutral-300 block">Masukkan Kode Sandi</label>
-                  <span className="text-[10px] font-extrabold text-amber-500 bg-amber-500/15 border border-amber-500/20 px-2 py-0.5 rounded-md font-mono">
-                    Password: sawahjaya2026
-                  </span>
-                </div>
-                <div className="relative">
-                  <input 
-                    type={showPasswordText ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-                      setPasswordError('');
-                    }}
-                    placeholder="••••••••••••••"
-                    autoFocus
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-2xl pl-4 pr-10 py-3 text-sm text-neutral-100 font-mono focus:outline-none focus:ring-1 focus:ring-amber-500 transition-all placeholder:text-neutral-700"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPasswordText(!showPasswordText)}
-                    className="absolute right-3.5 top-3.5 text-neutral-500 hover:text-neutral-300 transition-colors"
-                  >
-                    {showPasswordText ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </button>
-                </div>
-                {passwordError && (
-                  <p className="text-rose-500 text-[11px] font-semibold leading-relaxed font-sans">{passwordError}</p>
-                )}
-              </div>
-
-              {/* Security Hint */}
-              <div className="bg-neutral-950/60 p-3 rounded-2xl border border-neutral-800/50 flex gap-2.5 items-start text-[11px] text-neutral-400 font-medium">
-                <ShieldCheck className="h-4 w-4 text-amber-500/80 shrink-0 mt-0.5" />
-                <span className="leading-relaxed">
-                  Akses dibatasi hanya untuk staf resmi Smart Journey. Seluruh aktivitas login dipantau oleh server audit.
-                </span>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex gap-2.5 pt-1">
-                <button 
-                  type="button"
-                  onClick={() => {
-                    setShowPasswordModal(false);
-                    setClickCount(0);
-                  }}
-                  className="flex-1 py-2.5 bg-neutral-950 hover:bg-neutral-900 border border-neutral-800 hover:border-neutral-700 text-neutral-400 hover:text-neutral-200 font-bold rounded-2xl text-xs transition-all"
-                >
-                  Batal
-                </button>
-                <button 
-                  type="submit"
-                  className="flex-1 py-2.5 bg-amber-500 hover:bg-amber-600 text-neutral-950 font-black rounded-2xl text-xs shadow-md transition-all active:scale-[0.98]"
-                >
-                  Konfirmasi Portal
-                </button>
-              </div>
-            </form>
           </div>
         </div>
       )}
