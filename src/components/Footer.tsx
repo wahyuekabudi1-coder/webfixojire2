@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../AppContext';
 import { useLanguageCurrency } from '../sharetour/LanguageCurrencyContext';
+import SocialMediaButtons from './SocialMediaButtons';
 import { Mail, MapPin, Phone, Clock, MessageSquare, Instagram, Facebook, Youtube, Share2, Sparkles, QrCode, Copy, Check, X, ShieldCheck, FileText, Lock, Eye, EyeOff, ExternalLink } from 'lucide-react';
 
 function WeChatIcon({ className = "h-4 w-4" }: { className?: string }) {
@@ -19,7 +20,7 @@ function WeChatIcon({ className = "h-4 w-4" }: { className?: string }) {
 
 export default function Footer() {
   const { setPage, setPrivacyOpen, setTermsOpen } = useApp();
-  const { t } = useLanguageCurrency();
+  const { t, language } = useLanguageCurrency();
   const [emailSubscribed, setEmailSubscribed] = useState(false);
   const [email, setEmail] = useState('');
   const [isWeChatModalOpen, setIsWeChatModalOpen] = useState(false);
@@ -82,14 +83,24 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mb-12">
           
-          {/* Column 1: About Info */}
-          <div className="space-y-3">
-            <h3 className="text-neutral-900 font-bold text-xs tracking-wider uppercase mb-4 border-l-2 border-amber-500 pl-2.5">
-              Smart Journey
-            </h3>
-            <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">
-              {t('footer.aboutText')}
-            </p>
+          {/* Column 1: About Info & Official Social Channels */}
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-neutral-900 font-bold text-xs tracking-wider uppercase mb-3 border-l-2 border-amber-500 pl-2.5">
+                Smart Journey
+              </h3>
+              <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">
+                {t('footer.aboutText')}
+              </p>
+            </div>
+
+            {/* Official Social Media - Icon-Only Buttons */}
+            <div className="pt-1">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 font-mono block mb-2">
+                {language === 'zh' ? '官方社交媒体' : language === 'id' ? 'Media Sosial Resmi' : 'Official Social Media'}
+              </span>
+              <SocialMediaButtons size="md" />
+            </div>
           </div>
  
           {/* Column 2: Services & Quick Links */}

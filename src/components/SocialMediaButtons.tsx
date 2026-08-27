@@ -24,21 +24,21 @@ export default function SocialMediaButtons({
   }, []);
 
   const sizeClasses = {
-    sm: 'w-7 h-7 rounded-lg text-xs',
-    md: 'w-8 h-8 rounded-lg text-sm',
-    lg: 'w-9 h-9 rounded-xl text-base'
+    sm: 'w-8 h-8 rounded-lg text-xs',
+    md: 'w-9 h-9 rounded-xl text-sm',
+    lg: 'w-10 h-10 rounded-xl text-base'
   }[size];
 
   const iconSizes = {
-    sm: 'w-3.5 h-3.5',
-    md: 'w-4 h-4',
-    lg: 'w-4.5 h-4.5'
+    sm: 'w-4 h-4',
+    md: 'w-4.5 h-4.5',
+    lg: 'w-5 h-5'
   }[size];
 
   const renderIcon = (id: string, iconClass: string) => {
     switch (id) {
       case 'instagram':
-        return <Instagram className={iconClass} />;
+        return <Instagram className={iconClass} strokeWidth={2} />;
       case 'tiktok':
         return (
           <svg className={iconClass} viewBox="0 0 24 24" fill="currentColor">
@@ -47,20 +47,20 @@ export default function SocialMediaButtons({
         );
       case 'rednote':
         return (
-          <svg className={iconClass} viewBox="0 0 24 24" fill="currentColor">
-            <rect x="2" y="3" width="20" height="18" rx="5" fill="#FF2442" />
-            <text x="12" y="16" fontFamily="system-ui, -apple-system, sans-serif" fontSize="11" fontWeight="900" fill="#FFFFFF" textAnchor="middle">RED</text>
+          <svg className={iconClass} viewBox="0 0 24 24" fill="none">
+            <rect width="24" height="24" rx="6" fill="#FF2442" />
+            <path d="M6.2 14.5c.3.8 1.1 1.5 2.2 1.5 1.5 0 2.2-1.1 2.4-2.6-.6.5-1.3.8-2 .8-1.5 0-2.8-1.1-2.8-2.8 0-1.8 1.4-3.1 3.2-3.1 2.2 0 3.3 1.7 3.3 4.6 0 2.7-1.3 4.6-3.8 4.6-1.5 0-2.6-.9-3-2.1l.5-.9zm2.4-3.9c-.9 0-1.6.6-1.6 1.6 0 .9.6 1.5 1.5 1.5.7 0 1.3-.4 1.7-.9v-.7c-.2-.9-.8-1.5-1.6-1.5zM14.5 14.5c.3.8 1.1 1.5 2.2 1.5 1.5 0 2.2-1.1 2.4-2.6-.6.5-1.3.8-2 .8-1.5 0-2.8-1.1-2.8-2.8 0-1.8 1.4-3.1 3.2-3.1 2.2 0 3.3 1.7 3.3 4.6 0 2.7-1.3 4.6-3.8 4.6-1.5 0-2.6-.9-3-2.1l.5-.9zm2.4-3.9c-.9 0-1.6.6-1.6 1.6 0 .9.6 1.5 1.5 1.5.7 0 1.3-.4 1.7-.9v-.7c-.2-.9-.8-1.5-1.6-1.5z" fill="#FFFFFF" />
           </svg>
         );
       case 'linkedin':
-        return <Linkedin className={iconClass} />;
+        return <Linkedin className={iconClass} strokeWidth={2} />;
       default:
-        return <ExternalLink className={iconClass} />;
+        return <ExternalLink className={iconClass} strokeWidth={2} />;
     }
   };
 
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
+    <div className={`flex items-center gap-2.5 ${className}`}>
       {socials.map((item) => (
         <a
           key={item.id}
@@ -68,11 +68,11 @@ export default function SocialMediaButtons({
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`${item.name} (${item.handle})`}
-          title={`${item.name} - ${item.handle}`}
-          className={`group ${sizeClasses} flex items-center justify-center bg-white border border-neutral-200 text-neutral-600 ${item.hoverBg} transition-all duration-200 shadow-xs hover:shadow-sm hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 cursor-pointer shrink-0`}
+          title={`${item.name}: ${item.handle}`}
+          className={`group ${sizeClasses} flex items-center justify-center bg-white border border-neutral-200/90 text-neutral-700 ${item.hoverBg} transition-all duration-200 shadow-xs hover:shadow-md hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 cursor-pointer shrink-0`}
         >
           <span 
-            className="transition-transform group-hover:scale-110 flex items-center justify-center"
+            className="transition-transform duration-200 group-hover:scale-110 flex items-center justify-center"
             style={{ color: item.id === 'rednote' ? undefined : item.color }}
           >
             {renderIcon(item.id, iconSizes)}

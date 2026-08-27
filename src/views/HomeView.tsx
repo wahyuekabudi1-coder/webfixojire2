@@ -8,8 +8,6 @@ import {
   Heart, Mail, Send, CheckCircle2 
 } from 'lucide-react';
 import CheckoutModal from '../components/CheckoutModal';
-import PartnerLogos from '../components/PartnerLogos';
-import SocialMediaButtons from '../components/SocialMediaButtons';
 import { motion, AnimatePresence } from 'motion/react';
 import { OFFICIAL_PARTNERS, PartnerApp } from '../data/partnersData';
 
@@ -578,23 +576,6 @@ export default function HomeView() {
                 </div>
               );
             })}
-          </div>
-
-          {/* Official Partner Platforms & Social Media Row (Kotak kecil-kecil, logo saja) */}
-          <div className="mt-8 pt-6 border-t border-neutral-200/80 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 font-mono shrink-0">
-                {language === 'zh' ? '官方合作平台' : language === 'id' ? 'Partner Resmi Platform' : 'Official Partners'}
-              </span>
-              <PartnerLogos size="md" />
-            </div>
-
-            <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-500 font-mono shrink-0">
-                {language === 'zh' ? '关注我们' : language === 'id' ? 'Media Sosial' : 'Social Channels'}
-              </span>
-              <SocialMediaButtons size="md" />
-            </div>
           </div>
         </div>
       </section>

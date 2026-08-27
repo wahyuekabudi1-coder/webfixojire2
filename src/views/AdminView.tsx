@@ -7699,7 +7699,7 @@ export default function AdminView() {
                                     type="text"
                                     value={social.handle}
                                     onChange={(e) => handleUpdateSocial(social.id, 'handle', e.target.value)}
-                                    placeholder="e.g. @sawahjayatrans"
+                                    placeholder="e.g. @smartjourney.id"
                                     className={`w-full ${theme.input} border rounded-xl px-3 py-2 text-xs`}
                                   />
                                 </div>

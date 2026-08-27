@@ -16,8 +16,8 @@ export const DEFAULT_SOCIAL_MEDIA: SocialMediaItem[] = [
     id: 'instagram',
     name: 'Instagram',
     shortName: 'IG',
-    handle: '@sawahjayatrans',
-    url: 'https://www.instagram.com/sawahjayatrans',
+    handle: '@smartjourney.id',
+    url: 'https://www.instagram.com/smartjourney.id',
     category: 'Visual & Story',
     color: '#E4405F',
     hoverBg: 'hover:bg-pink-50 hover:text-pink-600 hover:border-pink-300',
@@ -28,8 +28,8 @@ export const DEFAULT_SOCIAL_MEDIA: SocialMediaItem[] = [
     id: 'tiktok',
     name: 'TikTok',
     shortName: 'TikTok',
-    handle: '@sawahjayatrans',
-    url: 'https://www.tiktok.com/@sawahjayatrans',
+    handle: '@smartjourney.id',
+    url: 'https://www.tiktok.com/@smartjourney.id',
     category: 'Short Videos & Reels',
     color: '#000000',
     hoverBg: 'hover:bg-neutral-100 hover:text-neutral-950 hover:border-neutral-400',
@@ -40,8 +40,8 @@ export const DEFAULT_SOCIAL_MEDIA: SocialMediaItem[] = [
     id: 'rednote',
     name: 'Rednote (小红书)',
     shortName: 'Rednote',
-    handle: 'Red ID: sawahjayatrans',
-    url: 'https://www.xiaohongshu.com/user/profile/sawahjayatrans',
+    handle: 'Red ID: smartjourney.id',
+    url: 'https://www.xiaohongshu.com/user/profile/smartjourney.id',
     category: 'Travel Guides & Lifestyle',
     color: '#FF2442',
     hoverBg: 'hover:bg-red-50 hover:text-red-600 hover:border-red-300',
@@ -52,8 +52,8 @@ export const DEFAULT_SOCIAL_MEDIA: SocialMediaItem[] = [
     id: 'linkedin',
     name: 'LinkedIn',
     shortName: 'LinkedIn',
-    handle: 'PT Sawah Jaya Trans',
-    url: 'https://www.linkedin.com/company/pt-sawah-jaya-trans',
+    handle: 'smartjourney.id',
+    url: 'https://www.linkedin.com/company/smartjourney-id',
     category: 'B2B & Corporate',
     color: '#0A66C2',
     hoverBg: 'hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300',
@@ -67,12 +67,25 @@ export function getStoredSocialMedia(): SocialMediaItem[] {
   try {
     const stored = localStorage.getItem('smartjourney_social_media');
     if (stored) {
-      const parsed = JSON.parse(stored);
+      const parsed: SocialMediaItem[] = JSON.parse(stored);
       // Ensure all 4 platforms exist
       const ids = ['instagram', 'tiktok', 'rednote', 'linkedin'];
       const hasAll = ids.every(id => parsed.some((p: any) => p.id === id));
       if (hasAll && parsed.length >= 4) {
-        return parsed;
+        // Upgrade legacy sawahjayatrans URLs if present
+        const upgraded = parsed.map(item => {
+          const matchDefault = DEFAULT_SOCIAL_MEDIA.find(d => d.id === item.id);
+          if (matchDefault && (item.url.includes('sawahjayatrans') || item.handle.includes('sawahjayatrans'))) {
+            return {
+              ...item,
+              url: matchDefault.url,
+              handle: matchDefault.handle
+            };
+          }
+          return item;
+        });
+        localStorage.setItem('smartjourney_social_media', JSON.stringify(upgraded));
+        return upgraded;
       }
     }
   } catch (e) {
