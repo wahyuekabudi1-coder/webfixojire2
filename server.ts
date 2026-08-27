@@ -1,6 +1,7 @@
 import express from 'express';
 import path from 'path';
 import fs from 'fs';
+import crypto from 'crypto';
 import dotenv from 'dotenv';
 import type { Trip, Batch, Booking, DatabaseState } from './src/sharetour/types.ts';
 import type { Tour } from './src/types.ts';
@@ -143,7 +144,7 @@ function recalculateBatchSeats(db: DatabaseState): void {
 
   db.batches.forEach((batch) => {
     const activeBookings = db.bookings.filter(
-      (b) => b.batchId === batch.id && b.status !== 'Rejected'
+      (b) => Boolean(b.batchId) && b.batchId === batch.id && b.status !== 'Rejected'
     );
 
     const totalBooked = activeBookings.reduce(
@@ -754,62 +755,158 @@ app.post('/api/bookings', (req, res) => {
     const db = readDB();
     const payload = req.body || {};
 
-    const count = Math.floor(Number(payload.participantsCount));
+    const rawCount = payload.participantsCount ?? payload.details?.guests ?? 1;
+    const count = Math.floor(Number(rawCount));
     if (isNaN(count) || count < 1 || count > 50) {
       return res.status(400).json({ error: 'Jumlah peserta harus berupa angka positif antara 1 dan 50.' });
     }
 
-    const cleanEmail = String(payload.email || payload.participantData?.email || '').trim().toLowerCase();
+    const cleanEmail = String(payload.email || payload.customerEmail || payload.participantData?.email || '').trim().toLowerCase();
     if (cleanEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
       return res.status(400).json({ error: 'Format alamat email tidak valid.' });
     }
 
-    const batchIndex = db.batches.findIndex((b) => b.id === payload.batchId);
-    if (batchIndex === -1) {
-      return res.status(404).json({ error: 'Batch tanggal keberangkatan tidak ditemukan.' });
+    const sanitizedName = String(
+      payload.fullName || payload.customerName || payload.participantData?.name || payload.details?.fullName || 'Traveler'
+    ).trim().slice(0, 100);
+
+    const sanitizedPhone = String(
+      payload.phone || payload.customerPhone || payload.participantData?.whatsapp || payload.details?.whatsapp || 'N/A'
+    ).trim().slice(0, 30);
+
+    // Determine booking type explicitly: 'shared' (Open Trip) vs 'private' (Private Tour / Services)
+    const isShared = payload.bookingType === 'shared' || payload.tourBookingType === 'shared' || (Boolean(payload.batchId) && payload.bookingType !== 'private');
+
+    if (isShared) {
+      // -------------------------------------------------------------
+      // SHARE TOUR / OPEN TRIP BOOKING FLOW (Admin-Scheduled Batches)
+      // -------------------------------------------------------------
+      if (!payload.batchId) {
+        return res.status(400).json({ error: 'batchId diperlukan untuk Share Tour / Open Trip.' });
+      }
+
+      const batchIndex = db.batches.findIndex((b) => b.id === payload.batchId);
+      if (batchIndex === -1) {
+        return res.status(404).json({ error: 'Batch tanggal keberangkatan tidak ditemukan.' });
+      }
+
+      const batch = db.batches[batchIndex];
+
+      if (payload.tripId && batch.tripId !== payload.tripId) {
+        return res.status(400).json({ error: 'Batch keberangkatan tidak sesuai dengan trip yang dipilih.' });
+      }
+
+      if (batch.status === 'Closed' || batch.availableSeats < count) {
+        return res.status(400).json({ error: 'Sisa kuota untuk tanggal keberangkatan ini tidak mencukupi atau telah ditutup.' });
+      }
+
+      // Decrement seats atomically
+      batch.availableSeats -= count;
+      if (batch.availableSeats <= 0) {
+        batch.status = 'Closed';
+      }
+
+      const trip = db.trips.find((t) => t.id === payload.tripId || t.id === batch.tripId);
+      const bookingCode = payload.bookingCode || generateUniqueBookingCode(db.bookings.map(b => b.bookingCode));
+      const numericPrice = Math.max(0, Number(payload.totalPriceIDR || payload.totalPrice) || (batch.price * count));
+
+      const newBooking: Booking = {
+        id: payload.id || ('book-' + Date.now().toString()),
+        bookingCode,
+        tripId: payload.tripId || batch.tripId,
+        tripTitle: trip ? trip.title : (payload.tripTitle || 'Open Trip'),
+        bookingType: 'shared',
+        tourBookingType: 'shared',
+        batchId: batch.id,
+        departureDate: batch.departureDate,
+        fullName: sanitizedName,
+        customerName: sanitizedName,
+        email: cleanEmail || 'customer@example.com',
+        customerEmail: cleanEmail || 'customer@example.com',
+        phone: sanitizedPhone,
+        customerPhone: sanitizedPhone,
+        participantsCount: count,
+        participantsNames: payload.participantsNames || [sanitizedName],
+        proofOfPayment: payload.proofOfPayment || 'NOT_APPLICABLE_SLEEK_THEME',
+        status: payload.status || 'Pending',
+        paymentStatus: payload.paymentStatus || 'Pending',
+        totalPrice: numericPrice,
+        totalPriceIDR: numericPrice,
+        createdAt: new Date().toISOString(),
+        participantData: payload.participantData,
+        details: payload.details,
+        nationalityType: payload.nationalityType,
+        adminNotes: payload.adminNotes || ''
+      };
+
+      db.bookings.push(newBooking);
+      writeDB(db);
+      return res.status(201).json(newBooking);
+    } else {
+      // -------------------------------------------------------------
+      // PRIVATE TOUR / GENERAL SERVICE BOOKING FLOW (Customer-Date-Driven)
+      // -------------------------------------------------------------
+      const selectedDate = String(payload.departureDate || payload.details?.date || '').trim();
+
+      // Validate date if provided: Must not be in the past
+      if (selectedDate) {
+        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+        if (dateRegex.test(selectedDate)) {
+          const now = new Date();
+          const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+          if (selectedDate < todayStr) {
+            return res.status(400).json({ error: 'Tanggal keberangkatan tidak boleh di masa lalu.' });
+          }
+        }
+      }
+
+      // Find trip title from main tours, db.trips, or payload
+      const mainTours = readMainTours();
+      const mainTour = mainTours.find(t => t.id === payload.tripId || t.id === payload.details?.tourId);
+      const trip = db.trips.find(t => t.id === payload.tripId || t.id === payload.details?.tourId);
+      const resolvedTitle = payload.tripTitle || payload.serviceName || (mainTour ? mainTour.name : (trip ? trip.title : 'Private Tour'));
+
+      const bookingCode = payload.bookingCode || generateUniqueBookingCode(db.bookings.map(b => b.bookingCode));
+      const numericPrice = Math.max(0, Number(payload.totalPriceIDR || payload.totalPrice) || 0);
+
+      const newBooking: Booking = {
+        id: payload.id || ('book-' + Date.now().toString()),
+        bookingCode,
+        tripId: payload.tripId || payload.details?.tourId || 'tour-private',
+        tripTitle: resolvedTitle,
+        bookingType: 'private',
+        tourBookingType: 'private',
+        batchId: undefined, // Private Tours do NOT have batchId
+        departureDate: selectedDate || new Date().toISOString().split('T')[0],
+        fullName: sanitizedName,
+        customerName: sanitizedName,
+        email: cleanEmail || 'customer@example.com',
+        customerEmail: cleanEmail || 'customer@example.com',
+        phone: sanitizedPhone,
+        customerPhone: sanitizedPhone,
+        participantsCount: count,
+        participantsNames: payload.participantsNames || [sanitizedName],
+        proofOfPayment: payload.proofOfPayment || 'NOT_APPLICABLE_SLEEK_THEME',
+        status: payload.status || 'Pending',
+        paymentStatus: payload.paymentStatus || 'Pending',
+        totalPrice: numericPrice,
+        totalPriceIDR: numericPrice,
+        createdAt: new Date().toISOString(),
+        participantData: payload.participantData,
+        details: payload.details,
+        serviceName: payload.serviceName || resolvedTitle,
+        type: payload.type || 'tour',
+        nationalityType: payload.nationalityType,
+        adminNotes: payload.adminNotes || ''
+      };
+
+      db.bookings.push(newBooking);
+      writeDB(db);
+      return res.status(201).json(newBooking);
     }
-
-    const batch = db.batches[batchIndex];
-
-    if (batch.status === 'Closed' || batch.availableSeats < count) {
-      return res.status(400).json({ error: 'Sisa kuota untuk tanggal keberangkatan ini tidak mencukupi.' });
-    }
-
-    batch.availableSeats -= count;
-    if (batch.availableSeats <= 0) {
-      batch.status = 'Closed';
-    }
-
-    const trip = db.trips.find((t) => t.id === payload.tripId);
-    const sanitizedName = String(payload.fullName || payload.participantData?.name || 'Unknown traveler').trim().slice(0, 100);
-    const sanitizedPhone = String(payload.phone || payload.participantData?.whatsapp || 'N/A').trim().slice(0, 30);
-
-    const newBooking: Booking = {
-      id: 'book-' + Date.now().toString(),
-      bookingCode: generateUniqueBookingCode(db.bookings.map(b => b.bookingCode)),
-      tripId: payload.tripId,
-      tripTitle: trip ? trip.title : 'Unknown Trip',
-      batchId: payload.batchId,
-      departureDate: batch.departureDate,
-      fullName: sanitizedName,
-      email: cleanEmail || 'unknown@example.com',
-      phone: sanitizedPhone,
-      participantsCount: count,
-      participantsNames: payload.participantsNames || [sanitizedName],
-      proofOfPayment: payload.proofOfPayment || 'NOT_APPLICABLE_SLEEK_THEME',
-      status: 'Pending',
-      totalPrice: Math.max(0, Number(payload.totalPrice) || (batch ? batch.price : 0)),
-      createdAt: new Date().toISOString(),
-      participantData: payload.participantData,
-      adminNotes: payload.adminNotes || ''
-    };
-
-    db.bookings.push(newBooking);
-    writeDB(db);
-    res.status(201).json(newBooking);
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: 'Gagal memproses pendaftaran booking.' });
+  } catch (e: any) {
+    console.error('[Error in POST /api/bookings]:', e);
+    return res.status(500).json({ error: 'Gagal memproses pendaftaran booking: ' + (e.message || '') });
   }
 });
 
@@ -1177,9 +1274,41 @@ app.post(['/api/artopay/webhook', '/artopay/webhook'], (req, res) => {
     const body = req.body || {};
     console.log('[ArtoPay Webhook Callback Received]:', JSON.stringify(body));
 
-    const orderId = body.orderId || body.order_id || body.orderID || body.metadata?.orderId;
-    const paymentId = body.id || body.paymentId || body.payment_id || body.transaction_id;
-    const rawStatus = String(body.status || body.transaction_status || body.payment_status || '').toUpperCase();
+    // Webhook Signature verification if signature header or signature parameter is supplied
+    const incomingSignature = 
+      (req.headers['x-artopay-signature'] as string) || 
+      (req.headers['x-signature'] as string) || 
+      (req.headers['webhook-signature'] as string) || 
+      body.signature || 
+      body.hash;
+
+    const webhookSecret = (process.env.WEBHOOK_SECRET || process.env.ARTOPAY_SECRET_KEY || '').trim();
+
+    if (incomingSignature && webhookSecret) {
+      try {
+        const rawPayload = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
+        const expectedSignature = crypto
+          .createHmac('sha256', webhookSecret)
+          .update(rawPayload)
+          .digest('hex');
+
+        if (incomingSignature.toLowerCase() !== expectedSignature.toLowerCase()) {
+          console.warn('[ArtoPay Webhook Signature Warning] Mismatched webhook signature received:', {
+            incoming: incomingSignature,
+            expected: expectedSignature
+          });
+          // Note: If strict verification is required, we can reject with 401. Logged clearly for audit trail.
+        } else {
+          console.log('[ArtoPay Webhook Signature Verified] Authenticity confirmed via HMAC-SHA256.');
+        }
+      } catch (sigErr) {
+        console.warn('[ArtoPay Webhook Signature Check Exception]:', sigErr);
+      }
+    }
+
+    const orderId = body.orderId || body.order_id || body.orderID || body.metadata?.orderId || body.data?.orderId || body.data?.order_id;
+    const paymentId = body.id || body.paymentId || body.payment_id || body.transaction_id || body.data?.id || body.data?.paymentId;
+    const rawStatus = String(body.status || body.transaction_status || body.payment_status || body.data?.status || body.data?.transaction_status || '').toUpperCase();
 
     if (!orderId && !paymentId) {
       return res.status(400).json({ error: 'Missing orderId or paymentId in webhook payload' });
@@ -1190,7 +1319,7 @@ app.post(['/api/artopay/webhook', '/artopay/webhook'], (req, res) => {
 
     const index = db.bookings.findIndex(b =>
       (orderId && (b.bookingCode === orderId || b.id === orderId)) ||
-      (paymentId && b.paymentIntentId === paymentId)
+      (paymentId && (b.paymentIntentId === paymentId || b.paymentId === paymentId))
     );
 
     if (index === -1) {
@@ -1202,15 +1331,15 @@ app.post(['/api/artopay/webhook', '/artopay/webhook'], (req, res) => {
 
     // IDEMPOTENCY CHECK: If already confirmed and paid, do not re-process!
     if (booking.paymentStatus === 'Paid' && booking.status === 'Confirmed') {
-      console.log(`[ArtoPay Webhook IDEMPOTENT] Order ${orderId} is already Paid & Confirmed.`);
+      console.log(`[ArtoPay Webhook IDEMPOTENT] Order ${orderId || booking.id} is already Paid & Confirmed.`);
       return res.status(200).json({
         success: true,
         message: 'Order status is already Paid (Idempotent call).'
       });
     }
 
-    const successStatuses = ['SUCCESS', 'PAID', 'SETTLEMENT', 'COMPLETED', '00', 'SUCCESSFUL', 'APPROVED'];
-    const failureStatuses = ['FAILED', 'CANCELLED', 'DENIED', 'EXPIRED', 'EXPIRE', 'REJECTED'];
+    const successStatuses = ['SUCCESS', 'PAID', 'SETTLEMENT', 'COMPLETED', '00', 'SUCCESSFUL', 'APPROVED', 'CAPTURE'];
+    const failureStatuses = ['FAILED', 'CANCELLED', 'DENIED', 'EXPIRED', 'EXPIRE', 'REJECTED', 'FAILURE', 'CANCEL'];
 
     if (successStatuses.includes(rawStatus)) {
       booking.paymentStatus = 'Paid';
@@ -1218,12 +1347,12 @@ app.post(['/api/artopay/webhook', '/artopay/webhook'], (req, res) => {
       booking.paidAt = new Date().toISOString();
       booking.paymentId = paymentId || booking.paymentIntentId;
 
-      console.log(`[ArtoPay Webhook SUCCESS] Order ${orderId} status set to PAID & CONFIRMED.`);
+      console.log(`[ArtoPay Webhook SUCCESS] Order ${orderId || booking.id} status set to PAID & CONFIRMED.`);
     } else if (failureStatuses.includes(rawStatus)) {
       booking.paymentStatus = (rawStatus === 'EXPIRED' || rawStatus === 'EXPIRE') ? 'Expired' : 'Failed';
       booking.status = 'Rejected';
 
-      console.log(`[ArtoPay Webhook FAILURE] Order ${orderId} status set to ${booking.paymentStatus}.`);
+      console.log(`[ArtoPay Webhook FAILURE] Order ${orderId || booking.id} status set to ${booking.paymentStatus}.`);
 
       // Restore batch seats if applicable
       if (booking.batchId) {

@@ -535,8 +535,13 @@ export default function TripDetail({
           <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-md space-y-6">
             
             <div className="space-y-1">
+              <span className="text-[10px] bg-amber-100 text-amber-900 font-extrabold px-3 py-0.5 rounded-full uppercase tracking-wider font-mono inline-block border border-amber-200">
+                👥 SHARE TOUR — JADWAL BATCH RESMI
+              </span>
               <h3 className="font-display font-bold text-gray-900 text-lg">{t("Departure Calendar")}</h3>
-              <p className="text-xs text-gray-500">{t("Pilih tanggal keberangkatan yang disorot hijau pada kalender di bawah.")}</p>
+              <p className="text-xs text-gray-500 leading-relaxed">
+                {t("Jadwal keberangkatan Share Tour berdasarkan tanggal batch resmi yang dibuka oleh Admin.")}
+              </p>
             </div>
 
             {/* Real Interactive Calendar Month-Year selector */}

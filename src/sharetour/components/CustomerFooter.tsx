@@ -76,62 +76,67 @@ export default function CustomerFooter({ onNavigate }: CustomerFooterProps) {
               </div>
             </div>
 
-            {/* Payment Methods & Security Credentials (Pixel-perfect replication of User Screenshot) */}
-            <div className="pt-8 mt-8 border-t border-zinc-900 space-y-5" id="customer-payment-showcase">
-              <div className="space-y-3">
-                <span className="text-xs font-black font-sans tracking-wide text-white uppercase block">
-                  PAYMENT METHODS
-                </span>
+            {/* Payment Methods & Security Credentials */}
+            <div className="pt-6 sm:pt-8 mt-6 sm:mt-8 border-t border-zinc-900 space-y-4 sm:space-y-5" id="customer-payment-showcase">
+              <div className="space-y-2.5 sm:space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-black font-sans tracking-wide text-white uppercase block">
+                    PAYMENT METHODS
+                  </span>
+                  <span className="text-[10px] font-mono text-zinc-500 uppercase sm:hidden">
+                    Instant & Secure
+                  </span>
+                </div>
                 
-                {/* Beautiful horizontal line of white badge cards matching the screenshot exactly */}
-                <div className="flex flex-wrap items-center gap-2" id="payment-badge-grid">
+                {/* Symmetrical 3x2 Grid on Mobile Smartphones, Flex on Tablet/Desktop */}
+                <div className="grid grid-cols-3 sm:flex sm:flex-wrap items-center gap-2" id="payment-badge-grid">
                   {/* BCA Badge */}
-                  <div className="bg-white px-3 py-1.5 rounded-lg flex items-center justify-center shadow-sm h-9 w-[72px] select-none border border-zinc-100" title="BCA">
-                    <span className="text-[#00519E] font-sans font-black tracking-normal text-sm">BCA</span>
+                  <div className="bg-white px-2 sm:px-3 py-1.5 rounded-lg flex items-center justify-center shadow-xs h-9 w-full sm:w-[72px] select-none border border-zinc-100" title="BCA">
+                    <span className="text-[#00519E] font-sans font-black tracking-normal text-xs sm:text-sm">BCA</span>
                   </div>
 
                   {/* VISA Badge */}
-                  <div className="bg-white px-3 py-1.5 rounded-lg flex items-center justify-center shadow-sm h-9 w-[72px] select-none border border-zinc-100" title="Visa">
-                    <span className="text-[#1A1F71] font-sans font-extrabold italic tracking-tight text-sm">VISA</span>
+                  <div className="bg-white px-2 sm:px-3 py-1.5 rounded-lg flex items-center justify-center shadow-xs h-9 w-full sm:w-[72px] select-none border border-zinc-100" title="Visa">
+                    <span className="text-[#1A1F71] font-sans font-extrabold italic tracking-tight text-xs sm:text-sm">VISA</span>
                   </div>
 
                   {/* MASTERCARD Badge */}
-                  <div className="bg-white px-3 py-1.5 rounded-lg flex items-center justify-center shadow-sm h-9 w-[72px] select-none border border-zinc-100" title="Mastercard">
-                    <svg className="w-8 h-4 shrink-0" viewBox="0 0 32 20" fill="none">
+                  <div className="bg-white px-2 sm:px-3 py-1.5 rounded-lg flex items-center justify-center shadow-xs h-9 w-full sm:w-[72px] select-none border border-zinc-100" title="Mastercard">
+                    <svg className="w-7 sm:w-8 h-4 shrink-0" viewBox="0 0 32 20" fill="none">
                       <circle cx="11" cy="10" r="8" fill="#EB001B" />
                       <circle cx="21" cy="10" r="8" fill="#F79E1B" fillOpacity="0.85" />
                     </svg>
                   </div>
 
                   {/* PAYPAL Badge */}
-                  <div className="bg-white px-3 py-1.5 rounded-lg flex items-center justify-center shadow-sm h-9 w-[72px] select-none border border-zinc-100" title="PayPal">
+                  <div className="bg-white px-2 sm:px-3 py-1.5 rounded-lg flex items-center justify-center shadow-xs h-9 w-full sm:w-[72px] select-none border border-zinc-100" title="PayPal">
                     <span className="text-[#003087] font-sans font-black italic tracking-tighter text-[11px] leading-none shrink-0">
                       Pay<span className="text-[#0079C1]">Pal</span>
                     </span>
                   </div>
 
                   {/* ALIPAY Badge */}
-                  <div className="bg-white px-3 py-1.5 rounded-lg flex items-center justify-center shadow-sm h-9 w-[72px] select-none border border-zinc-100" title="Alipay">
+                  <div className="bg-white px-2 sm:px-3 py-1.5 rounded-lg flex items-center justify-center shadow-xs h-9 w-full sm:w-[72px] select-none border border-zinc-100" title="Alipay">
                     <span className="text-[#00A0E9] font-sans font-extrabold tracking-tight text-xs">Alipay</span>
                   </div>
 
                   {/* WECHAT PAY Badge */}
-                  <div className="bg-white px-3.5 py-1.5 rounded-lg flex items-center justify-center shadow-sm h-9 w-[90px] select-none border border-zinc-100" title="WeChat Pay">
+                  <div className="bg-white px-2 sm:px-3 py-1.5 rounded-lg flex items-center justify-center shadow-xs h-9 w-full sm:w-[84px] select-none border border-zinc-100" title="WeChat Pay">
                     <span className="text-[#09B83E] font-sans font-extrabold tracking-tighter text-[10px] sm:text-xs">WeChat Pay</span>
                   </div>
                 </div>
               </div>
 
-              {/* Secure Licensed Capsule (Clean visual matching screenshot) */}
+              {/* Secure Licensed Capsule */}
               <div 
-                className="inline-flex items-center space-x-2 bg-zinc-950/80 border border-zinc-900 rounded-full py-1.5 px-3.5 select-none" 
+                className="inline-flex items-center space-x-2 bg-zinc-950/80 border border-zinc-900 rounded-full py-1 px-3 sm:py-1.5 sm:px-3.5 select-none" 
                 id="secure-licensed-capsule"
               >
                 <ShieldCheck className="w-3.5 h-3.5 text-[#D6B16D] shrink-0" />
-                <span className="text-[11px] font-semibold text-zinc-300 font-sans tracking-wide">Secure</span>
+                <span className="text-[10px] sm:text-[11px] font-semibold text-zinc-300 font-sans tracking-wide">100% Secure</span>
                 <span className="text-zinc-800 text-xs">|</span>
                 <FileText className="w-3.5 h-3.5 text-[#D6B16D] shrink-0" />
-                <span className="text-[11px] font-semibold text-zinc-300 font-sans tracking-wide">Licensed</span>
+                <span className="text-[10px] sm:text-[11px] font-semibold text-zinc-300 font-sans tracking-wide">Official Licensed</span>
               </div>
             </div>
           </div>

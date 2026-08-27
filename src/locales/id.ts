@@ -395,6 +395,7 @@ export const idTranslations = {
     faq: 'FAQ & Bantuan',
     paymentMethods: 'METODE PEMBAYARAN RESMI',
     secure: '100% AMAN & TERPERCAYA',
+    secureSubtitle: 'Sistem reservasi & transaksi resmi terproteksi.',
     licensed: 'IZIN ANGKUTAN RESMI',
     allRightsReserved: 'Hak cipta dilindungi undang-undang',
     copyright: '© 2026 PT Sawah Jaya Trans. Hak Cipta Dilindungi.',

@@ -18,7 +18,7 @@ import AirportBookingCalendar from '../components/admin/AirportBookingCalendar';
 import ShareTourAdminDashboard from '../sharetour/components/AdminDashboard';
 import { fetchDB as fetchShareTourDB } from '../sharetour/api';
 import { Trip as ShareTourTrip, Batch as ShareTourBatch, Booking as ShareTourBooking } from '../sharetour/types';
-import { OFFICIAL_PARTNERS } from '../data/partnersData';
+import { OFFICIAL_PARTNERS, PARTNERS_DATA_VERSION } from '../data/partnersData';
 import { SocialMediaItem, getStoredSocialMedia, saveStoredSocialMedia } from '../data/socialMediaData';
 
 interface ItineraryFormItem {
@@ -401,13 +401,15 @@ export default function AdminView() {
 
   // Partner Management State
   const [adminPartners, setAdminPartners] = useState<any[]>(() => {
+    const version = localStorage.getItem('smartjourney_partners_version');
     const stored = localStorage.getItem('smartjourney_partners');
-    if (stored) {
+    if (stored && version === PARTNERS_DATA_VERSION) {
       try {
         const parsed = JSON.parse(stored);
-        const hasOutdatedLogos = parsed.some((p: any) => p.logoUrl && p.logoUrl.includes('images.unsplash.com'));
+        const hasOutdatedLogos = parsed.some((p: any) => p.logoUrl && (p.logoUrl.includes('images.unsplash.com') || p.id === 'pegipegi'));
         if (hasOutdatedLogos || parsed.length === 0) {
           localStorage.setItem('smartjourney_partners', JSON.stringify(OFFICIAL_PARTNERS));
+          localStorage.setItem('smartjourney_partners_version', PARTNERS_DATA_VERSION);
           return OFFICIAL_PARTNERS;
         }
         return parsed;
@@ -416,6 +418,7 @@ export default function AdminView() {
       }
     }
     localStorage.setItem('smartjourney_partners', JSON.stringify(OFFICIAL_PARTNERS));
+    localStorage.setItem('smartjourney_partners_version', PARTNERS_DATA_VERSION);
     return OFFICIAL_PARTNERS;
   });
 

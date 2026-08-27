@@ -137,7 +137,8 @@ export default function CheckoutModal({
     }
 
     const targetDate = initialDetails?.date;
-    if (targetDate) {
+    // Private Trips (serviceType === 'tour') are free from calendar batch/availability restrictions
+    if (targetDate && serviceType !== 'tour') {
       const isBlocked = (schedules || []).some(s => s.date === targetDate && s.type === 'blocked');
       const confirmedCount = (bookings || []).filter(b => 
         b.details && 

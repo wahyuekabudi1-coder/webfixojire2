@@ -64,12 +64,16 @@ export interface ParticipantData {
   nationalityType?: NationalityType;
 }
 
+export type TourBookingType = 'private' | 'shared';
+
 export interface Booking {
   id: string;
   bookingCode: string;
   tripId: string;
   tripTitle?: string;
-  batchId: string;
+  bookingType?: 'private' | 'shared';
+  tourBookingType?: 'private' | 'shared';
+  batchId?: string | null;
   departureDate?: string;
   fullName: string;
   email: string;

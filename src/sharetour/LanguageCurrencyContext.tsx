@@ -383,8 +383,9 @@ const dictionary: Record<string, Partial<Record<Language, string>>> = {
     zh: "查询预订详情"
   },
   "Real-time Secure Checkouts Locked": {
-    en: "Real-time Secure Checkouts Locked",
-    zh: "已启用256位实时安全加密结账"
+    en: "Official Protected Checkout",
+    id: "Gerbang Pembayaran Resmi Terlindungi",
+    zh: "官方安全认证结账"
   },
 
   // Trip Detail

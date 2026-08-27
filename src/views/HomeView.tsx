@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import CheckoutModal from '../components/CheckoutModal';
 import { motion, AnimatePresence } from 'motion/react';
-import { OFFICIAL_PARTNERS, PartnerApp } from '../data/partnersData';
+import { OFFICIAL_PARTNERS, PartnerApp, PARTNERS_DATA_VERSION } from '../data/partnersData';
 
 const WHY_US_ICONS: Record<number, React.ReactNode> = {
   1: <Users className="h-5 w-5 sm:h-6 sm:w-6" />,
@@ -79,14 +79,17 @@ export default function HomeView() {
   // Partnerships State
   const [partners, setPartners] = useState<PartnerApp[]>([]);
   React.useEffect(() => {
+    const version = localStorage.getItem('smartjourney_partners_version');
     const stored = localStorage.getItem('smartjourney_partners');
-    if (stored) {
+    
+    if (stored && version === PARTNERS_DATA_VERSION) {
       try {
         const parsed: PartnerApp[] = JSON.parse(stored);
-        const hasOutdatedLogos = parsed.some(p => p.logoUrl && p.logoUrl.includes('images.unsplash.com'));
+        const hasOutdatedLogos = parsed.some(p => p.logoUrl && (p.logoUrl.includes('images.unsplash.com') || p.id === 'pegipegi'));
         if (hasOutdatedLogos || parsed.length === 0) {
           setPartners(OFFICIAL_PARTNERS);
           localStorage.setItem('smartjourney_partners', JSON.stringify(OFFICIAL_PARTNERS));
+          localStorage.setItem('smartjourney_partners_version', PARTNERS_DATA_VERSION);
         } else {
           setPartners(parsed);
         }
@@ -94,10 +97,12 @@ export default function HomeView() {
         console.error('Failed to parse partners in HomeView', e);
         setPartners(OFFICIAL_PARTNERS);
         localStorage.setItem('smartjourney_partners', JSON.stringify(OFFICIAL_PARTNERS));
+        localStorage.setItem('smartjourney_partners_version', PARTNERS_DATA_VERSION);
       }
     } else {
       setPartners(OFFICIAL_PARTNERS);
       localStorage.setItem('smartjourney_partners', JSON.stringify(OFFICIAL_PARTNERS));
+      localStorage.setItem('smartjourney_partners_version', PARTNERS_DATA_VERSION);
     }
   }, []);
   
@@ -1111,28 +1116,29 @@ export default function HomeView() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
-              {partners.slice(0, 6).map((partner) => {
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-6">
+              {partners.slice(0, 12).map((partner) => {
                 return (
                   <a
                     key={partner.id}
+                    id={`partner-card-${partner.id}`}
                     href={partner.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="bg-white border border-neutral-200 hover:border-amber-500/40 rounded-2xl h-24 flex items-center justify-center p-4 relative group transition-all duration-300 shadow-sm hover:shadow-md cursor-pointer overflow-hidden"
+                    className="bg-white border border-neutral-200/90 hover:border-amber-500/60 rounded-2xl h-24 flex items-center justify-center p-3 sm:p-4 relative group transition-all duration-300 shadow-xs hover:shadow-md hover:-translate-y-1 cursor-pointer overflow-hidden"
                   >
-                    <div className="w-full h-full flex items-center justify-center p-2">
+                    <div className="w-full h-full flex items-center justify-center p-1 sm:p-2">
                       <img
                         src={partner.logoUrl}
                         alt={partner.name}
-                        className="max-h-11 max-w-[85%] object-contain group-hover:scale-105 transition-all duration-300 rounded"
+                        className="max-h-12 max-w-[88%] object-contain group-hover:scale-105 transition-all duration-300"
                         referrerPolicy="no-referrer"
                         onError={(e) => {
                           (e.target as any).src = 'https://images.unsplash.com/photo-1557200134-90327ee9fafa?auto=format&fit=crop&w=150&q=80';
                         }}
                       />
                     </div>
-                    <div className="absolute bottom-1 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-neutral-900/90 px-2 py-0.5 rounded text-[8px] text-amber-500 font-semibold tracking-wider uppercase whitespace-nowrap pointer-events-none">
+                    <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-neutral-900/90 backdrop-blur-xs px-2.5 py-0.5 rounded-full text-[9px] text-amber-400 font-bold tracking-wider uppercase whitespace-nowrap pointer-events-none shadow-md">
                       {partner.name}
                     </div>
                   </a>

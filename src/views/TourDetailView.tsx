@@ -196,9 +196,9 @@ export default function TourDetailView({ tourId, onBack }: TourDetailViewProps) 
   const [guestCount, setGuestCount] = useState<number>(2);
   const [selectedTierId, setSelectedTierId] = useState<'WNI' | 'WNA_CHINA' | 'WNA_EUROPE' | ''>('WNI');
   
-  // Calendar month & year navigation state
-  const [calendarYear, setCalendarYear] = useState<number>(2026);
-  const [calendarMonth, setCalendarMonth] = useState<number>(6); // 6 = July 2026 (0-indexed)
+  // Calendar month & year navigation state - defaults to current date
+  const [calendarYear, setCalendarYear] = useState<number>(() => new Date().getFullYear());
+  const [calendarMonth, setCalendarMonth] = useState<number>(() => new Date().getMonth()); // current month (0-indexed)
 
   // Tab control for the Day-by-Day structured itinerary
   const [selectedDayTab, setSelectedDayTab] = useState<number>(1);
@@ -300,17 +300,6 @@ export default function TourDetailView({ tourId, onBack }: TourDetailViewProps) 
       wnaPrice: selectedTier.priceIDR
     };
 
-    const shareBatch: Batch = {
-      id: `batch-${tour.id}-${selectedDate || 'today'}`,
-      tripId: tour.id,
-      departureDate: selectedDate || new Date().toISOString().split('T')[0],
-      quota: 20,
-      availableSeats: 20,
-      price: selectedTier.priceIDR,
-      wnaPrice: selectedTier.priceIDR,
-      status: 'Open'
-    };
-
     const mappedNationality: 'WNI' | 'WNA_CHINA' | 'WNA_EUROPE' = 
       selectedTier.id === 'WNA_CHINA' ? 'WNA_CHINA' : 
       selectedTier.id === 'WNA_EUROPE' ? 'WNA_EUROPE' : 'WNI';
@@ -319,7 +308,12 @@ export default function TourDetailView({ tourId, onBack }: TourDetailViewProps) 
       <div className="pt-28 pb-16 min-h-screen bg-[#F8FAF9]">
         <BookingForm
           trip={shareTrip}
-          batch={shareBatch}
+          batch={null}
+          bookingType="private"
+          tourBookingType="private"
+          departureDate={selectedDate || new Date().toISOString().split('T')[0]}
+          initialParticipants={guestCount}
+          initialUnitPrice={selectedTier.priceIDR}
           nationalityType={mappedNationality}
           onBack={() => setIsBookingOpen(false)}
           onSuccess={(b) => {
@@ -354,10 +348,14 @@ export default function TourDetailView({ tourId, onBack }: TourDetailViewProps) 
   };
 
   // Generate date list for interactive departure calendar for selected year & month
+  // NOTE: For Private Trips, date selection is 100% FREE (any day today or in the future is available daily)
   const getCalendarMonthData = () => {
     const firstDay = new Date(calendarYear, calendarMonth, 1);
     const daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate();
     const startDayIndex = firstDay.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+
+    const now = new Date();
+    const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
     const days = [];
     for (let i = 1; i <= daysInMonth; i++) {
@@ -365,22 +363,10 @@ export default function TourDetailView({ tourId, onBack }: TourDetailViewProps) 
       const dayStr = String(i).padStart(2, '0');
       const dateStr = `${calendarYear}-${monthStr}-${dayStr}`;
       
-      // Check if date is manually blocked (blackout date)
-      const isBlocked = (schedules || []).some(s => s.date === dateStr && s.type === 'blocked');
-      
-      // Maximum capacity for tour bookings per day is 3
-      const MAX_BOOKINGS_PER_DAY = 3;
-      const confirmedCount = (bookings || []).filter(b => 
-        b.details && 
-        b.details.date === dateStr && 
-        b.type === 'tour' &&
-        (b.status === 'Confirmed' || b.status === 'Completed')
-      ).length;
-      
-      const isFull = confirmedCount >= MAX_BOOKINGS_PER_DAY;
-      const remainingSlots = Math.max(0, MAX_BOOKINGS_PER_DAY - confirmedCount);
-      const isAvailable = !isBlocked && !isFull;
-      
+      // Private trip: Any day from today onwards is fully available without batch or quota constraints
+      const isPast = dateStr < todayStr;
+      const isAvailable = !isPast;
+
       // Determine pricing multiplier (peak surcharge or weekend premium)
       const peakSch = (schedules || []).find(s => s.date === dateStr && s.type === 'peak');
       let priceMultiplier = 1.0;
@@ -398,15 +384,13 @@ export default function TourDetailView({ tourId, onBack }: TourDetailViewProps) 
         dayNum: i,
         dateString: dateStr,
         isAvailable,
-        isFull,
-        confirmedCount,
-        remainingSlots,
+        isPast,
         priceMultiplier,
         note
       });
     }
 
-    return { startDayIndex, daysInMonth, days };
+    return { startDayIndex, daysInMonth, days, todayStr };
   };
 
   const calendarMonthData = getCalendarMonthData();
@@ -833,15 +817,44 @@ export default function TourDetailView({ tourId, onBack }: TourDetailViewProps) 
           {/* RIGHT 5 COLUMNS: Departure Calendar & Sticky Secure Booking Widget */}
           <div className="lg:col-span-5 space-y-8 lg:sticky lg:top-24">
             
-            {/* Embedded Departure Calendar & Booking Widget (Same display requirements as Share Tour / shutter) */}
+            {/* Embedded Departure Calendar & Booking Widget - Private Trip (Free Calendar Selection) */}
             <div id="booking-section" className="bg-white rounded-3xl border border-gray-100 p-6 sm:p-7 shadow-md space-y-6 text-left">
               
               <div className="space-y-1">
                 <span className="text-[10px] bg-emerald-100 text-[#315B4F] font-extrabold px-3 py-1 rounded-full uppercase tracking-widest font-mono inline-block border border-emerald-200">
-                  PEMESANAN INSTAN
+                  ✨ PRIVATE TRIP — BEBAS PILIH TANGGAL
                 </span>
-                <h3 className="text-xl font-display font-bold text-gray-900">Departure Calendar &amp; Booking</h3>
-                <p className="text-xs text-gray-500">Pilih tanggal keberangkatan dan kategori kewarganegaraan di bawah.</p>
+                <h3 className="text-xl font-display font-bold text-gray-900">Pilih Tanggal &amp; Reservasi</h3>
+                <p className="text-xs text-gray-500 leading-relaxed">
+                  Khusus Private Trip, Anda bebas menentukan tanggal keberangkatan kapan saja (tersedia setiap hari).
+                </p>
+              </div>
+
+              {/* Quick Direct Date Picker Input */}
+              <div className="p-3 bg-gray-50 rounded-2xl border border-gray-100 space-y-1.5">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-gray-500 font-mono flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5 text-[#315B4F]" />
+                  <span>Pilih Tanggal Keberangkatan Langsung:</span>
+                </label>
+                <input
+                  type="date"
+                  min={calendarMonthData.todayStr}
+                  value={selectedDate}
+                  onChange={(e) => {
+                    setSelectedDate(e.target.value);
+                    if (e.target.value) {
+                      const d = new Date(e.target.value);
+                      if (!isNaN(d.getTime())) {
+                        setCalendarYear(d.getFullYear());
+                        setCalendarMonth(d.getMonth());
+                      }
+                      if (!selectedTierId) {
+                        setSelectedTierId('WNI');
+                      }
+                    }
+                  }}
+                  className="w-full px-3.5 py-2 rounded-xl bg-white border border-gray-200 text-xs sm:text-sm font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#315B4F]/30 focus:border-[#315B4F] transition-all cursor-pointer"
+                />
               </div>
 
               {/* 1. Interactive Calendar Navigation */}
@@ -899,10 +912,8 @@ export default function TourDetailView({ tourId, onBack }: TourDetailViewProps) 
                           }
                         }}
                         className={`relative aspect-square rounded-xl text-xs font-mono font-bold flex flex-col items-center justify-center transition-all cursor-pointer ${
-                          day.isFull
-                            ? 'bg-rose-50 text-rose-500 border border-rose-100 cursor-not-allowed opacity-80'
-                            : !day.isAvailable
-                            ? 'text-gray-300 cursor-not-allowed select-none opacity-50'
+                          !day.isAvailable
+                            ? 'text-gray-300 cursor-not-allowed select-none opacity-40 bg-gray-50'
                             : isSelected
                             ? 'bg-[#315B4F] text-[#D6B16D] ring-4 ring-[#315B4F]/20 font-black shadow-md'
                             : 'bg-emerald-50 text-[#315B4F] hover:bg-emerald-100 border border-emerald-100 hover:scale-105'
@@ -921,15 +932,11 @@ export default function TourDetailView({ tourId, onBack }: TourDetailViewProps) 
                 <div className="flex items-center justify-between text-[9px] text-gray-400 font-mono border-t border-gray-100 pt-2.5">
                   <span className="flex items-center gap-1">
                     <span className="w-2.5 h-2.5 bg-emerald-50 border border-emerald-100 rounded block" />
-                    <span>Tersedia</span>
+                    <span>Bebas Dipilih (Setiap Hari)</span>
                   </span>
                   <span className="flex items-center gap-1">
                     <span className="w-2.5 h-2.5 bg-[#315B4F] rounded block" />
-                    <span>Terpilih</span>
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <span className="w-2.5 h-2.5 bg-rose-50 border border-rose-100 rounded block" />
-                    <span>Penuh</span>
+                    <span>Tanggal Terpilih</span>
                   </span>
                 </div>
               </div>

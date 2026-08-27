@@ -8,7 +8,7 @@ export function recalculateBatchSeats(db: DatabaseState): DatabaseState {
 
   db.batches.forEach((batch) => {
     const activeBookings = db.bookings.filter(
-      (b) => b.batchId === batch.id && b.status !== "Rejected"
+      (b) => Boolean(b.batchId) && b.batchId === batch.id && b.status !== "Rejected"
     );
     const totalBooked = activeBookings.reduce(
       (sum, b) => sum + (Number(b.participantsCount) || 1),

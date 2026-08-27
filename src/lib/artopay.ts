@@ -120,18 +120,29 @@ export async function processArtoPayPayment({
       throw new Error(msg);
     }
 
+    if (publicKey) {
+      if (typeof window !== 'undefined') {
+        (window as any).__ARTOPAY_PUBLIC_KEY__ = publicKey;
+        const scriptEl = document.getElementById('arto-pay-sdk-script');
+        if (scriptEl) {
+          scriptEl.setAttribute('data-client-key', publicKey);
+        }
+      }
+    }
+
     // Configure ArtoPay SDK
     ArtoPay.configure({
       sandbox: isSandbox,
     });
 
     // Step 3: Open Payment Interface using official SDK parameters
-    ArtoPay.openPayment({
+    (ArtoPay.openPayment as any)({
       token: customerToken,
       clientSecret,
       paymentId,
       orderId: returnedOrderId,
       sandbox: isSandbox,
+      publicKey: publicKey || undefined,
       onSuccess: (result: any) => {
         console.log('[ArtoPay SDK Callback] onSuccess:', result);
         if (onSuccess) onSuccess(result);

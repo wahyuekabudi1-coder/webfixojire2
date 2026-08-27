@@ -90,10 +90,11 @@ export default function ToursView() {
   });
 
   const handleBookTour = (tour: any) => {
+    const todayStr = new Date().toISOString().split('T')[0];
     setBookingTour({
       tour,
       details: {
-        date: searchDate || '2026-07-12',
+        date: searchDate || todayStr,
         guests: Number(searchGuests),
         tourId: tour.id,
         pickupLocation: 'Hotel Lobby / Airport Arrival'

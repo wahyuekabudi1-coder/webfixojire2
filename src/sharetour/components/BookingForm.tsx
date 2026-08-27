@@ -7,14 +7,35 @@ import { processArtoPayPayment } from "../../lib/artopay";
 
 interface BookingFormProps {
   trip: Trip;
-  batch: Batch;
+  batch?: Batch | null;
+  bookingType?: 'private' | 'shared';
+  tourBookingType?: 'private' | 'shared';
+  departureDate?: string;
+  initialParticipants?: number;
+  initialUnitPrice?: number;
   nationalityType?: 'WNI' | 'WNA' | 'WNA_CHINA' | 'WNA_EUROPE' | null;
   onBack: () => void;
   onSuccess: (booking: Booking) => void;
 }
 
-export default function BookingForm({ trip, batch, nationalityType = 'WNI', onBack, onSuccess }: BookingFormProps) {
+export default function BookingForm({
+  trip,
+  batch,
+  bookingType = 'shared',
+  tourBookingType,
+  departureDate,
+  initialParticipants = 1,
+  initialUnitPrice,
+  nationalityType = 'WNI',
+  onBack,
+  onSuccess
+}: BookingFormProps) {
   const { t, formatPrice, language } = useLanguageCurrency();
+
+  const isPrivate = (bookingType === 'private' || tourBookingType === 'private' || !batch);
+  const selectedDepartureDate = isPrivate 
+    ? (departureDate || (batch ? batch.departureDate : new Date().toISOString().split('T')[0]))
+    : (batch ? batch.departureDate : (departureDate || new Date().toISOString().split('T')[0]));
 
   // Initial nationality category state
   const initialCategory = (): 'WNI' | 'WNA_CHINA' | 'WNA_EUROPE' => {
@@ -36,14 +57,16 @@ export default function BookingForm({ trip, batch, nationalityType = 'WNI', onBa
   const [email, setEmail] = useState(""); // Email
   const [flightNumber, setFlightNumber] = useState(""); // No Penerbangan
 
-  // Participants Counter (Max is 12)
-  const [numParticipants, setNumParticipants] = useState(1);
+  // Participants Counter
+  const maxSeatsAllowed = isPrivate ? 25 : (batch ? Math.min(12, batch.availableSeats) : 12);
+  const [numParticipants, setNumParticipants] = useState(() => Math.max(1, Math.min(initialParticipants, maxSeatsAllowed)));
   const [companionNames, setCompanionNames] = useState<string[]>([]);
 
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
   const formatDate = (dateStr: string) => {
+    if (!dateStr) return '';
     if (language === "zh") {
       const d = new Date(dateStr);
       return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
@@ -52,10 +75,9 @@ export default function BookingForm({ trip, batch, nationalityType = 'WNI', onBa
     return new Date(dateStr).toLocaleDateString('en-US', options);
   };
 
-  // Adjust companion arrays dynamically (Max 12, and restricted by availableSeats)
+  // Adjust companion arrays dynamically
   const handleParticipantsChange = (val: number) => {
-    const allowedMax = Math.min(12, batch.availableSeats);
-    const count = Math.max(1, Math.min(val, allowedMax));
+    const count = Math.max(1, Math.min(val, maxSeatsAllowed));
     setNumParticipants(count);
     
     const companionsDiff = count - 1;
@@ -72,6 +94,23 @@ export default function BookingForm({ trip, batch, nationalityType = 'WNI', onBa
     updated[index] = val;
     setCompanionNames(updated);
   };
+
+  const getUnitPrice = () => {
+    if (initialUnitPrice && initialUnitPrice > 0) return initialUnitPrice;
+    if (isPrivate) {
+      if (currentNationality === 'WNI') return trip.price || trip.startingPrice || 150;
+      return trip.wnaPrice || trip.wnaStartingPrice || (trip.price || trip.startingPrice || 150) + 20;
+    }
+    if (batch) {
+      return (currentNationality === 'WNI')
+        ? batch.price
+        : (batch.wnaPrice || batch.price + 20);
+    }
+    return trip.price || trip.startingPrice || 150;
+  };
+
+  const currentUnitPrice = getUnitPrice();
+  const totalPrice = numParticipants * currentUnitPrice;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -103,23 +142,26 @@ export default function BookingForm({ trip, batch, nationalityType = 'WNI', onBa
       if (n.trim()) participantsList.push(n.trim());
     });
 
-    const unitPrice = (currentNationality === 'WNI')
-      ? batch.price
-      : (batch.wnaPrice || batch.price + 20);
-
-    const calculatedTotalPrice = numParticipants * unitPrice;
+    const calculatedTotalPrice = numParticipants * currentUnitPrice;
 
     try {
-      const payload = {
+      const payload: any = {
         tripId: trip.id,
-        batchId: batch.id,
+        ...(isPrivate ? {} : { batchId: batch?.id }),
+        bookingType: isPrivate ? 'private' : 'shared',
+        tourBookingType: isPrivate ? 'private' : 'shared',
+        departureDate: selectedDepartureDate,
         fullName: name.trim(),
+        customerName: name.trim(),
         email: email.toLowerCase().trim(),
+        customerEmail: email.toLowerCase().trim(),
         phone: whatsapp.trim(),
+        customerPhone: whatsapp.trim(),
         participantsCount: numParticipants,
         participantsNames: participantsList,
         proofOfPayment: "NOT_APPLICABLE_SLEEK_THEME",
         totalPrice: calculatedTotalPrice,
+        totalPriceIDR: calculatedTotalPrice,
         nationalityType: currentNationality,
         participantData: {
           name: name.trim(),
@@ -143,7 +185,7 @@ export default function BookingForm({ trip, batch, nationalityType = 'WNI', onBa
           orderId: result.bookingCode || result.id,
           amount: calculatedTotalPrice,
           currency: 'IDR',
-          description: trip.title,
+          description: isPrivate ? `Private Tour: ${trip.title}` : `Open Trip: ${trip.title} (${selectedDepartureDate})`,
           customerName: name.trim(),
           customerEmail: email.toLowerCase().trim(),
           customerPhone: whatsapp.trim(),
@@ -170,12 +212,6 @@ export default function BookingForm({ trip, batch, nationalityType = 'WNI', onBa
       setLoading(false);
     }
   };
-
-  const currentUnitPrice = (currentNationality === 'WNI')
-    ? batch.price
-    : (batch.wnaPrice || batch.price + 20);
-
-  const totalPrice = numParticipants * currentUnitPrice;
 
   return (
     <div className="space-y-8 pb-16 animate-fade-in" id="booking-registration-module">
@@ -214,7 +250,7 @@ export default function BookingForm({ trip, batch, nationalityType = 'WNI', onBa
 
               <div className="border-t border-white/10 pt-4 flex items-center justify-between text-xs text-emerald-200">
                 <span>{t("Selected Schedule")}</span>
-                <span className="font-bold text-white">{formatDate(batch.departureDate)}</span>
+                <span className="font-bold text-white">{formatDate(selectedDepartureDate)}</span>
               </div>
               <div className="flex items-center justify-between text-xs text-emerald-200">
                 <span>{t("Duration")}</span>
@@ -494,8 +530,14 @@ export default function BookingForm({ trip, batch, nationalityType = 'WNI', onBa
             <div className="space-y-4 pt-6 border-t border-gray-100">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div className="space-y-0.5">
-                  <span className="text-xs font-bold text-gray-700 block">{t("Total Booking Seats (Max 12)")}</span>
-                  <p className="text-[11px] text-[#315B4F] font-semibold">{t("Maximum 12 participants can be mapped to a single checkout lock.")}</p>
+                  <span className="text-xs font-bold text-gray-700 block">
+                    {t("Total Booking Seats")} (Max {maxSeatsAllowed})
+                  </span>
+                  <p className="text-[11px] text-[#315B4F] font-semibold">
+                    {isPrivate 
+                      ? t("Private Tour: Bebas menentukan tanggal dan jumlah peserta (hingga 25 orang).")
+                      : t("Share Tour: Maksimal kuota peserta dibatasi oleh ketersediaan kursi batch.")}
+                  </p>
                 </div>
                 
                 <div className="flex items-center space-x-3 bg-gray-50 px-3 py-1.5 rounded-2xl border border-gray-200 w-fit self-start sm:self-center">

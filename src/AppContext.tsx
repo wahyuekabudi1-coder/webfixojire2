@@ -361,7 +361,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const addBooking = (bookingData: Omit<Booking, 'id' | 'bookingDate' | 'status'>): Booking => {
     const targetDate = bookingData.details?.date;
-    if (targetDate) {
+    // Private Trips (type === 'tour') are free from calendar batch/availability restrictions
+    if (targetDate && bookingData.type !== 'tour') {
       const isBlocked = (schedules || []).some(s => s.date === targetDate && s.type === 'blocked');
       const confirmedCount = bookings.filter(b => 
         b.details && 
@@ -403,10 +404,17 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       body: JSON.stringify({
         id,
         bookingCode: id,
+        bookingType: 'private',
+        tourBookingType: 'private',
+        type: bookingData.type,
         serviceName: bookingData.serviceName,
+        departureDate: bookingData.details?.date || '',
         customerName: bookingData.customerName,
+        fullName: bookingData.customerName,
         customerEmail: bookingData.customerEmail,
+        email: bookingData.customerEmail,
         customerPhone: bookingData.customerPhone,
+        phone: bookingData.customerPhone,
         totalPrice: bookingData.totalPrice,
         totalPriceIDR: bookingData.totalPriceIDR || bookingData.totalPrice,
         status: 'Pending',

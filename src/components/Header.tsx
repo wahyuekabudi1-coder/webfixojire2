@@ -345,8 +345,8 @@ export default function Header() {
             </button>
           </div>
 
-          {/* Mobile Separate Dropdowns & Menu Controls */}
-          <div className="flex md:hidden items-center space-x-1.5">
+          {/* Mobile Separate Dropdowns & Menu Controls (Compact & Sleek for Smartphone) */}
+          <div className="flex md:hidden items-center space-x-1 sm:space-x-1.5">
             
             {/* 1. Mobile Separate Language Dropdown */}
             <div className="relative" id="mobile-lang-container">
@@ -355,14 +355,13 @@ export default function Header() {
                   setIsMobileLangOpen(!isMobileLangOpen);
                   setIsMobileCurrOpen(false);
                 }}
-                className="bg-neutral-100 active:bg-neutral-200 border border-neutral-200 text-neutral-900 text-xs px-2 py-1.5 rounded-xl font-bold min-h-[36px] flex items-center justify-center gap-1 cursor-pointer shadow-xs transition-all"
+                className="bg-neutral-100/90 active:bg-neutral-200 border border-neutral-200 text-neutral-800 text-[11px] px-2 py-1 rounded-lg font-black font-mono h-7 flex items-center justify-center gap-1 cursor-pointer shadow-2xs transition-all hover:bg-neutral-200/60"
                 title="Pilih Bahasa"
                 aria-label="Pilih Bahasa"
                 aria-expanded={isMobileLangOpen}
               >
-                <span>{language === 'id' ? '🇮🇩' : language === 'en' ? '🇬🇧' : '🇨🇳'}</span>
-                <span className="uppercase text-[11px] font-mono font-bold">
-                  {language.toUpperCase()}
+                <span className="uppercase tracking-tight text-neutral-800">
+                  {language === 'en' ? 'EN' : language === 'id' ? 'ID' : 'ZH'}
                 </span>
                 <ChevronDown className={`h-3 w-3 text-neutral-500 transition-transform duration-200 ${isMobileLangOpen ? 'rotate-180' : ''}`} />
               </button>
@@ -370,38 +369,38 @@ export default function Header() {
               <AnimatePresence>
                 {isMobileLangOpen && (
                   <motion.div
-                    initial={{ opacity: 0, y: 6, scale: 0.95 }}
+                    initial={{ opacity: 0, y: 4, scale: 0.96 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 6, scale: 0.95 }}
-                    transition={{ duration: 0.15 }}
-                    className="absolute right-0 top-full mt-1.5 w-36 bg-white rounded-2xl shadow-2xl border border-neutral-200 py-1.5 z-50 overflow-hidden"
+                    exit={{ opacity: 0, y: 4, scale: 0.96 }}
+                    transition={{ duration: 0.12 }}
+                    className="absolute right-0 top-full mt-1 w-28 bg-white rounded-xl shadow-xl border border-neutral-200 py-1 z-50 overflow-hidden"
                   >
                     <button
                       onClick={() => handleLanguageChange('id')}
-                      className={`w-full text-left px-3.5 py-2 text-xs flex items-center justify-between transition-colors cursor-pointer ${
+                      className={`w-full text-left px-2.5 py-1.5 text-xs flex items-center justify-between transition-colors cursor-pointer ${
                         language === 'id' ? 'bg-amber-50 text-amber-800 font-bold' : 'text-neutral-700 active:bg-neutral-100'
                       }`}
                     >
-                      <span className="flex items-center gap-2">🇮🇩 Indonesia</span>
-                      {language === 'id' && <Check className="h-3.5 w-3.5 text-amber-600" />}
+                      <span className="font-bold">ID</span>
+                      {language === 'id' && <Check className="h-3 w-3 text-amber-600" />}
                     </button>
                     <button
                       onClick={() => handleLanguageChange('en')}
-                      className={`w-full text-left px-3.5 py-2 text-xs flex items-center justify-between transition-colors cursor-pointer ${
+                      className={`w-full text-left px-2.5 py-1.5 text-xs flex items-center justify-between transition-colors cursor-pointer ${
                         language === 'en' ? 'bg-amber-50 text-amber-800 font-bold' : 'text-neutral-700 active:bg-neutral-100'
                       }`}
                     >
-                      <span className="flex items-center gap-2">🇬🇧 English</span>
-                      {language === 'en' && <Check className="h-3.5 w-3.5 text-amber-600" />}
+                      <span className="font-bold">EN</span>
+                      {language === 'en' && <Check className="h-3 w-3 text-amber-600" />}
                     </button>
                     <button
                       onClick={() => handleLanguageChange('zh')}
-                      className={`w-full text-left px-3.5 py-2 text-xs flex items-center justify-between transition-colors cursor-pointer ${
+                      className={`w-full text-left px-2.5 py-1.5 text-xs flex items-center justify-between transition-colors cursor-pointer ${
                         language === 'zh' ? 'bg-amber-50 text-amber-800 font-bold' : 'text-neutral-700 active:bg-neutral-100'
                       }`}
                     >
-                      <span className="flex items-center gap-2">🇨🇳 中文</span>
-                      {language === 'zh' && <Check className="h-3.5 w-3.5 text-amber-600" />}
+                      <span className="font-bold">ZH</span>
+                      {language === 'zh' && <Check className="h-3 w-3 text-amber-600" />}
                     </button>
                   </motion.div>
                 )}
@@ -415,15 +414,12 @@ export default function Header() {
                   setIsMobileCurrOpen(!isMobileCurrOpen);
                   setIsMobileLangOpen(false);
                 }}
-                className="bg-neutral-100 active:bg-neutral-200 border border-neutral-200 text-neutral-900 text-xs px-2 py-1.5 rounded-xl font-bold min-h-[36px] flex items-center justify-center gap-1 cursor-pointer shadow-xs transition-all"
+                className="bg-neutral-100/90 active:bg-neutral-200 border border-neutral-200 text-neutral-800 text-[11px] px-2 py-1 rounded-lg font-black font-mono h-7 flex items-center justify-center gap-1 cursor-pointer shadow-2xs transition-all hover:bg-neutral-200/60"
                 title="Pilih Mata Uang"
                 aria-label="Pilih Mata Uang"
                 aria-expanded={isMobileCurrOpen}
               >
-                <span className="font-mono font-black text-amber-600 text-xs">
-                  {currency === 'USD' ? '$' : currency === 'IDR' ? 'Rp' : '¥'}
-                </span>
-                <span className="text-[11px] font-bold text-neutral-800">
+                <span className="tracking-tight text-neutral-800">
                   {currency}
                 </span>
                 <ChevronDown className={`h-3 w-3 text-neutral-500 transition-transform duration-200 ${isMobileCurrOpen ? 'rotate-180' : ''}`} />
@@ -432,47 +428,38 @@ export default function Header() {
               <AnimatePresence>
                 {isMobileCurrOpen && (
                   <motion.div
-                    initial={{ opacity: 0, y: 6, scale: 0.95 }}
+                    initial={{ opacity: 0, y: 4, scale: 0.96 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 6, scale: 0.95 }}
-                    transition={{ duration: 0.15 }}
-                    className="absolute right-0 top-full mt-1.5 w-36 bg-white rounded-2xl shadow-2xl border border-neutral-200 py-1.5 z-50 overflow-hidden"
+                    exit={{ opacity: 0, y: 4, scale: 1 }}
+                    transition={{ duration: 0.12 }}
+                    className="absolute right-0 top-full mt-1 w-28 bg-white rounded-xl shadow-xl border border-neutral-200 py-1 z-50 overflow-hidden"
                   >
                     <button
-                      onClick={() => handleCurrencyChange('USD')}
-                      className={`w-full text-left px-3.5 py-2 text-xs flex items-center justify-between transition-colors cursor-pointer ${
-                        currency === 'USD' ? 'bg-amber-50 text-amber-800 font-bold' : 'text-neutral-700 active:bg-neutral-100'
-                      }`}
-                    >
-                      <span className="flex items-center gap-2">
-                        <span className="font-mono font-black text-amber-600 w-4">$</span>
-                        <span>USD ($)</span>
-                      </span>
-                      {currency === 'USD' && <Check className="h-3.5 w-3.5 text-amber-600" />}
-                    </button>
-                    <button
                       onClick={() => handleCurrencyChange('IDR')}
-                      className={`w-full text-left px-3.5 py-2 text-xs flex items-center justify-between transition-colors cursor-pointer ${
+                      className={`w-full text-left px-2.5 py-1.5 text-xs flex items-center justify-between transition-colors cursor-pointer ${
                         currency === 'IDR' ? 'bg-amber-50 text-amber-800 font-bold' : 'text-neutral-700 active:bg-neutral-100'
                       }`}
                     >
-                      <span className="flex items-center gap-2">
-                        <span className="font-mono font-black text-amber-600 w-4 text-[10px]">Rp</span>
-                        <span>IDR (Rp)</span>
-                      </span>
-                      {currency === 'IDR' && <Check className="h-3.5 w-3.5 text-amber-600" />}
+                      <span className="font-bold font-mono">IDR</span>
+                      {currency === 'IDR' && <Check className="h-3 w-3 text-amber-600" />}
+                    </button>
+                    <button
+                      onClick={() => handleCurrencyChange('USD')}
+                      className={`w-full text-left px-2.5 py-1.5 text-xs flex items-center justify-between transition-colors cursor-pointer ${
+                        currency === 'USD' ? 'bg-amber-50 text-amber-800 font-bold' : 'text-neutral-700 active:bg-neutral-100'
+                      }`}
+                    >
+                      <span className="font-bold font-mono">USD</span>
+                      {currency === 'USD' && <Check className="h-3 w-3 text-amber-600" />}
                     </button>
                     <button
                       onClick={() => handleCurrencyChange('CNY')}
-                      className={`w-full text-left px-3.5 py-2 text-xs flex items-center justify-between transition-colors cursor-pointer ${
+                      className={`w-full text-left px-2.5 py-1.5 text-xs flex items-center justify-between transition-colors cursor-pointer ${
                         currency === 'CNY' ? 'bg-amber-50 text-amber-800 font-bold' : 'text-neutral-700 active:bg-neutral-100'
                       }`}
                     >
-                      <span className="flex items-center gap-2">
-                        <span className="font-mono font-black text-amber-600 w-4">¥</span>
-                        <span>CNY (¥)</span>
-                      </span>
-                      {currency === 'CNY' && <Check className="h-3.5 w-3.5 text-amber-600" />}
+                      <span className="font-bold font-mono">CNY</span>
+                      {currency === 'CNY' && <Check className="h-3 w-3 text-amber-600" />}
                     </button>
                   </motion.div>
                 )}
@@ -482,11 +469,11 @@ export default function Header() {
             {/* 3. Mobile Hamburger Navigation Toggle */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="text-neutral-700 hover:text-neutral-900 active:bg-neutral-100 p-1.5 rounded-xl min-h-[36px] min-w-[36px] flex items-center justify-center cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+              className="text-neutral-700 hover:text-neutral-900 active:bg-neutral-100 p-1 rounded-lg h-7 w-7 flex items-center justify-center cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
               aria-label="Toggle Navigation Menu"
               aria-expanded={isMobileMenuOpen}
             >
-              {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {isMobileMenuOpen ? <X className="h-4.5 w-4.5" /> : <Menu className="h-4.5 w-4.5" />}
             </button>
           </div>
 
@@ -620,9 +607,8 @@ export default function Header() {
                         }}
                         className="w-full flex items-center justify-between px-3.5 py-2.5 bg-white border border-neutral-200 rounded-xl text-xs font-bold text-neutral-800 shadow-xs cursor-pointer active:bg-neutral-50"
                       >
-                        <span className="flex items-center gap-2">
-                          <span>{language === 'id' ? '🇮🇩' : language === 'en' ? '🇬🇧' : '🇨🇳'}</span>
-                          <span>{language === 'id' ? 'Bahasa Indonesia' : language === 'en' ? 'English (US)' : '简体中文'}</span>
+                        <span className="font-bold">
+                          {language === 'id' ? 'ID (Bahasa Indonesia)' : language === 'en' ? 'EN (English)' : 'ZH (简体中文)'}
                         </span>
                         <ChevronDown className={`h-4 w-4 text-neutral-400 transition-transform duration-200 ${isDrawerLangOpen ? 'rotate-180' : ''}`} />
                       </button>
@@ -642,7 +628,7 @@ export default function Header() {
                                 language === 'id' ? 'bg-amber-50 text-amber-800 font-bold' : 'text-neutral-700 hover:bg-neutral-50'
                               }`}
                             >
-                              <span className="flex items-center gap-2">🇮🇩 Bahasa Indonesia</span>
+                              <span>ID (Bahasa Indonesia)</span>
                               {language === 'id' && <Check className="h-4 w-4 text-amber-600" />}
                             </button>
                             <button
@@ -651,7 +637,7 @@ export default function Header() {
                                 language === 'en' ? 'bg-amber-50 text-amber-800 font-bold' : 'text-neutral-700 hover:bg-neutral-50'
                               }`}
                             >
-                              <span className="flex items-center gap-2">🇬🇧 English</span>
+                              <span>EN (English)</span>
                               {language === 'en' && <Check className="h-4 w-4 text-amber-600" />}
                             </button>
                             <button
@@ -660,7 +646,7 @@ export default function Header() {
                                 language === 'zh' ? 'bg-amber-50 text-amber-800 font-bold' : 'text-neutral-700 hover:bg-neutral-50'
                               }`}
                             >
-                              <span className="flex items-center gap-2">🇨🇳 简体中文</span>
+                              <span>ZH (简体中文)</span>
                               {language === 'zh' && <Check className="h-4 w-4 text-amber-600" />}
                             </button>
                           </motion.div>
@@ -683,13 +669,8 @@ export default function Header() {
                         }}
                         className="w-full flex items-center justify-between px-3.5 py-2.5 bg-white border border-neutral-200 rounded-xl text-xs font-bold text-neutral-800 shadow-xs cursor-pointer active:bg-neutral-50"
                       >
-                        <span className="flex items-center gap-2">
-                          <span className="font-mono font-black text-amber-600">
-                            {currency === 'USD' ? '$' : currency === 'IDR' ? 'Rp' : '¥'}
-                          </span>
-                          <span>
-                            {currency === 'USD' ? 'USD · US Dollar ($)' : currency === 'IDR' ? 'IDR · Indonesian Rupiah (Rp)' : 'CNY · Chinese Yuan (¥)'}
-                          </span>
+                        <span className="font-bold font-mono">
+                          {currency}
                         </span>
                         <ChevronDown className={`h-4 w-4 text-neutral-400 transition-transform duration-200 ${isDrawerCurrOpen ? 'rotate-180' : ''}`} />
                       </button>
@@ -704,28 +685,22 @@ export default function Header() {
                             className="mt-1.5 w-full bg-white border border-neutral-200 rounded-xl shadow-lg py-1 overflow-hidden z-20"
                           >
                             <button
-                              onClick={() => handleCurrencyChange('USD')}
-                              className={`w-full text-left px-3.5 py-2.5 text-xs flex items-center justify-between cursor-pointer ${
-                                currency === 'USD' ? 'bg-amber-50 text-amber-800 font-bold' : 'text-neutral-700 hover:bg-neutral-50'
-                              }`}
-                            >
-                              <span className="flex items-center gap-2">
-                                <span className="font-mono font-black text-amber-600 w-4">$</span>
-                                <span>USD - US Dollar ($)</span>
-                              </span>
-                              {currency === 'USD' && <Check className="h-4 w-4 text-amber-600" />}
-                            </button>
-                            <button
                               onClick={() => handleCurrencyChange('IDR')}
                               className={`w-full text-left px-3.5 py-2.5 text-xs flex items-center justify-between cursor-pointer ${
                                 currency === 'IDR' ? 'bg-amber-50 text-amber-800 font-bold' : 'text-neutral-700 hover:bg-neutral-50'
                               }`}
                             >
-                              <span className="flex items-center gap-2">
-                                <span className="font-mono font-black text-amber-600 w-4 text-[10px]">Rp</span>
-                                <span>IDR - Indonesian Rupiah (Rp)</span>
-                              </span>
+                              <span className="font-bold font-mono">IDR</span>
                               {currency === 'IDR' && <Check className="h-4 w-4 text-amber-600" />}
+                            </button>
+                            <button
+                              onClick={() => handleCurrencyChange('USD')}
+                              className={`w-full text-left px-3.5 py-2.5 text-xs flex items-center justify-between cursor-pointer ${
+                                currency === 'USD' ? 'bg-amber-50 text-amber-800 font-bold' : 'text-neutral-700 hover:bg-neutral-50'
+                              }`}
+                            >
+                              <span className="font-bold font-mono">USD</span>
+                              {currency === 'USD' && <Check className="h-4 w-4 text-amber-600" />}
                             </button>
                             <button
                               onClick={() => handleCurrencyChange('CNY')}
@@ -733,10 +708,7 @@ export default function Header() {
                                 currency === 'CNY' ? 'bg-amber-50 text-amber-800 font-bold' : 'text-neutral-700 hover:bg-neutral-50'
                               }`}
                             >
-                              <span className="flex items-center gap-2">
-                                <span className="font-mono font-black text-amber-600 w-4">¥</span>
-                                <span>CNY - Chinese Yuan (¥)</span>
-                              </span>
+                              <span className="font-bold font-mono">CNY</span>
                               {currency === 'CNY' && <Check className="h-4 w-4 text-amber-600" />}
                             </button>
                           </motion.div>

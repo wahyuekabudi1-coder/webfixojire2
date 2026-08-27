@@ -12,8 +12,8 @@ export default function PartnerLogos({
   size = 'md',
   showAll = false
 }: PartnerLogosProps) {
-  // Filter top 6 requested official partners first: Traveloka, Trip.com, Booking.com, Airbnb, Agoda, Tiket.com
-  const targetIds = ['traveloka', 'trip-com', 'booking-com', 'airbnb', 'agoda', 'tiket-com'];
+  // Filter top official partners: Traveloka, Trip.com, Booking.com, Airbnb, Agoda, Tiket.com, Klook, Tripadvisor
+  const targetIds = ['traveloka', 'trip-com', 'booking-com', 'airbnb', 'agoda', 'tiket-com', 'klook', 'tripadvisor'];
   const partnersList = showAll 
     ? OFFICIAL_PARTNERS 
     : OFFICIAL_PARTNERS.filter(p => targetIds.includes(p.id));

@@ -445,8 +445,8 @@ export default function StatusChecker({
               {/* Print action footer */}
               {foundBooking.status === "Confirmed" && (
                 <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4">
-                  <div className="text-[10px] text-slate-550 font-mono tracking-wider text-center md:text-left leading-normal text-slate-500">
-                    <span>SECURITY CODES: <b>SHA256//SMART_JOURNEY//MANIFEST_VERIFIED</b></span>
+                  <div className="text-[10px] text-slate-500 font-mono tracking-wider text-center md:text-left leading-normal">
+                    <span>SECURITY CODES: <b>SMART_JOURNEY//MANIFEST_VERIFIED</b></span>
                     <br />
                     <span>VERIFIED OFFICIAL SMART JOURNEY DEPARTURES</span>
                   </div>

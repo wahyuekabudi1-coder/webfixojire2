@@ -14,7 +14,7 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import Breadcrumbs from '../components/Breadcrumbs';
-import { OFFICIAL_PARTNERS, PartnerApp } from '../data/partnersData';
+import { OFFICIAL_PARTNERS, PartnerApp, PARTNERS_DATA_VERSION } from '../data/partnersData';
 
 export default function PartnershipsView() {
   const { setPage } = useApp();
@@ -37,19 +37,19 @@ export default function PartnershipsView() {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  // Load partners on mount - upgrade if using old unsplash placeholders
+  // Load partners on mount - upgrade if using old unsplash placeholders or outdated schema
   useEffect(() => {
+    const version = localStorage.getItem('smartjourney_partners_version');
     const stored = localStorage.getItem('smartjourney_partners');
-    if (stored) {
+    
+    if (stored && version === PARTNERS_DATA_VERSION) {
       try {
         const parsed: PartnerApp[] = JSON.parse(stored);
-        // Check if existing data has old unsplash placeholder images or needs refresh with official SVG logos
-        const hasOutdatedLogos = parsed.some(p => p.logoUrl && p.logoUrl.includes('images.unsplash.com'));
+        const hasOutdatedLogos = parsed.some(p => p.logoUrl && (p.logoUrl.includes('images.unsplash.com') || p.id === 'pegipegi'));
         if (hasOutdatedLogos || parsed.length === 0) {
-          // Merge with official logos
-          const updated = OFFICIAL_PARTNERS;
-          setPartners(updated);
-          localStorage.setItem('smartjourney_partners', JSON.stringify(updated));
+          setPartners(OFFICIAL_PARTNERS);
+          localStorage.setItem('smartjourney_partners', JSON.stringify(OFFICIAL_PARTNERS));
+          localStorage.setItem('smartjourney_partners_version', PARTNERS_DATA_VERSION);
         } else {
           setPartners(parsed);
         }
@@ -57,12 +57,24 @@ export default function PartnershipsView() {
         console.error('Failed to parse partners', e);
         setPartners(OFFICIAL_PARTNERS);
         localStorage.setItem('smartjourney_partners', JSON.stringify(OFFICIAL_PARTNERS));
+        localStorage.setItem('smartjourney_partners_version', PARTNERS_DATA_VERSION);
       }
     } else {
       setPartners(OFFICIAL_PARTNERS);
       localStorage.setItem('smartjourney_partners', JSON.stringify(OFFICIAL_PARTNERS));
+      localStorage.setItem('smartjourney_partners_version', PARTNERS_DATA_VERSION);
     }
   }, []);
+
+  // Restore Official 2026 Partners
+  const restoreOfficialPartners = () => {
+    if (confirm('Reset to official 2026 partner platforms and logos?')) {
+      setPartners(OFFICIAL_PARTNERS);
+      localStorage.setItem('smartjourney_partners', JSON.stringify(OFFICIAL_PARTNERS));
+      localStorage.setItem('smartjourney_partners_version', PARTNERS_DATA_VERSION);
+      triggerNotification('Restored to official 2026 partner platforms.');
+    }
+  };
 
   // Save to LocalStorage
   const savePartners = (updated: PartnerApp[]) => {
@@ -320,7 +332,43 @@ export default function PartnershipsView() {
         )}
 
         {/* Clean, Premium Partner Grid - Simple Layout containing only Logos */}
-        <div className="bg-white border border-neutral-200/80 rounded-3xl p-6 sm:p-10 shadow-sm">
+        <div className="bg-white border border-neutral-200/80 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-neutral-100">
+            <div>
+              <h2 className="text-lg font-black text-neutral-900 flex items-center gap-2">
+                <span>Verified Partner Platforms (2026)</span>
+                <span className="text-[11px] font-mono px-2 py-0.5 bg-amber-100 text-amber-800 rounded-full font-bold">
+                  {partners.length} Active
+                </span>
+              </h2>
+              <p className="text-xs text-neutral-500 font-medium mt-0.5">
+                Official integrations & booking systems synced with SmartJourney
+              </p>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={restoreOfficialPartners}
+                className="px-3 py-2 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 font-bold text-xs rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer"
+                title="Reset to official 2026 partner list and vector logos"
+              >
+                <span>Reset 2026 Logos</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  resetForm();
+                  setShowModal(true);
+                }}
+                className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-bold text-xs rounded-xl flex items-center gap-1.5 transition-colors shadow-xs cursor-pointer"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Add Platform</span>
+              </button>
+            </div>
+          </div>
+
           {partners.length === 0 ? (
             <div className="text-center py-16 space-y-3">
               <Handshake className="h-12 w-12 text-neutral-300 mx-auto" />
@@ -338,11 +386,11 @@ export default function PartnershipsView() {
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-5">
               {partners.map((partner) => (
                 <div
                   key={partner.id}
-                  className="group relative bg-neutral-50/70 hover:bg-white border border-neutral-200 hover:border-amber-400/60 rounded-2xl h-28 flex flex-col items-center justify-center p-4 transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5"
+                  className="group relative bg-neutral-50/70 hover:bg-white border border-neutral-200 hover:border-amber-400/60 rounded-2xl h-32 flex flex-col items-center justify-between p-3.5 transition-all duration-300 shadow-2xs hover:shadow-md hover:-translate-y-0.5"
                 >
                   {/* Action Buttons for quick edit / delete on hover */}
                   <div className="absolute top-1.5 right-1.5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 bg-white/90 backdrop-blur-xs p-1 rounded-lg border border-neutral-200 shadow-sm z-10">
@@ -350,7 +398,7 @@ export default function PartnershipsView() {
                       type="button"
                       onClick={(e) => { e.stopPropagation(); startEdit(partner); }}
                       title="Edit Logo"
-                      className="p-1 hover:bg-amber-50 text-neutral-600 hover:text-amber-600 rounded transition-colors"
+                      className="p-1 hover:bg-amber-50 text-neutral-600 hover:text-amber-600 rounded transition-colors cursor-pointer"
                     >
                       <Edit3 className="h-3.5 w-3.5" />
                     </button>
@@ -358,7 +406,7 @@ export default function PartnershipsView() {
                       type="button"
                       onClick={(e) => { e.stopPropagation(); handleDeletePartner(partner.id); }}
                       title="Delete Logo"
-                      className="p-1 hover:bg-red-50 text-neutral-600 hover:text-red-600 rounded transition-colors"
+                      className="p-1 hover:bg-red-50 text-neutral-600 hover:text-red-600 rounded transition-colors cursor-pointer"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>
@@ -369,12 +417,12 @@ export default function PartnershipsView() {
                     href={partner.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full h-full flex items-center justify-center cursor-pointer"
+                    className="w-full flex-1 flex items-center justify-center cursor-pointer p-1"
                   >
                     <img
                       src={partner.logoUrl}
                       alt={partner.name}
-                      className="max-h-12 max-w-[85%] object-contain group-hover:scale-105 transition-all duration-300"
+                      className="max-h-12 max-w-[90%] object-contain group-hover:scale-105 transition-all duration-300"
                       referrerPolicy="no-referrer"
                       onError={(e) => {
                         (e.target as any).src = 'https://images.unsplash.com/photo-1557200134-90327ee9fafa?auto=format&fit=crop&w=150&q=80';
@@ -382,10 +430,17 @@ export default function PartnershipsView() {
                     />
                   </a>
                   
-                  {/* Subtle Label on Bottom */}
-                  <span className="text-[10px] font-bold text-neutral-500 group-hover:text-amber-600 transition-colors mt-1 truncate max-w-full">
-                    {partner.name}
-                  </span>
+                  {/* Subtle Label and Category on Bottom */}
+                  <div className="w-full text-center mt-1 border-t border-neutral-100/80 pt-1">
+                    <span className="text-[11px] font-bold text-neutral-700 group-hover:text-amber-600 transition-colors block truncate">
+                      {partner.name}
+                    </span>
+                    {partner.category && (
+                      <span className="text-[9px] text-neutral-400 block truncate font-medium">
+                        {partner.category}
+                      </span>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>

@@ -232,42 +232,43 @@ export default function Footer() {
  
         </div>
  
-        {/* 2. DESAIN 4: SECURITY & PAYMENT METHODS STRIP (Website Green Theme & Multi-Language) */}
-        <div className="bg-[#203c34] text-white py-5 px-6 lg:px-8 rounded-2xl border border-[#315B4F] my-8 shadow-lg max-w-5xl mx-auto w-full flex flex-col md:flex-row md:items-center md:justify-between gap-6 md:gap-8">
+        {/* 2. SECURITY & PAYMENT METHODS STRIP (Clean & Professional 2026 Enterprise Edition) */}
+        <div id="footer-secure-payment-strip" className="bg-[#1b332c] text-white p-5 sm:py-6 sm:px-8 rounded-2xl border border-[#2b5145] my-6 sm:my-8 shadow-xl max-w-5xl mx-auto w-full flex flex-col md:flex-row md:items-center md:justify-between gap-5 md:gap-8">
           
           {/* LEFT: Security Section */}
-          <div className="flex items-center gap-3.5 shrink-0">
-            <div className="w-10 h-10 rounded-xl bg-[#315B4F] border border-[#467b6b] flex items-center justify-center text-amber-300 shrink-0 shadow-xs">
-              <ShieldCheck className="h-5 w-5" />
+          <div className="flex items-center gap-3.5 w-full md:w-auto">
+            <div className="w-11 h-11 rounded-xl bg-[#26483d] border border-[#3b6657] flex items-center justify-center text-amber-300 shrink-0 shadow-sm">
+              <ShieldCheck className="h-6 w-6" />
             </div>
             <div className="flex flex-col text-left">
-              <span className="text-xs font-black tracking-wider text-white uppercase font-sans">
+              <span className="text-xs sm:text-sm font-black tracking-wider text-white uppercase font-sans">
                 {t('footer.secure')}
               </span>
-              <p className="text-[11px] text-emerald-100/90 font-normal leading-tight mt-0.5">
+              <p className="text-[11px] sm:text-xs text-emerald-100/90 font-normal leading-tight mt-0.5">
                 {t('footer.secureSubtitle')}
               </p>
             </div>
           </div>
 
-          {/* Vertical Divider (Desktop Only) */}
-          <div className="hidden md:block w-px h-10 bg-[#315B4F] shrink-0 self-center" />
+          {/* Horizontal Divider on Mobile / Vertical Divider on Desktop */}
+          <div className="w-full h-px bg-[#2b5145] md:hidden" />
+          <div className="hidden md:block w-px h-10 bg-[#2b5145] shrink-0 self-center" />
 
-          {/* RIGHT: Payment Methods Section */}
-          <div className="flex flex-col md:items-end gap-2.5 shrink-0">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-200/90 font-mono">
+          {/* RIGHT: Payment Methods Section (Neat 3x2 Grid on Mobile, 1x6 Row on Desktop) */}
+          <div className="flex flex-col items-center md:items-end gap-2.5 w-full md:w-auto shrink-0">
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-emerald-200/90 font-mono text-center md:text-right">
               {t('footer.paymentMethods')}
             </span>
             
-            {/* Single Row of Payment Pills on Desktop */}
-            <div className="flex flex-wrap md:flex-nowrap items-center gap-2">
+            {/* Payment Method Badges: Balanced 3-col grid on smartphone, clean flex row on tablet/desktop */}
+            <div className="grid grid-cols-3 sm:flex sm:flex-nowrap items-center justify-center gap-2 sm:gap-2.5 w-full sm:w-auto">
               {/* VISA */}
-              <div className="w-[58px] h-[30px] bg-white rounded-lg flex items-center justify-center select-none shrink-0 border border-slate-200/90 shadow-xs hover:scale-105 transition-transform" title="VISA">
-                <span className="text-[#1A1F71] font-black italic tracking-wide text-xs font-sans">VISA</span>
+              <div className="w-full sm:w-[60px] h-[34px] sm:h-[30px] bg-white rounded-lg flex items-center justify-center select-none border border-slate-200 shadow-xs hover:scale-105 transition-transform" title="VISA">
+                <span className="text-[#1A1F71] font-black italic tracking-wide text-xs sm:text-xs font-sans">VISA</span>
               </div>
 
               {/* Mastercard */}
-              <div className="w-[58px] h-[30px] bg-white rounded-lg flex items-center justify-center select-none shrink-0 border border-slate-200/90 shadow-xs hover:scale-105 transition-transform" title="Mastercard">
+              <div className="w-full sm:w-[60px] h-[34px] sm:h-[30px] bg-white rounded-lg flex items-center justify-center select-none border border-slate-200 shadow-xs hover:scale-105 transition-transform" title="Mastercard">
                 <div className="relative w-6 h-4 flex items-center justify-center">
                   <div className="absolute left-0.5 w-[13px] h-[13px] rounded-full bg-[#EB001B] opacity-95" />
                   <div className="absolute right-0.5 w-[13px] h-[13px] rounded-full bg-[#F79E1B] opacity-90 mix-blend-multiply" />
@@ -275,7 +276,7 @@ export default function Footer() {
               </div>
 
               {/* JCB */}
-              <div className="w-[58px] h-[30px] bg-white rounded-lg flex items-center justify-center select-none shrink-0 border border-slate-200/90 shadow-xs hover:scale-105 transition-transform" title="JCB">
+              <div className="w-full sm:w-[60px] h-[34px] sm:h-[30px] bg-white rounded-lg flex items-center justify-center select-none border border-slate-200 shadow-xs hover:scale-105 transition-transform" title="JCB">
                 <div className="flex items-center gap-0.5 font-sans">
                   <span className="text-[#004193] font-black tracking-tight text-xs italic">J</span>
                   <span className="text-[#D31115] font-black tracking-tight text-xs italic">C</span>
@@ -284,17 +285,17 @@ export default function Footer() {
               </div>
 
               {/* QRIS */}
-              <div className="w-[58px] h-[30px] bg-white rounded-lg flex items-center justify-center select-none shrink-0 border border-slate-200/90 shadow-xs hover:scale-105 transition-transform" title="QRIS">
+              <div className="w-full sm:w-[60px] h-[34px] sm:h-[30px] bg-white rounded-lg flex items-center justify-center select-none border border-slate-200 shadow-xs hover:scale-105 transition-transform" title="QRIS">
                 <span className="text-[#012d5e] font-black tracking-tight text-xs font-sans">QRIS</span>
               </div>
 
               {/* Alipay */}
-              <div className="w-[58px] h-[30px] bg-white rounded-lg flex items-center justify-center select-none shrink-0 border border-slate-200/90 shadow-xs hover:scale-105 transition-transform" title="Alipay">
+              <div className="w-full sm:w-[60px] h-[34px] sm:h-[30px] bg-white rounded-lg flex items-center justify-center select-none border border-slate-200 shadow-xs hover:scale-105 transition-transform" title="Alipay">
                 <span className="text-[#00A1E9] font-extrabold text-xs tracking-tight font-sans">Alipay</span>
               </div>
 
               {/* PayPal */}
-              <div className="w-[58px] h-[30px] bg-white rounded-lg flex items-center justify-center select-none shrink-0 border border-slate-200/90 shadow-xs hover:scale-105 transition-transform" title="PayPal">
+              <div className="w-full sm:w-[60px] h-[34px] sm:h-[30px] bg-white rounded-lg flex items-center justify-center select-none border border-slate-200 shadow-xs hover:scale-105 transition-transform" title="PayPal">
                 <div className="flex items-center justify-center font-sans tracking-tight font-black italic text-xs">
                   <span className="text-[#003087]">Pay</span>
                   <span className="text-[#0079C1]">Pal</span>

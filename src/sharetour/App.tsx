@@ -167,6 +167,8 @@ export default function App() {
               <BookingForm 
                 trip={activeTrip}
                 batch={activeBatch}
+                bookingType="shared"
+                tourBookingType="shared"
                 nationalityType={selectedNationality}
                 onBack={() => setCurrentView("trip-detail")}
                 onSuccess={handleBookingCompleted}

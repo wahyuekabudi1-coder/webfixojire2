@@ -395,6 +395,7 @@ export const enTranslations = {
     faq: 'FAQ & Help',
     paymentMethods: 'ACCEPTED PAYMENT METHODS',
     secure: '100% SECURE & TRUSTED',
+    secureSubtitle: 'Official verified & encrypted booking transactions.',
     licensed: 'OFFICIAL TRANSPORT LICENSE',
     allRightsReserved: 'All rights reserved',
     copyright: '© 2026 PT Sawah Jaya Trans. All Rights Reserved.',
