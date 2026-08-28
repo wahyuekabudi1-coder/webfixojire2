@@ -14,6 +14,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import CustomerReviewsSection from '../components/CustomerReviewsSection';
 import ServiceNavTabs from '../components/ServiceNavTabs';
 import Breadcrumbs from '../components/Breadcrumbs';
+import { trackTourDetailView, trackBookNowClick } from '../lib/analytics';
 
 interface TourDetailViewProps {
   tourId: string;
@@ -67,6 +68,12 @@ const DEFAULT_RICH_DATA = {
 export default function TourDetailView({ tourId, onBack }: TourDetailViewProps) {
   const { formatPrice, setPage, setSearchParams, searchParams, tours, schedules, bookings, serviceLimits } = useApp();
   const tour = tours.find(t => t.id === tourId);
+
+  useEffect(() => {
+    if (tour) {
+      trackTourDetailView(tour.name, tour.id, tour.category);
+    }
+  }, [tourId, tour?.name]);
   
   if (!tour) {
     return (
@@ -1139,7 +1146,12 @@ export default function TourDetailView({ tourId, onBack }: TourDetailViewProps) 
                   <div className="pt-2 space-y-2">
                     <button
                       type="button"
-                      onClick={() => setIsBookingOpen(true)}
+                      onClick={() => {
+                        if (tour) {
+                          trackBookNowClick(tour.name, 'Private Tour', tour.id);
+                        }
+                        setIsBookingOpen(true);
+                      }}
                       className="w-full bg-[#315B4F] hover:bg-[#203c34] text-white font-display font-bold py-4 px-6 rounded-2xl text-xs sm:text-sm uppercase tracking-widest flex items-center justify-center gap-2 shadow-md transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
                     >
                       <Sparkles className="h-4 w-4 text-[#D6B16D]" />

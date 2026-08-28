@@ -1,5 +1,6 @@
 import React from 'react';
 import { ChevronUp } from 'lucide-react';
+import { trackWhatsAppClick } from '../lib/analytics';
 
 export default function FloatingWhatsApp() {
   const phoneNumber = '6285212347289';
@@ -43,6 +44,7 @@ export default function FloatingWhatsApp() {
         href={whatsappUrl}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={() => trackWhatsAppClick('Floating Bottom-Right Widget', phoneNumber)}
         aria-label="Hubungi Customer Support via WhatsApp 24/7"
         className="bg-[#25D366] hover:bg-[#20ba5a] active:bg-[#1da851] p-3.5 sm:p-4 rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center relative group min-h-[48px] min-w-[48px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2"
       >

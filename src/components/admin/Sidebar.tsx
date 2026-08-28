@@ -1,12 +1,13 @@
 import React from 'react';
 import { 
-  LayoutDashboard, ClipboardList, Layers, Truck, MapPin, Globe, 
+  LayoutDashboard, BarChart3, ClipboardList, Layers, Truck, MapPin, Globe, 
   CheckSquare, Users, Briefcase, Calendar, Percent, CreditCard, 
   DollarSign, Settings, ChevronLeft, ChevronRight, LogOut 
 } from 'lucide-react';
 
 export type AdminTab = 
   | 'dashboard'
+  | 'analytics'
   | 'bookings' | 'tours' | 'rental' | 'taxi' | 'airport'
   | 'vehicles' | 'drivers' | 'guides' | 'customers'
   | 'pricing' | 'promo' | 'payments' | 'finance'
@@ -38,7 +39,8 @@ export default function Sidebar({
     {
       label: 'MAIN',
       items: [
-        { id: 'dashboard', label: 'Dashboard Analitik', icon: LayoutDashboard }
+        { id: 'dashboard', label: 'Dashboard Analitik', icon: LayoutDashboard },
+        { id: 'analytics', label: 'Analytics', icon: BarChart3 }
       ]
     },
     {
@@ -90,19 +92,19 @@ export default function Sidebar({
 
       // Rules for Sub-Admins
       if (role === 'tour') {
-        const allowed = ['dashboard', 'bookings', 'tours', 'guides', 'customers', 'pricing'];
+        const allowed = ['dashboard', 'analytics', 'bookings', 'tours', 'guides', 'customers', 'pricing'];
         return allowed.includes(item.id);
       }
       if (role === 'rental') {
-        const allowed = ['dashboard', 'bookings', 'rental', 'vehicles', 'drivers', 'customers'];
+        const allowed = ['dashboard', 'analytics', 'bookings', 'rental', 'vehicles', 'drivers', 'customers'];
         return allowed.includes(item.id);
       }
       if (role === 'taxi') {
-        const allowed = ['dashboard', 'bookings', 'taxi', 'vehicles', 'drivers', 'customers'];
+        const allowed = ['dashboard', 'analytics', 'bookings', 'taxi', 'vehicles', 'drivers', 'customers'];
         return allowed.includes(item.id);
       }
       if (role === 'airport') {
-        const allowed = ['dashboard', 'bookings', 'airport', 'vehicles', 'drivers', 'customers'];
+        const allowed = ['dashboard', 'analytics', 'bookings', 'airport', 'vehicles', 'drivers', 'customers'];
         return allowed.includes(item.id);
       }
       return false;

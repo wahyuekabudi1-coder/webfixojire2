@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useEffect } from 'react';
 import { AppProvider, useApp } from './AppContext';
 import { LanguageCurrencyProvider } from './sharetour/LanguageCurrencyContext';
 import SEOHead from './components/SEOHead';
@@ -12,6 +12,7 @@ import Footer from './components/Footer';
 import FloatingWhatsApp from './components/FloatingWhatsApp';
 import HomeView from './views/HomeView';
 import { motion, AnimatePresence } from 'motion/react';
+import { trackPageView } from './lib/analytics';
 
 // Code-split lazy loaded view chunks to keep initial bundle ultra-light
 const ToursView = lazy(() => import('./views/ToursView'));
@@ -35,6 +36,26 @@ const PageFallback = () => (
 
 function AppContent() {
   const { activePage } = useApp();
+
+  // Automatic privacy-conscious analytics page view tracking
+  useEffect(() => {
+    if (activePage === 'admin') return; // Do not log admin dashboard usage as public traffic
+    
+    const pagePathMap: Record<string, { path: string; title: string }> = {
+      home: { path: '/', title: 'Smart Journey - Sewa Mobil, Antar Jemput Bandara & Paket Wisata Bromo Bali' },
+      tours: { path: '/tours', title: 'Paket Wisata Private Tour - Bromo, Ijen, Bali & Tumpak Sewu' },
+      'share-tour': { path: '/share-tour', title: 'Open Trip & Share Tour Bromo Ijen Murah' },
+      airport: { path: '/airport', title: 'Antar Jemput Bandara Juanda, Abdulrachman Saleh & Banyuwangi' },
+      taxi: { path: '/taxi', title: 'Layanan Taksi & Antar Jemput Luar Kota Jawa Bali' },
+      'car-rental': { path: '/car-rental', title: 'Rental Mobil Lepas Kunci & dengan Supir Terpercaya' },
+      about: { path: '/about', title: 'Tentang Smart Journey Indonesia' },
+      partnerships: { path: '/partnerships', title: 'Kemitraan & Partner Ekosistem Smart Journey' },
+      bookings: { path: '/bookings', title: 'Cek Status Booking & Tiket Wisata' }
+    };
+
+    const target = pagePathMap[activePage] || { path: `/${activePage}`, title: 'Smart Journey' };
+    trackPageView(target.path, target.title);
+  }, [activePage]);
 
   // Render the appropriate view based on active page
   const renderView = () => {

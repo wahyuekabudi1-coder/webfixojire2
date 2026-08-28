@@ -22,6 +22,7 @@ import {
   Briefcase
 } from "lucide-react";
 import { useLanguageCurrency } from "../LanguageCurrencyContext";
+import { trackTourDetailView, trackBookNowClick } from "../../lib/analytics";
 
 interface TripDetailProps {
   trip: Trip;
@@ -55,6 +56,12 @@ export default function TripDetail({
   const [calendarMonth, setCalendarMonth] = useState<number>(new Date().getMonth());
 
   const { t, formatPrice, language } = useLanguageCurrency();
+
+  useEffect(() => {
+    if (trip) {
+      trackTourDetailView(trip.title, trip.id, 'Open Trip');
+    }
+  }, [trip?.id, trip?.title]);
 
   // Find batches scheduled for this trip
   const tripBatches = batches.filter((b) => b.tripId === trip.id);
@@ -916,7 +923,12 @@ export default function TripDetail({
             <button
               id="btn-register-booking"
               disabled={!selectedBatchId || !nationalityType}
-              onClick={() => selectedBatchId && nationalityType && onBook(selectedBatchId, nationalityType)}
+              onClick={() => {
+                if (selectedBatchId && nationalityType) {
+                  trackBookNowClick(trip.title, 'Open Trip', trip.id);
+                  onBook(selectedBatchId, nationalityType);
+                }
+              }}
               className={`w-full py-3.5 rounded-2xl font-display font-bold text-xs uppercase tracking-widest text-center transition-all ${
                 selectedBatchId && nationalityType
                   ? "bg-[#315B4F] text-white hover:bg-[#203c34] cursor-pointer shadow-md"

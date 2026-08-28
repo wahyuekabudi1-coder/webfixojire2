@@ -3,6 +3,7 @@ import { useApp } from '../AppContext';
 import { useLanguageCurrency } from '../sharetour/LanguageCurrencyContext';
 import SocialMediaButtons from './SocialMediaButtons';
 import { Mail, MapPin, Phone, Clock, MessageSquare, Instagram, Facebook, Youtube, Share2, Sparkles, QrCode, Copy, Check, X, ShieldCheck, FileText, Lock, ExternalLink, Compass, Timer } from 'lucide-react';
+import { trackWhatsAppClick, trackEmailClick, trackPhoneClick } from '../lib/analytics';
 
 function WeChatIcon({ className = "h-4 w-4" }: { className?: string }) {
   return (
@@ -184,13 +185,23 @@ export default function Footer() {
             <ul className="space-y-3 text-xs sm:text-sm text-neutral-600">
               <li className="flex items-center space-x-2.5">
                 <Phone className="h-4 w-4 text-amber-500 shrink-0" />
-                <a href="https://wa.me/6285212347289" target="_blank" rel="noopener noreferrer" className="hover:text-amber-600 font-medium text-neutral-700 transition-colors">
+                <a 
+                  href="https://wa.me/6285212347289" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  onClick={() => trackWhatsAppClick('Footer Phone Link', '+6285212347289')}
+                  className="hover:text-amber-600 font-medium text-neutral-700 transition-colors"
+                >
                   +62 852-1234-7289 (WhatsApp)
                 </a>
               </li>
               <li className="flex items-center space-x-2.5">
                 <Mail className="h-4 w-4 text-amber-500 shrink-0" />
-                <a href="mailto:Info@sawahjayatrans.com" className="hover:text-amber-600 font-medium text-neutral-700 transition-colors">
+                <a 
+                  href="mailto:Info@sawahjayatrans.com" 
+                  onClick={() => trackEmailClick('Info@sawahjayatrans.com', 'Footer Email Link')}
+                  className="hover:text-amber-600 font-medium text-neutral-700 transition-colors"
+                >
                   Info@sawahjayatrans.com
                 </a>
               </li>
@@ -210,6 +221,7 @@ export default function Footer() {
                 href="https://wa.me/6285212347289" 
                 target="_blank" 
                 rel="noopener noreferrer" 
+                onClick={() => trackWhatsAppClick('Footer Quick WhatsApp Button', '+6285212347289')}
                 className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold shadow-sm transition-all hover:scale-[1.01] duration-200 flex-1 text-center"
               >
                 <Phone className="h-3.5 w-3.5" />

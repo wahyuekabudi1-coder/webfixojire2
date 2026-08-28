@@ -423,6 +423,56 @@
       "totalPriceIDR": 300,
       "createdAt": "2026-08-27T16:54:30.371Z",
       "adminNotes": ""
+    },
+    {
+      "id": "SJ-TEST-193829",
+      "bookingCode": "SJ-TEST-193829",
+      "tripId": "General",
+      "tripTitle": "SmartJourney Booking",
+      "batchId": "",
+      "fullName": "Audit Test Traveler",
+      "customerName": "Audit Test Traveler",
+      "email": "audit@example.com",
+      "customerEmail": "audit@example.com",
+      "phone": "N/A",
+      "customerPhone": "N/A",
+      "participantsCount": 1,
+      "participantsNames": [
+        "Audit Test Traveler"
+      ],
+      "proofOfPayment": "ARTOPAY_GATEWAY",
+      "status": "Confirmed",
+      "paymentStatus": "Paid",
+      "totalPrice": 500000,
+      "totalPriceIDR": 500000,
+      "createdAt": "2026-08-28T02:13:13.833Z",
+      "paymentIntentId": "b1651ca2-bc3d-4713-a5da-f71da1e3a568",
+      "paidAt": "2026-08-28T02:13:14.131Z",
+      "paymentId": "PAY-1787883194130"
+    },
+    {
+      "id": "SJ-FAIL-194135",
+      "bookingCode": "SJ-FAIL-194135",
+      "tripId": "General",
+      "tripTitle": "SmartJourney Booking",
+      "batchId": "",
+      "fullName": "Fail Test Traveler",
+      "customerName": "Fail Test Traveler",
+      "email": "fail@example.com",
+      "customerEmail": "fail@example.com",
+      "phone": "N/A",
+      "customerPhone": "N/A",
+      "participantsCount": 1,
+      "participantsNames": [
+        "Fail Test Traveler"
+      ],
+      "proofOfPayment": "ARTOPAY_GATEWAY",
+      "status": "Rejected",
+      "paymentStatus": "Expired",
+      "totalPrice": 750000,
+      "totalPriceIDR": 750000,
+      "createdAt": "2026-08-28T02:13:14.136Z",
+      "paymentIntentId": "dfeaf30c-6ec2-42c3-816d-9b765d807e6d"
     }
   ]
 }

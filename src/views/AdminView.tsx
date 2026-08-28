@@ -20,6 +20,7 @@ import { fetchDB as fetchShareTourDB } from '../sharetour/api';
 import { Trip as ShareTourTrip, Batch as ShareTourBatch, Booking as ShareTourBooking } from '../sharetour/types';
 import { OFFICIAL_PARTNERS, PARTNERS_DATA_VERSION } from '../data/partnersData';
 import { SocialMediaItem, getStoredSocialMedia, saveStoredSocialMedia } from '../data/socialMediaData';
+import AnalyticsDashboard from '../components/admin/AnalyticsDashboard';
 
 interface ItineraryFormItem {
   id: string;
@@ -101,7 +102,7 @@ export default function AdminView() {
   const [showPassword, setShowPassword] = useState(false);
 
   // Navigation States
-  const [activeModule, setActiveModule] = useState<'dashboard' | 'tours' | 'sharetour' | 'bookings' | 'reports' | 'airport' | 'taxi' | 'rental' | 'cms' | 'account'>('dashboard');
+  const [activeModule, setActiveModule] = useState<'dashboard' | 'analytics' | 'tours' | 'sharetour' | 'bookings' | 'reports' | 'airport' | 'taxi' | 'rental' | 'cms' | 'account'>('dashboard');
   const [activeSubTab, setActiveSubTab] = useState<'dashboard' | 'management' | 'calendar' | 'blackout' | 'schedule' | 'booking' | 'customer' | 'payment' | 'finance' | 'reports' | 'settings' | 'master-data' | 'pricing-engine' | 'excel-import' | 'excel-export' | 'import-history'>('dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [reviewsFilter, setReviewsFilter] = useState<'all' | 'pending' | 'approved'>('all');
@@ -5958,7 +5959,7 @@ export default function AdminView() {
 
           {/* Navigation Menus */}
           <nav className="space-y-6">
-            {/* Category: Dashboard */}
+            {/* Category: Dashboard & Analytics */}
             <div className="space-y-1.5">
               {!sidebarCollapsed && (
                 <span className="text-[10px] font-black text-neutral-500 uppercase tracking-widest px-2.5">
@@ -5978,6 +5979,20 @@ export default function AdminView() {
               >
                 <LayoutDashboard className="h-4.5 w-4.5" />
                 {!sidebarCollapsed && <span className="truncate flex-grow text-left">Dashboard</span>}
+              </button>
+
+              <button
+                onClick={() => {
+                  setActiveModule('analytics');
+                }}
+                className={`w-full flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-xs font-bold transition-all relative cursor-pointer ${
+                  activeModule === 'analytics' 
+                    ? 'bg-amber-500/10 border border-amber-500/20 text-amber-500 font-extrabold' 
+                    : `text-neutral-400 hover:text-white ${theme.hover} border border-transparent`
+                }`}
+              >
+                <BarChart3 className="h-4.5 w-4.5" />
+                {!sidebarCollapsed && <span className="truncate flex-grow text-left">Analytics</span>}
               </button>
             </div>
 
@@ -6198,7 +6213,7 @@ export default function AdminView() {
             <span className={theme.textMuted}>PORTAL ADMIN</span>
             <ChevronRight className="h-3.5 w-3.5 text-neutral-600" />
             <span className="text-amber-500 uppercase font-bold tracking-wider">{activeModule}</span>
-            {activeModule !== 'dashboard' && activeModule !== 'cms' && activeModule !== 'account' && (
+            {activeModule !== 'dashboard' && activeModule !== 'analytics' && activeModule !== 'cms' && activeModule !== 'account' && (
               <>
                 <ChevronRight className="h-3.5 w-3.5 text-neutral-600" />
                 <span className={`${theme.textSecondary} uppercase font-bold`}>{activeSubTab}</span>
@@ -7055,6 +7070,19 @@ export default function AdminView() {
                     </div>
                   </div>
                 </div>
+              </motion.div>
+            )}
+
+            {/* 1.1 VIEW: ADVANCED ANALYTICS DASHBOARD */}
+            {activeModule === 'analytics' && (
+              <motion.div 
+                key="analytics-module"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="space-y-6 text-left"
+              >
+                <AnalyticsDashboard isDark={isDark} />
               </motion.div>
             )}
 
