@@ -11,8 +11,16 @@ interface WeChatModalProps {
 export default function WeChatModal({ isOpen, onClose }: WeChatModalProps) {
   const [copied, setCopied] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const [qrSrc, setQrSrc] = useState('/wechat-qr-1.png');
   const [deeplinkNotice, setDeeplinkNotice] = useState<string | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      setImgError(false);
+      setQrSrc('/wechat-qr-1.png');
+    }
+  }, [isOpen]);
 
   // Copy ID functionality
   const handleCopyID = () => {
@@ -130,10 +138,20 @@ export default function WeChatModal({ isOpen, onClose }: WeChatModalProps) {
               <div className="relative w-64 h-64 mx-auto flex items-center justify-center bg-white p-2.5 rounded-xl border border-zinc-100 shadow-sm" id="wechat-modal-qr-frame">
                 {!imgError ? (
                   <img
-                    src="/images/wechat.png"
+                    src={qrSrc}
                     alt="WeChat QR Code"
-                    className="w-full h-full object-contain"
-                    onError={() => setImgError(true)}
+                    className="w-full h-full object-contain select-none"
+                    onError={() => {
+                      if (qrSrc === '/wechat-qr-1.png') {
+                        setQrSrc('/wechat-qr.png');
+                      } else if (qrSrc === '/wechat-qr.png') {
+                        setQrSrc('/images/wechat.png');
+                      } else if (qrSrc === '/images/wechat.png') {
+                        setQrSrc('/qr.png');
+                      } else {
+                        setImgError(true);
+                      }
+                    }}
                     referrerPolicy="no-referrer"
                   />
                 ) : (

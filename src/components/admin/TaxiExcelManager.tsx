@@ -27,6 +27,7 @@ interface TaxiExcelManagerProps {
   triggerToast: (msg: string) => void;
   activeTab?: 'dashboard' | 'calendar' | 'master-data' | 'pricing-engine' | 'excel-import' | 'excel-export' | 'import-history' | 'settings';
   setActiveTab?: (tab: 'dashboard' | 'calendar' | 'master-data' | 'pricing-engine' | 'excel-import' | 'excel-export' | 'import-history' | 'settings') => void;
+  isDark?: boolean;
 }
 
 export default function TaxiExcelManager({
@@ -44,9 +45,23 @@ export default function TaxiExcelManager({
   formatPrice,
   triggerToast,
   activeTab: propActiveTab,
-  setActiveTab: propSetActiveTab
+  setActiveTab: propSetActiveTab,
+  isDark = false
 }: TaxiExcelManagerProps) {
   const [internalActiveTab, setInternalActiveTab] = useState<'dashboard' | 'calendar' | 'master-data' | 'pricing-engine' | 'excel-import' | 'excel-export' | 'import-history' | 'settings'>('dashboard');
+
+  const theme = {
+    card: isDark ? 'bg-neutral-900 border-neutral-800' : 'bg-white border-neutral-200 shadow-sm',
+    innerCard: isDark ? 'bg-neutral-950 border-neutral-850' : 'bg-neutral-50 border-neutral-200',
+    textPrimary: isDark ? 'text-neutral-100' : 'text-neutral-900',
+    textSecondary: isDark ? 'text-neutral-400' : 'text-neutral-600',
+    textMuted: isDark ? 'text-neutral-500' : 'text-neutral-400',
+    border: isDark ? 'border-neutral-800' : 'border-neutral-200',
+    input: isDark ? 'bg-neutral-950 border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900',
+    hover: isDark ? 'hover:bg-neutral-800/60' : 'hover:bg-neutral-100',
+    tableHeader: isDark ? 'bg-neutral-950/70 text-neutral-400' : 'bg-neutral-100 text-neutral-600',
+    tableRowHover: isDark ? 'hover:bg-neutral-850/50' : 'hover:bg-neutral-50'
+  };
 
   const activeTab = propActiveTab || internalActiveTab;
   const setActiveTab = propSetActiveTab || setInternalActiveTab;
@@ -117,12 +132,12 @@ export default function TaxiExcelManager({
 
   // Stats Card Component helper
   const StatCard = ({ title, value, label, icon: Icon, color }: { title: string; value: string | number; label: string; icon: any; color: string }) => (
-    <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-6 flex items-center justify-between shadow-md relative overflow-hidden text-left">
+    <div className={`${theme.card} border rounded-3xl p-6 flex items-center justify-between shadow-md relative overflow-hidden text-left`}>
       <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/[0.02] rounded-full blur-2xl pointer-events-none" />
       <div className="space-y-1">
-        <span className="text-[10px] font-black uppercase tracking-widest text-neutral-500 block">{title}</span>
-        <h4 className="text-2xl font-mono font-black text-neutral-100">{value}</h4>
-        <p className="text-[10px] text-neutral-400 font-medium font-mono">{label}</p>
+        <span className={`text-[10px] font-black uppercase tracking-widest ${theme.textMuted} block`}>{title}</span>
+        <h4 className={`text-2xl font-mono font-black ${theme.textPrimary}`}>{value}</h4>
+        <p className={`text-[10px] ${theme.textSecondary} font-medium font-mono`}>{label}</p>
       </div>
       <div className={`p-3.5 rounded-2xl ${color} text-neutral-950`}>
         <Icon className="h-5.5 w-5.5 stroke-[2.5]" />
@@ -653,13 +668,13 @@ export default function TaxiExcelManager({
           return (
             <div className="space-y-6 animate-fade-in">
               {/* Header banner */}
-              <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <div className={`${theme.card} border rounded-2xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4`}>
                 <div className="space-y-1 text-left">
                   <h3 className="text-base font-black uppercase tracking-wider font-mono text-amber-500 flex items-center gap-2">
                     <MapPin className="h-4.5 w-4.5" />
                     ANALITIK DEPARTEMEN TAXI DISPATCH SERVICE
                   </h3>
-                  <p className="text-xs text-neutral-400">
+                  <p className={`text-xs ${theme.textSecondary}`}>
                     Tinjauan metrik operasional armada taksi, volume penugasan supir aktif, statistik area penjemputan, dan sebaran tarif wilayah Bali.
                   </p>
                 </div>
@@ -703,37 +718,37 @@ export default function TaxiExcelManager({
               {/* Quick action grid */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Left Column: Area & Surcharge Distribution */}
-                <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-4">
+                <div className={`${theme.card} border rounded-2xl p-6 space-y-4`}>
                   <h4 className="text-xs font-black uppercase tracking-widest font-mono text-amber-500 border-b border-neutral-850 pb-2 text-left">
                     Distribusi Zona Operasional
                   </h4>
                   <div className="space-y-4 pt-2">
                     <div className="space-y-1 text-left">
                       <div className="flex justify-between items-center text-xs">
-                        <span className="font-extrabold text-neutral-200">Terminal Bandara (Airport)</span>
-                        <span className="font-mono font-bold text-neutral-400">{airportAreasCount} Zona ({airportPct}%)</span>
+                        <span className={`font-extrabold ${theme.textPrimary}`}>Terminal Bandara (Airport)</span>
+                        <span className={`font-mono font-bold ${theme.textSecondary}`}>{airportAreasCount} Zona ({airportPct}%)</span>
                       </div>
-                      <div className="h-1.5 w-full bg-neutral-950 rounded-full overflow-hidden">
+                      <div className={`h-1.5 w-full ${theme.innerCard} rounded-full overflow-hidden`}>
                         <div className="h-full bg-amber-500" style={{ width: `${airportPct}%` }} />
                       </div>
                     </div>
 
                     <div className="space-y-1 text-left">
                       <div className="flex justify-between items-center text-xs">
-                        <span className="font-extrabold text-neutral-200">Kawasan Kota &amp; Wisata (City)</span>
-                        <span className="font-mono font-bold text-neutral-400">{cityAreasCount} Zona ({cityPct}%)</span>
+                        <span className={`font-extrabold ${theme.textPrimary}`}>Kawasan Kota &amp; Wisata (City)</span>
+                        <span className={`font-mono font-bold ${theme.textSecondary}`}>{cityAreasCount} Zona ({cityPct}%)</span>
                       </div>
-                      <div className="h-1.5 w-full bg-neutral-950 rounded-full overflow-hidden">
+                      <div className={`h-1.5 w-full ${theme.innerCard} rounded-full overflow-hidden`}>
                         <div className="h-full bg-amber-500" style={{ width: `${cityPct}%` }} />
                       </div>
                     </div>
 
                     <div className="border-t border-neutral-850 pt-4 space-y-3">
-                      <span className="text-[10px] font-mono font-black text-neutral-500 uppercase block tracking-wider text-left">STATUS DISPATCHER RATE</span>
-                      <div className="p-3 bg-neutral-950 rounded-xl border border-neutral-850 flex items-center justify-between">
+                      <span className={`text-[10px] font-mono font-black ${theme.textMuted} uppercase block tracking-wider text-left`}>STATUS DISPATCHER RATE</span>
+                      <div className={`p-3 ${theme.innerCard} rounded-xl border flex items-center justify-between`}>
                         <div className="text-left">
-                          <span className="text-xs font-bold text-neutral-200 block">Surcharge Peak-Season</span>
-                          <span className="text-[10px] text-neutral-500 font-mono">Diatur via Aturan Dispatcher</span>
+                          <span className={`text-xs font-bold ${theme.textPrimary} block`}>Surcharge Peak-Season</span>
+                          <span className={`text-[10px] ${theme.textMuted} font-mono`}>Diatur via Aturan Dispatcher</span>
                         </div>
                         <span className="text-[9px] font-mono font-black uppercase px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                           Active Normal
@@ -744,7 +759,7 @@ export default function TaxiExcelManager({
                 </div>
 
                 {/* Right Column: Live Dispatch Monitor */}
-                <div className="lg:col-span-2 bg-neutral-900 border border-neutral-800 rounded-2xl p-6 space-y-4">
+                <div className={`lg:col-span-2 ${theme.card} border rounded-2xl p-6 space-y-4`}>
                   <h4 className="text-xs font-black uppercase tracking-widest font-mono text-amber-500 border-b border-neutral-850 pb-2 flex justify-between items-center">
                     <span>Terminal Dispatch Taksi Terkini</span>
                     <span className="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full font-mono font-bold animate-pulse">● LIVE DISPATCH LINKED</span>
@@ -765,7 +780,7 @@ export default function TaxiExcelManager({
                         return (
                           <div 
                             key={b.id} 
-                            className="flex flex-col md:flex-row justify-between items-start md:items-center p-3.5 rounded-xl bg-neutral-950 border border-neutral-850 text-xs text-left gap-3.5 hover:border-neutral-700 transition-all"
+                            className={`flex flex-col md:flex-row justify-between items-start md:items-center p-3.5 rounded-xl ${theme.innerCard} border text-xs text-left gap-3.5 ${theme.hover} transition-all`}
                           >
                             <div className="flex items-start gap-3">
                               <div className="h-9 w-9 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 shrink-0 font-black text-[11px] font-mono">
@@ -778,11 +793,11 @@ export default function TaxiExcelManager({
                                     {b.status === 'Confirmed' ? 'AKTIF' : b.status === 'Completed' ? 'SELESAI' : b.status}
                                   </span>
                                 </div>
-                                <h5 className="font-extrabold text-neutral-200">{b.customerName} • <span className="font-mono text-neutral-500 text-[10px]">{b.customerPhone}</span></h5>
-                                <div className="text-[10px] text-neutral-400 flex items-center gap-1.5 leading-tight">
-                                  <span className="font-bold text-neutral-300">{details.pickupLocation || 'Pickup'}</span>
+                                <h5 className={`font-extrabold ${theme.textPrimary}`}>{b.customerName} • <span className={`font-mono ${theme.textMuted} text-[10px]`}>{b.customerPhone}</span></h5>
+                                <div className={`text-[10px] ${theme.textSecondary} flex items-center gap-1.5 leading-tight`}>
+                                  <span className={`font-bold ${theme.textPrimary}`}>{details.pickupLocation || 'Pickup'}</span>
                                   <span className="text-amber-500 font-bold">➔</span>
-                                  <span className="font-bold text-neutral-300">{details.destination || 'Destination'}</span>
+                                  <span className={`font-bold ${theme.textPrimary}`}>{details.destination || 'Destination'}</span>
                                 </div>
                               </div>
                             </div>
@@ -790,16 +805,16 @@ export default function TaxiExcelManager({
                               <span className="text-xs font-mono font-black text-emerald-500">
                                 {formatPrice(b.totalPrice, b.totalPriceIDR)}
                               </span>
-                              <span className="text-[10px] text-neutral-500 font-mono font-bold mt-0.5 block">Pukul {details.time || '--:--'} WIB</span>
+                              <span className={`text-[10px] ${theme.textMuted} font-mono font-bold mt-0.5 block`}>Pukul {details.time || '--:--'} WIB</span>
                             </div>
                           </div>
                         );
                       })
                     ) : (
-                      <div className="text-center py-12 text-xs text-neutral-500 font-mono space-y-2 border-2 border-dashed border-neutral-800 rounded-2xl bg-neutral-950/20">
-                        <MapPin className="h-8 w-8 text-neutral-600 mx-auto animate-pulse" />
+                      <div className={`text-center py-12 text-xs ${theme.textMuted} font-mono space-y-2 border-2 border-dashed ${theme.border} rounded-2xl ${theme.innerCard}`}>
+                        <MapPin className="h-8 w-8 text-neutral-500 mx-auto animate-pulse" />
                         <div>Belum ada data trip taksi terdaftar.</div>
-                        <p className="text-[10px] text-neutral-600 max-w-md mx-auto">Gunakan halaman Kalender Booking atau menu Excel Import untuk memperbarui data trip layanan taksi.</p>
+                        <p className={`text-[10px] ${theme.textSecondary} max-w-md mx-auto`}>Gunakan halaman Kalender Booking atau menu Excel Import untuk memperbarui data trip layanan taksi.</p>
                       </div>
                     )}
                   </div>

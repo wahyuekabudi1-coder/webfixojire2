@@ -83,10 +83,15 @@ export default function AdminView() {
     rejectReview
   } = useApp();
 
-  // Theme State
+  // Theme State - Default to clean light mode
   const [isDark, setIsDark] = useState(() => {
     const saved = localStorage.getItem('sj_admin_theme');
-    return saved !== 'light';
+    // If not set or explicitly requested light, default to false (clean light mode)
+    if (!saved || saved === 'dark') {
+      localStorage.setItem('sj_admin_theme', 'light');
+      return false;
+    }
+    return saved === 'dark';
   });
 
   useEffect(() => {
@@ -634,19 +639,19 @@ export default function AdminView() {
 
   // Color theme helpers based on light/dark mode selection
   const theme = {
-    bg: isDark ? 'bg-neutral-950 text-neutral-100' : 'bg-neutral-50 text-neutral-900',
-    card: isDark ? 'bg-neutral-900/80 border-neutral-800' : 'bg-white border-neutral-200 shadow-sm',
-    innerCard: isDark ? 'bg-neutral-950/60 border-neutral-850' : 'bg-neutral-50 border-neutral-150',
-    sidebar: isDark ? 'bg-neutral-900 border-neutral-800' : 'bg-white border-neutral-200 shadow-md',
-    header: isDark ? 'bg-neutral-950/80 border-neutral-900/60' : 'bg-white/80 border-neutral-200/60',
+    bg: isDark ? 'bg-neutral-950 text-neutral-100' : 'bg-slate-50/90 text-neutral-900',
+    card: isDark ? 'bg-neutral-900/80 border-neutral-800' : 'bg-white border-neutral-200/90 shadow-sm text-neutral-900',
+    innerCard: isDark ? 'bg-neutral-950/60 border-neutral-850' : 'bg-slate-100/60 border-neutral-200 text-neutral-800',
+    sidebar: isDark ? 'bg-neutral-900 border-neutral-800' : 'bg-white border-neutral-200/90 shadow-sm text-neutral-900',
+    header: isDark ? 'bg-neutral-950/80 border-neutral-900/60' : 'bg-white/95 border-neutral-200/90 shadow-xs text-neutral-900',
     border: isDark ? 'border-neutral-800' : 'border-neutral-200',
-    borderSubtle: isDark ? 'border-neutral-850' : 'border-neutral-150',
+    borderSubtle: isDark ? 'border-neutral-850' : 'border-neutral-200/60',
     textPrimary: isDark ? 'text-neutral-100' : 'text-neutral-900',
-    textSecondary: isDark ? 'text-neutral-400' : 'text-neutral-500',
+    textSecondary: isDark ? 'text-neutral-400' : 'text-neutral-600',
     textMuted: isDark ? 'text-neutral-600' : 'text-neutral-400',
-    input: isDark ? 'bg-neutral-950/80 border-neutral-800 text-white' : 'bg-white border-neutral-200 text-neutral-900',
-    hover: isDark ? 'hover:bg-neutral-800/60' : 'hover:bg-neutral-100',
-    activeTab: 'bg-amber-500/10 text-amber-500 border-amber-500/30'
+    input: isDark ? 'bg-neutral-950/80 border-neutral-800 text-white' : 'bg-white border-neutral-300 text-neutral-900 placeholder:text-neutral-400 focus:border-amber-500 focus:ring-1 focus:ring-amber-500/20',
+    hover: isDark ? 'hover:bg-neutral-800/60' : 'hover:bg-slate-100',
+    activeTab: isDark ? 'bg-amber-500/10 text-amber-400 font-extrabold border-amber-500/30' : 'bg-amber-500/10 text-amber-700 font-extrabold border-amber-500/30'
   };
 
   // Lockscreen View (Stage 1)
@@ -748,13 +753,13 @@ export default function AdminView() {
       <div className="flex justify-between items-start">
         <div className="space-y-1">
           <span className={`text-[10px] font-black tracking-wider uppercase ${theme.textMuted}`}>{title}</span>
-          <h4 className="text-2xl font-black font-mono tracking-tight">{value}</h4>
+          <h4 className={`text-2xl font-black font-mono tracking-tight ${theme.textPrimary}`}>{value}</h4>
         </div>
         <div className="p-2 rounded-xl bg-amber-500/10 text-amber-500">
           <Icon className="h-5 w-5" />
         </div>
       </div>
-      <div className="flex items-center gap-2 mt-4 pt-4 border-t border-neutral-850 border-dashed">
+      <div className={`flex items-center gap-2 mt-4 pt-4 border-t ${theme.borderSubtle} border-dashed`}>
         <span className={`text-[10px] font-black px-1.5 py-0.5 rounded ${isPositive ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}`}>
           {isPositive ? '▲' : '▼'} {change}
         </span>
@@ -5920,7 +5925,7 @@ export default function AdminView() {
       >
         <div className="flex-grow overflow-y-auto no-scrollbar py-6 px-4 space-y-6">
           {/* Header Identity */}
-          <div className="flex items-center justify-between border-b border-neutral-850 border-dashed pb-5">
+          <div className={`flex items-center justify-between border-b ${theme.borderSubtle} border-dashed pb-5`}>
             {!sidebarCollapsed ? (
               <div className="flex items-center gap-2.5">
                 <img 
@@ -5932,8 +5937,8 @@ export default function AdminView() {
                   }}
                 />
                 <div>
-                  <h1 className="text-xs font-black tracking-widest font-mono text-white">SMART JOURNEY</h1>
-                  <span className="text-[9px] font-mono bg-amber-500/10 text-amber-400 font-extrabold px-1.5 py-0.5 rounded border border-amber-500/20 block mt-0.5">
+                  <h1 className={`text-xs font-black tracking-widest font-mono ${theme.textPrimary}`}>SMART JOURNEY</h1>
+                  <span className="text-[9px] font-mono bg-amber-500/10 text-amber-600 font-extrabold px-1.5 py-0.5 rounded border border-amber-500/20 block mt-0.5">
                     ADMIN GATE v2.0
                   </span>
                 </div>
@@ -5951,7 +5956,7 @@ export default function AdminView() {
 
             <button 
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-              className="hidden md:flex p-1.5 rounded-lg bg-neutral-950/20 border border-neutral-800 text-neutral-400 hover:text-white cursor-pointer"
+              className={`hidden md:flex p-1.5 rounded-lg ${theme.innerCard} border ${theme.border} ${theme.textSecondary} hover:${theme.textPrimary} cursor-pointer transition-all`}
             >
               {sidebarCollapsed ? <ChevronRight className="h-3.5 w-3.5" /> : <ChevronLeft className="h-3.5 w-3.5" />}
             </button>
@@ -5962,7 +5967,7 @@ export default function AdminView() {
             {/* Category: Dashboard & Analytics */}
             <div className="space-y-1.5">
               {!sidebarCollapsed && (
-                <span className="text-[10px] font-black text-neutral-500 uppercase tracking-widest px-2.5">
+                <span className={`text-[10px] font-black ${theme.textMuted} uppercase tracking-widest px-2.5`}>
                   Executive
                 </span>
               )}
@@ -5973,8 +5978,8 @@ export default function AdminView() {
                 }}
                 className={`w-full flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-xs font-bold transition-all relative cursor-pointer ${
                   activeModule === 'dashboard' 
-                    ? 'bg-amber-500/10 border border-amber-500/20 text-amber-500 font-extrabold' 
-                    : `text-neutral-400 hover:text-white ${theme.hover} border border-transparent`
+                    ? theme.activeTab
+                    : `${theme.textSecondary} hover:${theme.textPrimary} ${theme.hover} border border-transparent`
                 }`}
               >
                 <LayoutDashboard className="h-4.5 w-4.5" />
@@ -5987,8 +5992,8 @@ export default function AdminView() {
                 }}
                 className={`w-full flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-xs font-bold transition-all relative cursor-pointer ${
                   activeModule === 'analytics' 
-                    ? 'bg-amber-500/10 border border-amber-500/20 text-amber-500 font-extrabold' 
-                    : `text-neutral-400 hover:text-white ${theme.hover} border border-transparent`
+                    ? theme.activeTab
+                    : `${theme.textSecondary} hover:${theme.textPrimary} ${theme.hover} border border-transparent`
                 }`}
               >
                 <BarChart3 className="h-4.5 w-4.5" />
@@ -5999,7 +6004,7 @@ export default function AdminView() {
             {/* Category: Tour Management & Channels */}
             <div className="space-y-1.5">
               {!sidebarCollapsed && (
-                <span className="text-[10px] font-black text-neutral-500 uppercase tracking-widest px-2.5">
+                <span className={`text-[10px] font-black ${theme.textMuted} uppercase tracking-widest px-2.5`}>
                   Tours &amp; Services
                 </span>
               )}
@@ -6066,8 +6071,8 @@ export default function AdminView() {
                         }}
                         className={`w-full flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-xs font-bold transition-all relative cursor-pointer ${
                           isActive 
-                            ? 'bg-amber-500/10 border border-amber-500/20 text-amber-500 font-extrabold' 
-                            : `text-neutral-400 hover:text-white ${theme.hover} border border-transparent`
+                            ? theme.activeTab
+                            : `${theme.textSecondary} hover:${theme.textPrimary} ${theme.hover} border border-transparent`
                         }`}
                       >
                         <Icon className="h-4.5 w-4.5 shrink-0" />
@@ -6086,7 +6091,7 @@ export default function AdminView() {
                       </button>
                       
                       {isActive && !sidebarCollapsed && subTabs.length > 0 && (
-                        <div className="pl-4 ml-4 border-l border-neutral-800 space-y-0.5 mt-1">
+                        <div className={`pl-4 ml-4 border-l ${theme.border} space-y-0.5 mt-1`}>
                           {subTabs.map((sub) => {
                             const SubIcon = sub.icon;
                             const isSubActive = activeSubTab === sub.id;
@@ -6099,8 +6104,8 @@ export default function AdminView() {
                                 }}
                                 className={`w-full flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold transition-all cursor-pointer text-left ${
                                   isSubActive
-                                    ? 'text-amber-500 font-black bg-amber-500/5'
-                                    : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/30'
+                                    ? 'text-amber-600 font-black bg-amber-500/10'
+                                    : `${theme.textSecondary} hover:${theme.textPrimary} ${theme.hover}`
                                 }`}
                               >
                                 <SubIcon className="h-3.5 w-3.5 shrink-0" />
@@ -6119,7 +6124,7 @@ export default function AdminView() {
             {/* Category: Analytics & CMS */}
             <div className="space-y-1.5">
               {!sidebarCollapsed && (
-                <span className="text-[10px] font-black text-neutral-500 uppercase tracking-widest px-2.5">
+                <span className={`text-[10px] font-black ${theme.textMuted} uppercase tracking-widest px-2.5`}>
                   Analytics &amp; CMS
                 </span>
               )}
@@ -6131,8 +6136,8 @@ export default function AdminView() {
                 }}
                 className={`w-full flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-xs font-bold transition-all relative cursor-pointer ${
                   activeModule === 'reports' 
-                    ? 'bg-amber-500/10 border border-amber-500/20 text-amber-500 font-extrabold' 
-                    : `text-neutral-400 hover:text-white ${theme.hover} border border-transparent`
+                    ? theme.activeTab
+                    : `${theme.textSecondary} hover:${theme.textPrimary} ${theme.hover} border border-transparent`
                 }`}
               >
                 <BarChart3 className="h-4.5 w-4.5" />
@@ -6146,8 +6151,8 @@ export default function AdminView() {
                 }}
                 className={`w-full flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-xs font-bold transition-all relative cursor-pointer ${
                   activeModule === 'cms' 
-                    ? 'bg-amber-500/10 border border-amber-500/20 text-amber-500 font-extrabold' 
-                    : `text-neutral-400 hover:text-white ${theme.hover} border border-transparent`
+                    ? theme.activeTab
+                    : `${theme.textSecondary} hover:${theme.textPrimary} ${theme.hover} border border-transparent`
                 }`}
               >
                 <ClipboardList className="h-4.5 w-4.5" />
@@ -6158,7 +6163,7 @@ export default function AdminView() {
             {/* Category: Account / Profile */}
             <div className="space-y-1.5">
               {!sidebarCollapsed && (
-                <span className="text-[10px] font-black text-neutral-500 uppercase tracking-widest px-2.5">
+                <span className={`text-[10px] font-black ${theme.textMuted} uppercase tracking-widest px-2.5`}>
                   Security &amp; Account
                 </span>
               )}
@@ -6169,8 +6174,8 @@ export default function AdminView() {
                 }}
                 className={`w-full flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-xs font-bold transition-all relative cursor-pointer ${
                   activeModule === 'account' 
-                    ? 'bg-amber-500/10 border border-amber-500/20 text-amber-500 font-extrabold' 
-                    : `text-neutral-400 hover:text-white ${theme.hover} border border-transparent`
+                    ? theme.activeTab
+                    : `${theme.textSecondary} hover:${theme.textPrimary} ${theme.hover} border border-transparent`
                 }`}
               >
                 <Settings className="h-4.5 w-4.5" />
@@ -6181,21 +6186,21 @@ export default function AdminView() {
         </div>
 
         {/* User Identity / Exit Portal */}
-        <div className="p-4 border-t border-neutral-850 space-y-2">
+        <div className={`p-4 border-t ${theme.border} space-y-2`}>
           {!sidebarCollapsed && (
-            <div className={`p-3 rounded-xl ${theme.innerCard} border flex items-center gap-2.5`}>
+            <div className={`p-3 rounded-xl ${theme.innerCard} border ${theme.border} flex items-center gap-2.5`}>
               <div className="h-8 w-8 rounded-lg bg-amber-500 flex items-center justify-center text-neutral-950 font-black text-xs">
                 SJT
               </div>
               <div className="overflow-hidden">
-                <h5 className="text-[11px] font-bold text-neutral-200 truncate">Administrator</h5>
-                <span className="text-[9px] text-neutral-500 block truncate">sawahjaya@gmail.com</span>
+                <h5 className={`text-[11px] font-bold ${theme.textPrimary} truncate`}>Administrator</h5>
+                <span className={`text-[9px] ${theme.textMuted} block truncate`}>sawahjaya@gmail.com</span>
               </div>
             </div>
           )}
           <button 
             onClick={() => setPage('home')}
-            className={`w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-rose-400 hover:text-rose-300 border border-transparent hover:bg-rose-500/10 cursor-pointer`}
+            className={`w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-bold text-rose-500 hover:text-rose-600 border border-transparent hover:bg-rose-500/10 cursor-pointer`}
           >
             <LogOut className="h-4 w-4 shrink-0" />
             {!sidebarCollapsed && <span>Keluar Portal</span>}
@@ -6241,10 +6246,10 @@ export default function AdminView() {
                 setIsDark(!isDark);
                 triggerToast(`Mengubah ke ${!isDark ? 'Tema Gelap' : 'Tema Terang'}`);
               }}
-              className={`p-2 rounded-xl border ${theme.border} ${theme.hover} text-neutral-400 hover:text-white transition-all cursor-pointer`}
+              className={`p-2 rounded-xl border ${theme.border} ${theme.hover} ${theme.textSecondary} hover:${theme.textPrimary} transition-all cursor-pointer`}
               title="Ganti Tema Visual"
             >
-              {isDark ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4 text-neutral-500" />}
+              {isDark ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4 text-neutral-600" />}
             </button>
 
             {/* Notifications Placeholder */}
@@ -6255,7 +6260,7 @@ export default function AdminView() {
                   setShowProfileDropdown(false);
                   if (notificationCount > 0) setNotificationCount(0);
                 }}
-                className={`p-2 rounded-xl border ${theme.border} ${theme.hover} text-neutral-400 hover:text-white transition-all cursor-pointer relative`}
+                className={`p-2 rounded-xl border ${theme.border} ${theme.hover} ${theme.textSecondary} hover:${theme.textPrimary} transition-all cursor-pointer relative`}
               >
                 <Bell className="h-4 w-4" />
                 {notificationCount > 0 && (
@@ -6273,7 +6278,7 @@ export default function AdminView() {
                     exit={{ opacity: 0, y: 10 }}
                     className={`absolute right-0 mt-2 w-80 rounded-2xl border ${theme.card} shadow-2xl p-4 space-y-3 z-30`}
                   >
-                    <div className="flex justify-between items-center border-b border-neutral-850 pb-2">
+                    <div className={`flex justify-between items-center border-b ${theme.borderSubtle} pb-2`}>
                       <span className="text-xs font-black uppercase tracking-wider font-mono text-amber-500">Notifikasi Sistem</span>
                       <button onClick={() => setShowNotifications(false)} className={`text-neutral-500 ${theme.hover} p-1 rounded-lg`}>
                         <X className="h-3.5 w-3.5" />
@@ -6285,10 +6290,10 @@ export default function AdminView() {
                         { title: 'Alokasi Otomatis Supir', desc: 'Supir "Made Wijaya" berhasil dialokasikan ke Rental #SJ-RB-4410.', time: '12m yang lalu' },
                         { title: 'Pembaruan Katalog Wisata', desc: 'Admin Smart Journey memperbarui harga promo tur Uluwatu Sunset.', time: '1h yang lalu' }
                       ].map((n, i) => (
-                        <div key={i} className={`p-2.5 rounded-xl ${theme.innerCard} border space-y-1`}>
-                          <h6 className="text-[11px] font-black">{n.title}</h6>
+                        <div key={i} className={`p-2.5 rounded-xl ${theme.innerCard} border ${theme.borderSubtle} space-y-1`}>
+                          <h6 className={`text-[11px] font-black ${theme.textPrimary}`}>{n.title}</h6>
                           <p className={`text-[10px] ${theme.textSecondary} leading-normal`}>{n.desc}</p>
-                          <span className="text-[8px] font-mono font-bold text-neutral-500 block mt-1">{n.time}</span>
+                          <span className={`text-[8px] font-mono font-bold ${theme.textMuted} block mt-1`}>{n.time}</span>
                         </div>
                       ))}
                     </div>
@@ -6309,7 +6314,7 @@ export default function AdminView() {
                 <div className="h-6 w-6 rounded-lg bg-amber-500 flex items-center justify-center text-neutral-950 font-black text-[10px] font-mono">
                   AD
                 </div>
-                <span className="text-xs font-bold hidden md:inline">Admin Pusat</span>
+                <span className={`text-xs font-bold hidden md:inline ${theme.textPrimary}`}>Admin Pusat</span>
                 <ChevronDown className="h-3.5 w-3.5 text-neutral-500" />
               </button>
 
@@ -6321,9 +6326,9 @@ export default function AdminView() {
                     exit={{ opacity: 0, y: 10 }}
                     className={`absolute right-0 mt-2 w-56 rounded-2xl border ${theme.card} shadow-2xl p-3 space-y-1.5 z-30`}
                   >
-                    <div className="p-2 border-b border-neutral-850 text-xs">
-                      <p className="font-black text-neutral-200">Smart Journey</p>
-                      <span className="text-[9px] text-neutral-500 block font-mono">Role: Super Administrator</span>
+                    <div className={`p-2 border-b ${theme.borderSubtle} text-xs`}>
+                      <p className={`font-black ${theme.textPrimary}`}>Smart Journey</p>
+                      <span className={`text-[9px] ${theme.textMuted} block font-mono`}>Role: Super Administrator</span>
                     </div>
                     <button 
                       onClick={() => {
@@ -6331,7 +6336,7 @@ export default function AdminView() {
                         setActiveAccountTab('profile');
                         setShowProfileDropdown(false);
                       }}
-                      className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold ${theme.hover} text-neutral-300 cursor-pointer`}
+                      className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold ${theme.hover} ${theme.textPrimary} cursor-pointer`}
                     >
                       <User className="h-4 w-4 text-amber-500" />
                       <span>Profil Akun</span>
@@ -6342,18 +6347,18 @@ export default function AdminView() {
                         setActiveAccountTab('password');
                         setShowProfileDropdown(false);
                       }}
-                      className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold ${theme.hover} text-neutral-300 cursor-pointer`}
+                      className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold ${theme.hover} ${theme.textPrimary} cursor-pointer`}
                     >
                       <LockKeyhole className="h-4 w-4 text-amber-500" />
                       <span>Ubah Sandi</span>
                     </button>
-                    <div className="border-t border-neutral-850 pt-1.5 mt-1.5">
+                    <div className={`border-t ${theme.borderSubtle} pt-1.5 mt-1.5`}>
                       <button 
                         onClick={() => {
                           setShowProfileDropdown(false);
                           handleLogout();
                         }}
-                        className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-rose-400 hover:bg-rose-500/10 cursor-pointer"
+                        className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-xs font-bold text-rose-500 hover:bg-rose-500/10 cursor-pointer"
                       >
                         <LogOut className="h-4 w-4" />
                         <span>Log Out</span>
@@ -6388,7 +6393,7 @@ export default function AdminView() {
                         Operational Control Center
                       </span>
                     </div>
-                    <h2 className="text-2xl font-black tracking-tight text-neutral-100 font-sans">
+                    <h2 className={`text-2xl font-black tracking-tight ${theme.textPrimary} font-sans`}>
                       {(() => {
                         const hours = liveTime.getHours();
                         if (hours < 12) return 'Good Morning';
@@ -6408,10 +6413,10 @@ export default function AdminView() {
                     <div>
                       <span className={`${theme.textSecondary} block text-[9px] uppercase tracking-wider`}>LIVE CONTROL PANEL TIME</span>
                       <div className="flex items-center gap-2 text-sm">
-                        <span className="text-neutral-100 font-extrabold">
+                        <span className={`${theme.textPrimary} font-extrabold`}>
                           {liveTime.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
                         </span>
-                        <span className="text-neutral-500">|</span>
+                        <span className={theme.textMuted}>|</span>
                         <span className="text-amber-500 font-black">
                           {liveTime.toLocaleTimeString('en-US', { hour12: false })}
                         </span>
@@ -6503,7 +6508,7 @@ export default function AdminView() {
                                 setOverviewMonth(prev => prev - 1);
                               }
                             }}
-                            className={`p-1.5 rounded-lg border border-neutral-800 ${theme.hover} text-neutral-300 cursor-pointer`}
+                            className={`p-1.5 rounded-lg border ${theme.border} ${theme.hover} ${theme.textPrimary} cursor-pointer`}
                           >
                             <ChevronLeft className="h-4 w-4" />
                           </button>
@@ -6511,7 +6516,7 @@ export default function AdminView() {
                           <select 
                             value={overviewMonth}
                             onChange={(e) => setOverviewMonth(parseInt(e.target.value, 10))}
-                            className="bg-neutral-950 border border-neutral-800 text-xs font-bold px-2.5 py-1.5 rounded-lg text-neutral-200 outline-none focus:border-amber-500"
+                            className={`${theme.input} text-xs font-bold px-2.5 py-1.5 rounded-lg outline-none focus:border-amber-500`}
                           >
                             {[
                               'January', 'February', 'March', 'April', 'May', 'June',
@@ -6524,7 +6529,7 @@ export default function AdminView() {
                           <select 
                             value={overviewYear}
                             onChange={(e) => setOverviewYear(parseInt(e.target.value, 10))}
-                            className="bg-neutral-950 border border-neutral-800 text-xs font-bold px-2.5 py-1.5 rounded-lg text-neutral-200 outline-none focus:border-amber-500"
+                            className={`${theme.input} text-xs font-bold px-2.5 py-1.5 rounded-lg outline-none focus:border-amber-500`}
                           >
                             {[2024, 2025, 2026, 2027, 2028, 2029, 2030].map(y => (
                               <option key={y} value={y}>{y}</option>
@@ -6540,7 +6545,7 @@ export default function AdminView() {
                                 setOverviewMonth(prev => prev + 1);
                               }
                             }}
-                            className={`p-1.5 rounded-lg border border-neutral-800 ${theme.hover} text-neutral-300 cursor-pointer`}
+                            className={`p-1.5 rounded-lg border ${theme.border} ${theme.hover} ${theme.textPrimary} cursor-pointer`}
                           >
                             <ChevronRight className="h-4 w-4" />
                           </button>
@@ -6548,8 +6553,8 @@ export default function AdminView() {
                       </div>
 
                       {/* Calendar Legends */}
-                      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[10px] font-mono font-bold text-neutral-400 bg-neutral-950/40 p-2.5 border border-neutral-850 rounded-xl">
-                        <span className="text-[9px] text-neutral-500 uppercase">LEGENDA MODUL:</span>
+                      <div className={`flex flex-wrap items-center gap-x-4 gap-y-2 text-[10px] font-mono font-bold ${theme.textSecondary} ${theme.innerCard} p-2.5 border ${theme.borderSubtle} rounded-xl`}>
+                        <span className={`text-[9px] ${theme.textMuted} uppercase`}>LEGENDA MODUL:</span>
                         <span className="flex items-center gap-1">🟣 Share Tour</span>
                         <span className="flex items-center gap-1">🟢 Airport Transfer</span>
                         <span className="flex items-center gap-1">🟠 Taxi Service</span>
@@ -6557,7 +6562,7 @@ export default function AdminView() {
                       </div>
 
                       {/* Day Grid */}
-                      <div className="grid grid-cols-7 gap-1 text-center font-mono text-[10px] font-bold text-neutral-500 border-b border-neutral-850 pb-2">
+                      <div className={`grid grid-cols-7 gap-1 text-center font-mono text-[10px] font-bold ${theme.textMuted} border-b ${theme.borderSubtle} pb-2`}>
                         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => (
                           <div key={d}>{d}</div>
                         ))}
@@ -6618,10 +6623,10 @@ export default function AdminView() {
                           const rentalLimit = serviceLimits?.rental ?? 5;
 
                           const getStatusColor = (count: number, limit: number) => {
-                            if (count === 0) return 'text-neutral-500 bg-neutral-900/10 opacity-60';
-                            if (count >= limit) return 'text-rose-400 bg-rose-500/15 border border-rose-500/25 font-black';
+                            if (count === 0) return isDark ? 'text-neutral-500 bg-neutral-900/10 opacity-60' : 'text-neutral-400 bg-neutral-100 opacity-60';
+                            if (count >= limit) return 'text-rose-500 bg-rose-500/15 border border-rose-500/25 font-black';
                             if (count >= limit - 1) return 'text-amber-500 bg-amber-500/15 border border-amber-500/25 font-bold';
-                            return 'text-emerald-400 bg-emerald-500/15 border border-emerald-500/25';
+                            return 'text-emerald-500 bg-emerald-500/15 border border-emerald-500/25';
                           };
 
                           return {
@@ -6647,18 +6652,18 @@ export default function AdminView() {
                                     isSelected 
                                       ? 'bg-amber-500/10 border-amber-500/60 ring-1 ring-amber-500/30' 
                                       : dayItem.isCurrentMonth
-                                        ? 'bg-neutral-900/40 border-neutral-850 hover:bg-neutral-900 hover:border-neutral-750'
-                                        : 'bg-neutral-950/20 border-neutral-900/40 opacity-45 hover:opacity-80'
+                                        ? isDark ? 'bg-neutral-900/40 border-neutral-850 hover:bg-neutral-900 hover:border-neutral-750' : 'bg-white border-neutral-200 hover:bg-amber-500/5 hover:border-amber-500/30 shadow-xs'
+                                        : isDark ? 'bg-neutral-950/20 border-neutral-900/40 opacity-45 hover:opacity-80' : 'bg-neutral-50 border-neutral-100 opacity-40 hover:opacity-75'
                                   }`}
                                 >
                                   {/* Day Number Row */}
                                   <div className="flex justify-between items-center w-full">
                                     <span className={`text-[11px] font-black font-mono ${
                                       isSelected 
-                                        ? 'text-amber-400' 
+                                        ? 'text-amber-500' 
                                         : dayItem.isCurrentMonth 
-                                          ? 'text-neutral-300' 
-                                          : 'text-neutral-600'
+                                          ? theme.textPrimary 
+                                          : theme.textMuted
                                     }`}>
                                       {dayItem.day}
                                     </span>
@@ -6700,11 +6705,11 @@ export default function AdminView() {
                   {/* RIGHT: BOOKING SUMMARY PANEL (4 COLS) */}
                   <div className="lg:col-span-4 space-y-4">
                     <div className={`${theme.card} border rounded-2xl p-5 space-y-4 shadow-sm h-full`}>
-                      <div className="border-b border-neutral-850 pb-4">
-                        <span className="text-[9px] font-mono font-bold bg-neutral-950/80 border border-neutral-800 text-neutral-400 px-2.5 py-1 rounded-full uppercase block w-fit mb-1.5">
+                      <div className={`border-b ${theme.borderSubtle} pb-4`}>
+                        <span className={`text-[9px] font-mono font-bold ${theme.innerCard} border ${theme.borderSubtle} ${theme.textSecondary} px-2.5 py-1 rounded-full uppercase block w-fit mb-1.5`}>
                           Date Details Panel
                         </span>
-                        <h3 className="text-sm font-black text-neutral-200">
+                        <h3 className={`text-sm font-black ${theme.textPrimary}`}>
                           {(() => {
                             const parts = selectedDashDate.split('-');
                             if (parts.length !== 3) return selectedDashDate;
@@ -6742,23 +6747,23 @@ export default function AdminView() {
                         return (
                           <div className="space-y-3.5">
                             {/* 1. Share Tour */}
-                            <div className={`p-3.5 border rounded-xl bg-neutral-950/30 border-neutral-850 flex flex-col justify-between`}>
+                            <div className={`p-3.5 border rounded-xl ${theme.innerCard} ${theme.borderSubtle} flex flex-col justify-between`}>
                               <div className="flex justify-between items-center mb-1.5">
                                 <div className="flex items-center gap-1.5">
                                   <span className="text-sm">🟣</span>
-                                  <span className="font-extrabold text-xs text-neutral-200">Share Tour</span>
+                                  <span className={`font-extrabold text-xs ${theme.textPrimary}`}>Share Tour</span>
                                 </div>
                                 <span className={`text-[9px] font-bold font-mono px-2 py-0.5 rounded-full ${
                                   tourCount >= tourLimit 
-                                    ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' 
-                                    : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                                    ? 'bg-rose-500/10 text-rose-500 border border-rose-500/20' 
+                                    : 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'
                                 }`}>
                                   {tourCount >= tourLimit ? 'FULL' : 'Available'}
                                 </span>
                               </div>
                               <div className="flex justify-between items-center text-[10px] text-neutral-500 font-mono mb-2.5">
                                 <span>Kapasitas Terisi</span>
-                                <span className="font-bold text-neutral-300">{tourCount} / {tourLimit}</span>
+                                <span className={`font-bold ${theme.textPrimary}`}>{tourCount} / {tourLimit}</span>
                               </div>
                               <button 
                                 onClick={() => {
@@ -6772,7 +6777,7 @@ export default function AdminView() {
                                   }
                                   localStorage.setItem('smartjourney_selected_date', selectedDashDate);
                                 }}
-                                className="w-full bg-neutral-950 hover:bg-neutral-900 border border-neutral-850 hover:border-neutral-750 text-amber-500 font-black text-[10px] py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                                className={`w-full ${isDark ? 'bg-neutral-950 hover:bg-neutral-900 border-neutral-850' : 'bg-white hover:bg-amber-500/5 border-neutral-200 shadow-xs'} border text-amber-600 font-black text-[10px] py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer`}
                               >
                                 <span>View Details</span>
                                 <ArrowUpRight className="h-3.5 w-3.5" />
@@ -6780,23 +6785,23 @@ export default function AdminView() {
                             </div>
 
                             {/* 2. Airport Transfer */}
-                            <div className={`p-3.5 border rounded-xl bg-neutral-950/30 border-neutral-850 flex flex-col justify-between`}>
+                            <div className={`p-3.5 border rounded-xl ${theme.innerCard} ${theme.borderSubtle} flex flex-col justify-between`}>
                               <div className="flex justify-between items-center mb-1.5">
                                 <div className="flex items-center gap-1.5">
                                   <span className="text-sm">🟢</span>
-                                  <span className="font-extrabold text-xs text-neutral-200">Airport Transfer</span>
+                                  <span className={`font-extrabold text-xs ${theme.textPrimary}`}>Airport Transfer</span>
                                 </div>
                                 <span className={`text-[9px] font-bold font-mono px-2 py-0.5 rounded-full ${
                                   airportCount >= airportLimit 
-                                    ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' 
-                                    : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                                    ? 'bg-rose-500/10 text-rose-500 border border-rose-500/20' 
+                                    : 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'
                                 }`}>
                                   {airportCount >= airportLimit ? 'FULL' : 'Available'}
                                 </span>
                               </div>
                               <div className="flex justify-between items-center text-[10px] text-neutral-500 font-mono mb-2.5">
                                 <span>Kapasitas Terisi</span>
-                                <span className="font-bold text-neutral-300">{airportCount} / {airportLimit}</span>
+                                <span className={`font-bold ${theme.textPrimary}`}>{airportCount} / {airportLimit}</span>
                               </div>
                               <button 
                                 onClick={() => {
@@ -6804,7 +6809,7 @@ export default function AdminView() {
                                   setActiveSubTab('booking');
                                   setAirportPaymentSearch(selectedDashDate);
                                 }}
-                                className="w-full bg-neutral-950 hover:bg-neutral-900 border border-neutral-850 hover:border-neutral-750 text-amber-500 font-black text-[10px] py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                                className={`w-full ${isDark ? 'bg-neutral-950 hover:bg-neutral-900 border-neutral-850' : 'bg-white hover:bg-amber-500/5 border-neutral-200 shadow-xs'} border text-amber-600 font-black text-[10px] py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer`}
                               >
                                 <span>View Details</span>
                                 <ArrowUpRight className="h-3.5 w-3.5" />
@@ -6812,23 +6817,23 @@ export default function AdminView() {
                             </div>
 
                             {/* 3. Taxi Service */}
-                            <div className={`p-3.5 border rounded-xl bg-neutral-950/30 border-neutral-850 flex flex-col justify-between`}>
+                            <div className={`p-3.5 border rounded-xl ${theme.innerCard} ${theme.borderSubtle} flex flex-col justify-between`}>
                               <div className="flex justify-between items-center mb-1.5">
                                 <div className="flex items-center gap-1.5">
                                   <span className="text-sm">🟠</span>
-                                  <span className="font-extrabold text-xs text-neutral-200">Taxi Service</span>
+                                  <span className={`font-extrabold text-xs ${theme.textPrimary}`}>Taxi Service</span>
                                 </div>
                                 <span className={`text-[9px] font-bold font-mono px-2 py-0.5 rounded-full ${
                                   taxiCount >= taxiLimit 
-                                    ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' 
-                                    : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                                    ? 'bg-rose-500/10 text-rose-500 border border-rose-500/20' 
+                                    : 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'
                                 }`}>
                                   {taxiCount >= taxiLimit ? 'FULL' : 'Available'}
                                 </span>
                               </div>
                               <div className="flex justify-between items-center text-[10px] text-neutral-500 font-mono mb-2.5">
                                 <span>Kapasitas Terisi</span>
-                                <span className="font-bold text-neutral-300">{taxiCount} / {taxiLimit}</span>
+                                <span className={`font-bold ${theme.textPrimary}`}>{taxiCount} / {taxiLimit}</span>
                               </div>
                               <button 
                                 onClick={() => {
@@ -6836,7 +6841,7 @@ export default function AdminView() {
                                   setActiveSubTab('calendar');
                                   localStorage.setItem('smartjourney_selected_date', selectedDashDate);
                                 }}
-                                className="w-full bg-neutral-950 hover:bg-neutral-900 border border-neutral-850 hover:border-neutral-750 text-amber-500 font-black text-[10px] py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                                className={`w-full ${isDark ? 'bg-neutral-950 hover:bg-neutral-900 border-neutral-850' : 'bg-white hover:bg-amber-500/5 border-neutral-200 shadow-xs'} border text-amber-600 font-black text-[10px] py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer`}
                               >
                                 <span>View Details</span>
                                 <ArrowUpRight className="h-3.5 w-3.5" />
@@ -6844,23 +6849,23 @@ export default function AdminView() {
                             </div>
 
                             {/* 4. Car Rental */}
-                            <div className={`p-3.5 border rounded-xl bg-neutral-950/30 border-neutral-850 flex flex-col justify-between`}>
+                            <div className={`p-3.5 border rounded-xl ${theme.innerCard} ${theme.borderSubtle} flex flex-col justify-between`}>
                               <div className="flex justify-between items-center mb-1.5">
                                 <div className="flex items-center gap-1.5">
                                   <span className="text-sm">🔵</span>
-                                  <span className="font-extrabold text-xs text-neutral-200">Car Rental</span>
+                                  <span className={`font-extrabold text-xs ${theme.textPrimary}`}>Car Rental</span>
                                 </div>
                                 <span className={`text-[9px] font-bold font-mono px-2 py-0.5 rounded-full ${
                                   rentalCount >= rentalLimit 
-                                    ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' 
-                                    : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                                    ? 'bg-rose-500/10 text-rose-500 border border-rose-500/20' 
+                                    : 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'
                                 }`}>
                                   {rentalCount >= rentalLimit ? 'FULL' : 'Available'}
                                 </span>
                               </div>
                               <div className="flex justify-between items-center text-[10px] text-neutral-500 font-mono mb-2.5">
                                 <span>Kapasitas Terisi</span>
-                                <span className="font-bold text-neutral-300">{rentalCount} / {rentalLimit}</span>
+                                <span className={`font-bold ${theme.textPrimary}`}>{rentalCount} / {rentalLimit}</span>
                               </div>
                               <button 
                                 onClick={() => {
@@ -6868,7 +6873,7 @@ export default function AdminView() {
                                   setActiveSubTab('calendar');
                                   localStorage.setItem('smartjourney_selected_date', selectedDashDate);
                                 }}
-                                className="w-full bg-neutral-950 hover:bg-neutral-900 border border-neutral-850 hover:border-neutral-750 text-amber-500 font-black text-[10px] py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                                className={`w-full ${isDark ? 'bg-neutral-950 hover:bg-neutral-900 border-neutral-850' : 'bg-white hover:bg-amber-500/5 border-neutral-200 shadow-xs'} border text-amber-600 font-black text-[10px] py-2 rounded-lg transition-all flex items-center justify-center gap-1.5 cursor-pointer`}
                               >
                                 <span>View Details</span>
                                 <ArrowUpRight className="h-3.5 w-3.5" />
@@ -6895,14 +6900,14 @@ export default function AdminView() {
                         <div className="space-y-4">
                           <div className="flex justify-between items-start">
                             <div className="space-y-1">
-                              <h4 className="font-black text-xs uppercase tracking-widest font-mono text-amber-500 border-b border-neutral-850 pb-2">
+                              <h4 className={`font-black text-xs uppercase tracking-widest font-mono text-amber-500 border-b ${theme.borderSubtle} pb-2`}>
                                 PENDING PAYMENT SUMMARY
                               </h4>
                               <p className={`text-[11px] ${theme.textSecondary}`}>
                                 Aktivitas tagihan reservasi tamu yang masih menunggu konfirmasi transfer atau pembayaran selesai.
                               </p>
                             </div>
-                            <span className="p-2 bg-rose-500/10 text-rose-400 rounded-xl border border-rose-500/20">
+                            <span className="p-2 bg-rose-500/10 text-rose-500 rounded-xl border border-rose-500/20">
                               <CreditCard className="h-4.5 w-4.5" />
                             </span>
                           </div>
@@ -6910,24 +6915,24 @@ export default function AdminView() {
                           <div className="grid grid-cols-2 gap-4">
                             <div className={`p-4 rounded-xl border ${theme.innerCard} text-center space-y-1`}>
                               <span className="text-[9px] font-bold text-neutral-500 uppercase block font-mono">Invoice Pending</span>
-                              <span className="text-lg font-black text-rose-400">{pendingPaymentCount} Invoices</span>
+                              <span className="text-lg font-black text-rose-500">{pendingPaymentCount} Invoices</span>
                             </div>
                             <div className={`p-4 rounded-xl border ${theme.innerCard} text-center space-y-1`}>
                               <span className="text-[9px] font-bold text-neutral-500 uppercase block font-mono">Total Pending Amount</span>
-                              <span className="text-lg font-black text-amber-500">
+                              <span className="text-lg font-black text-amber-600">
                                 {currency === 'USD' ? `$${pendingPaymentAmountUSD.toLocaleString()}` : `IDR ${(pendingPaymentAmountIDR / 1000).toFixed(0)}K`}
                               </span>
                             </div>
                           </div>
                         </div>
 
-                        <div className="pt-4 border-t border-neutral-850 flex justify-end mt-4">
+                        <div className={`pt-4 border-t ${theme.borderSubtle} flex justify-end mt-4`}>
                           <button 
                             onClick={() => {
                               setActiveModule('tours');
                               setActiveSubTab('payment');
                             }}
-                            className="bg-neutral-950 hover:bg-neutral-900 border border-neutral-850 text-amber-500 hover:border-neutral-750 font-extrabold text-[11px] px-5 py-2.5 rounded-xl transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
+                            className={`${isDark ? 'bg-neutral-950 hover:bg-neutral-900 border-neutral-850 text-amber-400' : 'bg-amber-500 hover:bg-amber-600 text-neutral-950'} border border-transparent font-extrabold text-[11px] px-5 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-1.5 cursor-pointer`}
                           >
                             <span>View Payments</span>
                             <ArrowUpRight className="h-4 w-4" />
@@ -6942,7 +6947,7 @@ export default function AdminView() {
                     <div className="space-y-4">
                       <div className="flex justify-between items-center">
                         <div className="space-y-1">
-                          <h4 className="font-black text-xs uppercase tracking-widest font-mono text-amber-500 border-b border-neutral-850 pb-2">
+                          <h4 className={`font-black text-xs uppercase tracking-widest font-mono text-amber-500 border-b ${theme.borderSubtle} pb-2`}>
                             LATEST OPERATIONAL NOTIFICATIONS
                           </h4>
                           <p className={`text-[11px] ${theme.textSecondary}`}>
@@ -6969,17 +6974,17 @@ export default function AdminView() {
 
                             if (b.status === 'Confirmed') {
                               icon = CheckCircle2;
-                              colorClass = 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20';
+                              colorClass = 'text-emerald-500 bg-emerald-500/10 border border-emerald-500/20';
                               title = 'Payment Verified';
                               message = `Pembayaran lunas untuk booking ${serviceNameLabel} atas nama ${customerNameLabel}.`;
                             } else if (b.status === 'Pending') {
                               icon = ClipboardList;
-                              colorClass = 'text-blue-400 bg-blue-500/10 border border-blue-500/20';
+                              colorClass = 'text-blue-500 bg-blue-500/10 border border-blue-500/20';
                               title = 'New Booking';
                               message = `Reservasi baru diterima untuk ${serviceNameLabel} oleh ${customerNameLabel}.`;
                             } else {
                               icon = RefreshCw;
-                              colorClass = 'text-amber-400 bg-amber-500/10 border border-amber-500/20';
+                              colorClass = 'text-amber-500 bg-amber-500/10 border border-amber-500/20';
                               title = 'Booking Updated';
                               message = `Detail reservasi ${serviceNameLabel} (${customerNameLabel}) telah diperbarui.`;
                             }
@@ -7002,7 +7007,7 @@ export default function AdminView() {
                             message: 'Pembayaran lunas untuk booking Mount Bromo Midnight Tour atas nama Sophie Laurent.',
                             time: '2 hours ago',
                             icon: CheckCircle2,
-                            colorClass: 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20'
+                            colorClass: 'text-emerald-500 bg-emerald-500/10 border border-emerald-500/20'
                           },
                           {
                             id: 'mock-2',
@@ -7010,7 +7015,7 @@ export default function AdminView() {
                             message: 'Reservasi baru diterima untuk Airport Transfer Juanda oleh Kevin Wijaya.',
                             time: '4 hours ago',
                             icon: ClipboardList,
-                            colorClass: 'text-blue-400 bg-blue-500/10 border border-blue-500/20'
+                            colorClass: 'text-blue-500 bg-blue-500/10 border border-blue-500/20'
                           },
                           {
                             id: 'mock-3',
@@ -7018,7 +7023,7 @@ export default function AdminView() {
                             message: 'Detail reservasi Car Rental (Innova Reborn) telah disesuaikan jadwalnya.',
                             time: '1 day ago',
                             icon: RefreshCw,
-                            colorClass: 'text-amber-400 bg-amber-500/10 border border-amber-500/20'
+                            colorClass: 'text-amber-500 bg-amber-500/10 border border-amber-500/20'
                           },
                           {
                             id: 'mock-4',
@@ -7026,7 +7031,7 @@ export default function AdminView() {
                             message: 'Pembatalan otomatis sistem untuk penjemputan stasiun (Unpaid expired).',
                             time: '2 days ago',
                             icon: AlertTriangle,
-                            colorClass: 'text-rose-400 bg-rose-500/10 border border-rose-500/20'
+                            colorClass: 'text-rose-500 bg-rose-500/10 border border-rose-500/20'
                           },
                           {
                             id: 'mock-5',
@@ -7034,7 +7039,7 @@ export default function AdminView() {
                             message: 'Pusat integrasi multi-channel operational node aktif dan sinkron.',
                             time: '3 days ago',
                             icon: Shield,
-                            colorClass: 'text-purple-400 bg-purple-500/10 border border-purple-500/20'
+                            colorClass: 'text-purple-500 bg-purple-500/10 border border-purple-500/20'
                           }
                         ];
 
@@ -7054,10 +7059,10 @@ export default function AdminView() {
                                   </span>
                                   <div className="space-y-0.5">
                                     <div className="flex items-center gap-2">
-                                      <span className="font-extrabold text-xs text-neutral-200">{notif.title}</span>
-                                      <span className="text-[9px] font-mono font-bold text-neutral-500">{notif.time}</span>
+                                      <span className={`font-extrabold text-xs ${theme.textPrimary}`}>{notif.title}</span>
+                                      <span className={`text-[9px] font-mono font-bold ${theme.textMuted}`}>{notif.time}</span>
                                     </div>
-                                    <p className="text-[11px] text-neutral-400 leading-normal">
+                                    <p className={`text-[11px] ${theme.textSecondary} leading-normal`}>
                                       {notif.message}
                                     </p>
                                   </div>
@@ -7142,6 +7147,7 @@ export default function AdminView() {
                     triggerToast={triggerToast}
                     activeTab={activeSubTab as any}
                     setActiveTab={(tab) => setActiveSubTab(tab as any)}
+                    isDark={isDark}
                   />
                 </div>
               </motion.div>

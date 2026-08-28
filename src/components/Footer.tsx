@@ -27,6 +27,7 @@ export default function Footer() {
   const [isWeChatModalOpen, setIsWeChatModalOpen] = useState(false);
   const [copiedWeChat, setCopiedWeChat] = useState(false);
   const [qrImageError, setQrImageError] = useState(false);
+  const [qrSrc, setQrSrc] = useState('/wechat-qr-1.png');
   const [footerLogoError, setFooterLogoError] = useState(false);
 
   const [clickCount, setClickCount] = useState(0);
@@ -232,6 +233,7 @@ export default function Footer() {
                 id="footer-wechat-btn"
                 onClick={() => {
                   setQrImageError(false);
+                  setQrSrc('/wechat-qr-1.png');
                   setIsWeChatModalOpen(true);
                 }}
                 className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-xs font-semibold shadow-sm transition-all hover:scale-[1.01] duration-200 flex-1 text-center"
@@ -462,11 +464,21 @@ export default function Footer() {
               {!qrImageError ? (
                 <div className="relative w-full aspect-[888/1248] max-h-[460px] bg-white p-2 rounded-xl border border-neutral-200/60 shadow-sm flex items-center justify-center overflow-hidden">
                   <img 
-                    src="/wechat-qr.png" 
+                    src={qrSrc} 
                     alt="Smart Journey WeChat QR Code"
                     className="w-full h-full object-contain rounded-lg select-none"
                     onError={() => {
-                      setQrImageError(true);
+                      if (qrSrc === '/wechat-qr-1.png') {
+                        setQrSrc('/wechat-qr.png');
+                      } else if (qrSrc === '/wechat-qr.png') {
+                        setQrSrc('/images/wechat.png');
+                      } else if (qrSrc === '/images/wechat.png') {
+                        setQrSrc('/qr.png');
+                      } else if (qrSrc === '/qr.png') {
+                        setQrSrc('/wechat-qr.jpg');
+                      } else {
+                        setQrImageError(true);
+                      }
                     }}
                     referrerPolicy="no-referrer"
                   />

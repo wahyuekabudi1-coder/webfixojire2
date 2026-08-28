@@ -22,6 +22,7 @@ interface SidebarProps {
   pendingBookingsCount: number;
   onExit: () => void;
   role?: 'central' | 'tour' | 'rental' | 'taxi' | 'airport';
+  isDark?: boolean;
 }
 
 export default function Sidebar({ 
@@ -31,7 +32,8 @@ export default function Sidebar({
   setCollapsed, 
   pendingBookingsCount,
   onExit,
-  role = 'central'
+  role = 'central',
+  isDark = false
 }: SidebarProps) {
 
   // Define full raw menu groups
@@ -127,21 +129,25 @@ export default function Sidebar({
 
   return (
     <div 
-      className={`bg-neutral-900 border-r border-neutral-800 text-neutral-100 min-h-screen flex flex-col justify-between transition-all duration-300 z-30 sticky top-0 ${
+      className={`${
+        isDark 
+          ? 'bg-neutral-900 border-neutral-800 text-neutral-100' 
+          : 'bg-white border-neutral-200 text-neutral-900 shadow-sm'
+      } border-r min-h-screen flex flex-col justify-between transition-all duration-300 z-30 sticky top-0 ${
         collapsed ? 'w-20' : 'w-72'
       }`}
     >
       <div className="flex-grow overflow-y-auto no-scrollbar py-6 px-4 space-y-6">
         {/* Company Header Logo */}
-        <div className="flex items-center justify-between border-b border-neutral-800 pb-5">
+        <div className={`flex items-center justify-between border-b ${isDark ? 'border-neutral-800' : 'border-neutral-200'} pb-5`}>
           {!collapsed ? (
             <div className="flex items-center gap-2.5 animate-fade-in">
               <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-neutral-950 shadow-md">
                 <Globe className="h-5 w-5 stroke-[2.5]" />
               </div>
               <div>
-                <h1 className="text-sm font-black tracking-wider text-neutral-100 font-mono">SMART JOURNEY</h1>
-                <span className="text-[9px] font-mono bg-amber-500/10 text-amber-400 font-extrabold px-1.5 py-0.5 rounded border border-amber-500/20">
+                <h1 className={`text-sm font-black tracking-wider ${isDark ? 'text-neutral-100' : 'text-neutral-900'} font-mono`}>SMART JOURNEY</h1>
+                <span className="text-[9px] font-mono bg-amber-500/10 text-amber-600 font-extrabold px-1.5 py-0.5 rounded border border-amber-500/20">
                   SJOMS v1.0
                 </span>
               </div>
@@ -155,7 +161,11 @@ export default function Sidebar({
           {/* Collapse Button */}
           <button 
             onClick={() => setCollapsed(!collapsed)}
-            className="hidden md:flex p-1.5 rounded-lg bg-neutral-950 border border-neutral-800 text-neutral-400 hover:text-white transition-all cursor-pointer"
+            className={`hidden md:flex p-1.5 rounded-lg ${
+              isDark 
+                ? 'bg-neutral-950 border-neutral-800 text-neutral-400 hover:text-white' 
+                : 'bg-neutral-100 border-neutral-200 text-neutral-500 hover:text-neutral-900'
+            } border transition-all cursor-pointer`}
           >
             {collapsed ? <ChevronRight className="h-3.5 w-3.5" /> : <ChevronLeft className="h-3.5 w-3.5" />}
           </button>
@@ -166,7 +176,7 @@ export default function Sidebar({
           {menuGroups.map((group) => (
             <div key={group.label} className="space-y-1.5">
               {!collapsed && (
-                <span className="text-[10px] font-extrabold text-neutral-500 uppercase tracking-widest px-2.5">
+                <span className={`text-[10px] font-extrabold ${isDark ? 'text-neutral-500' : 'text-neutral-400'} uppercase tracking-widest px-2.5`}>
                   {group.label}
                 </span>
               )}
@@ -180,12 +190,16 @@ export default function Sidebar({
                       onClick={() => setActiveTab(item.id as AdminTab)}
                       className={`w-full flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-xs font-bold transition-all relative cursor-pointer ${
                         isActive 
-                          ? 'bg-amber-500/10 border border-amber-500/20 text-amber-400 font-extrabold' 
-                          : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/40 border border-transparent'
+                          ? isDark
+                            ? 'bg-amber-500/10 border border-amber-500/20 text-amber-400 font-extrabold'
+                            : 'bg-amber-500/10 border border-amber-500/30 text-amber-700 font-extrabold'
+                          : isDark
+                            ? 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/40 border border-transparent'
+                            : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 border border-transparent'
                       }`}
                       title={collapsed ? item.label : undefined}
                     >
-                      <Icon className={`h-4.5 w-4.5 ${isActive ? 'text-amber-500' : 'text-neutral-400'}`} />
+                      <Icon className={`h-4.5 w-4.5 ${isActive ? 'text-amber-500' : isDark ? 'text-neutral-400' : 'text-neutral-500'}`} />
                       
                       {!collapsed && (
                         <span className="truncate flex-grow text-left">
@@ -211,14 +225,14 @@ export default function Sidebar({
       </div>
 
       {/* Footer Profile Exit Area */}
-      <div className="p-4 border-t border-neutral-800 bg-neutral-950 flex flex-col gap-3">
+      <div className={`p-4 border-t ${isDark ? 'border-neutral-800 bg-neutral-950' : 'border-neutral-200 bg-neutral-50'} flex flex-col gap-3`}>
         {!collapsed && (
           <div className="flex items-center gap-3 animate-fade-in">
             <div className="h-9 w-9 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 font-black font-mono text-xs">
               {profileDetails.initial}
             </div>
             <div className="min-w-0 flex-grow">
-              <p className="text-xs font-extrabold text-neutral-200 truncate">{profileDetails.name}</p>
+              <p className={`text-xs font-extrabold ${isDark ? 'text-neutral-200' : 'text-neutral-800'} truncate`}>{profileDetails.name}</p>
               <p className="text-[10px] font-semibold text-neutral-500 font-mono truncate">{profileDetails.roleName}</p>
             </div>
           </div>
@@ -226,7 +240,11 @@ export default function Sidebar({
 
         <button
           onClick={onExit}
-          className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl border border-neutral-800 hover:border-neutral-700 hover:bg-neutral-900 text-neutral-400 hover:text-rose-400 transition-all text-xs font-bold cursor-pointer font-mono"
+          className={`w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl border ${
+            isDark
+              ? 'border-neutral-800 hover:border-neutral-700 hover:bg-neutral-900 text-neutral-400 hover:text-rose-400'
+              : 'border-neutral-200 hover:border-neutral-300 hover:bg-white text-neutral-600 hover:text-rose-600'
+          } transition-all text-xs font-bold cursor-pointer font-mono`}
         >
           <LogOut className="h-4 w-4" />
           {!collapsed && <span>Pilih Layanan Lain</span>}

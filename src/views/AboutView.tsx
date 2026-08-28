@@ -32,6 +32,7 @@ import {
 import { BLOG_POSTS, BlogPost } from '../blogData';
 import Breadcrumbs from '../components/Breadcrumbs';
 import SocialMediaButtons from '../components/SocialMediaButtons';
+import ServiceAreaMap from '../components/ServiceAreaMap';
 
 interface StatCardProps {
   key?: React.Key;
@@ -45,15 +46,12 @@ function StatCard({ target, suffix, label, sublabel }: StatCardProps) {
   const [displayValue, setDisplayValue] = useState(0);
 
   const startAnimation = () => {
-    // Snappy duration for the count-up animation
     const duration = 800; 
     const startTime = performance.now();
 
     const animate = (currentTime: number) => {
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      
-      // Use easeOutQuad for snappy smooth decelerated motion
       const easeProgress = progress * (2 - progress);
       const currentVal = Math.floor(easeProgress * target);
       
@@ -71,24 +69,25 @@ function StatCard({ target, suffix, label, sublabel }: StatCardProps) {
     startAnimation();
   }, [target]);
 
-  // Format with Indonesian/local standard thousands separators (e.g., 1.200)
   const formatNumber = (num: number) => {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   };
 
   return (
     <div 
-      className="p-4 sm:p-5 bg-slate-900/60 rounded-2xl border border-slate-800/80 hover:border-amber-500/40 transition-all duration-300 flex flex-col justify-center items-center h-28 sm:h-32 select-none group cursor-pointer shadow-lg shadow-black/10"
+      className="p-6 bg-slate-900/80 rounded-2xl border border-slate-800 hover:border-amber-500/40 transition-all duration-300 flex flex-col justify-between items-center text-center group cursor-pointer shadow-lg shadow-black/20"
       onMouseEnter={startAnimation}
     >
-      <div className="text-xl sm:text-2xl md:text-3xl font-black text-amber-500 tracking-tight transition-transform duration-300 group-hover:scale-110">
+      <div className="text-3xl sm:text-4xl font-black text-amber-500 tracking-tight font-mono">
         {formatNumber(displayValue)}{suffix}
       </div>
-      <div className="text-[10px] text-slate-300 uppercase tracking-wider font-extrabold font-mono text-center mt-1.5 leading-none">
-        {label}
-      </div>
-      <div className="text-[9px] text-slate-500 font-bold font-sans text-center mt-1 leading-none uppercase tracking-wide">
-        {sublabel}
+      <div className="space-y-1 mt-3 w-full">
+        <div className="text-xs text-white uppercase tracking-wider font-extrabold font-mono">
+          {label}
+        </div>
+        <div className="text-[11px] text-slate-400 font-medium leading-snug">
+          {sublabel}
+        </div>
       </div>
     </div>
   );
@@ -108,8 +107,8 @@ export default function AboutView() {
   const [copiedPostId, setCopiedPostId] = useState<string | null>(null);
   const [dialogTab, setDialogTab] = useState<'read' | 'info' | 'gallery' | 'faq'>('read');
   
-  // State for dynamic background image (.jpg or .png)
-  const [aboutBgSrc, setAboutBgSrc] = useState<string>('/about-bg.jpg');
+  // State for dynamic background/office image (.png or .jpg)
+  const [aboutBgSrc, setAboutBgSrc] = useState<string>('/office.png');
   
   // State for dynamic team background image (.jpg or .png)
   const [teamBgSrc, setTeamBgSrc] = useState<string>('/team.jpg');
@@ -279,19 +278,23 @@ export default function AboutView() {
         <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-amber-500/5 rounded-full blur-[140px] pointer-events-none" />
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/80 to-transparent z-10" />
         
-        {/* Background Image of Luxury Van (Supporting easy manual upload /about-bg.jpg or /about-bg.png) */}
+        {/* Background Image of Headquarters / Office (Supports /office.png, /office.jpg, /kantor.png, /about-bg.jpg) */}
         <div className="absolute inset-y-0 right-0 w-full md:w-1/2 pointer-events-none overflow-hidden opacity-45 md:opacity-85">
           <img 
             src={aboutBgSrc} 
-            alt="About Background" 
+            alt="Smart Journey Office & Headquarters" 
             className="w-full h-full object-cover"
             onError={() => {
-              if (aboutBgSrc === '/about-bg.jpg') {
-                // If JPG fails, try PNG
+              if (aboutBgSrc === '/office.png') {
+                setAboutBgSrc('/office.jpg');
+              } else if (aboutBgSrc === '/office.jpg') {
+                setAboutBgSrc('/kantor.png');
+              } else if (aboutBgSrc === '/kantor.png') {
+                setAboutBgSrc('/about-bg.jpg');
+              } else if (aboutBgSrc === '/about-bg.jpg') {
                 setAboutBgSrc('/about-bg.png');
-              } else if (aboutBgSrc === '/about-bg.png') {
-                // If PNG also fails, fallback to high-quality Unsplash image
-                setAboutBgSrc('https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=1200&q=80');
+              } else {
+                setAboutBgSrc('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1600&q=80');
               }
             }}
           />
@@ -367,7 +370,7 @@ export default function AboutView() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 sm:gap-6 text-center">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 text-center">
             {STATS_DATA.map((stat, idx) => (
               <StatCard 
                 key={idx}
@@ -1101,228 +1104,58 @@ export default function AboutView() {
       </AnimatePresence>
 
       {/* 6. SERVICE AREA */}
-      <section className="py-20 bg-slate-50 border-t border-b border-slate-200/50">
+      <section className="py-20 bg-slate-50 border-t border-b border-slate-200/60">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          <div className="text-center space-y-3 mb-16">
-            <h2 className="text-2xl sm:text-4.5xl font-black text-slate-950 tracking-tight leading-none">
-              Service Area
+          <div className="text-center space-y-3 mb-14">
+            <span className="text-xs font-mono uppercase tracking-widest font-black text-amber-600 bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">
+              Interconnected Coverage
+            </span>
+            <h2 className="text-3xl sm:text-4.5xl font-black text-slate-950 tracking-tight leading-tight">
+              Service Area &amp; Koridor Rute
             </h2>
+            <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto font-medium">
+              Jaringan operasional resmi Smart Journey menghubungkan kota-kota utama, gerbang bandara, stasiun, hingga pelabuhan penyeberangan di Jawa Timur dan Pulau Bali.
+            </p>
             <div className="h-1 w-16 bg-amber-500 mx-auto rounded-full" />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            
-            {/* Left Column: Custom Image or Sleek Original Vector Map Representation */}
-            {serviceAreaSrc ? (
-              <div className="lg:col-span-7 bg-slate-900 border-4 border-slate-950 rounded-3xl p-3 sm:p-4 shadow-[8px_8px_0px_0px_rgba(15,23,42,1)] relative overflow-hidden aspect-[4/3] flex items-center justify-center select-none">
-                <div className="relative w-full h-full rounded-2xl overflow-hidden bg-slate-950 flex items-center justify-center group">
-                  <img 
-                    src={serviceAreaSrc} 
-                    alt="SmartJourney Service Area Map" 
-                    className="w-full h-full object-cover sm:object-contain transition-transform duration-500 group-hover:scale-105"
-                    referrerPolicy="no-referrer"
-                  />
-                  {/* Sleek overlay label */}
-                  <div className="absolute bottom-4 left-4 bg-slate-950/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-800 text-[9px] font-mono font-extrabold uppercase tracking-widest text-amber-500 shadow-lg">
-                    🗺️ LIVE COVERAGE MAP
-                  </div>
-                </div>
+          {/* Professional Interactive Visual Map Component */}
+          <ServiceAreaMap />
+
+          {/* Key Strategic Hubs Bento Summary */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+            <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
+              <div className="h-10 w-10 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-600 font-black">
+                01
               </div>
-            ) : (
-              <div className="lg:col-span-7 bg-slate-900 border-4 border-slate-950 rounded-3xl p-6 sm:p-8 shadow-[8px_8px_0px_0px_rgba(15,23,42,1)] relative overflow-hidden aspect-[4/3] flex flex-col justify-between select-none">
-                {/* Subtle tech grid pattern */}
-                <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{
-                  backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
-                  backgroundSize: '20px 20px'
-                }} />
-                
-                <div className="relative w-full h-full overflow-hidden">
-                  {/* Network Radar / Coordinate Grid in Background */}
-                  <svg className="absolute inset-0 w-full h-full text-slate-800/40 pointer-events-none" viewBox="0 0 400 300">
-                    {/* Grid Lines */}
-                    <line x1="50" y1="0" x2="50" y2="300" stroke="currentColor" strokeWidth="1" strokeDasharray="3 3" />
-                    <line x1="100" y1="0" x2="100" y2="300" stroke="currentColor" strokeWidth="1" strokeDasharray="3 3" />
-                    <line x1="150" y1="0" x2="150" y2="300" stroke="currentColor" strokeWidth="1" strokeDasharray="3 3" />
-                    <line x1="200" y1="0" x2="200" y2="300" stroke="currentColor" strokeWidth="1" strokeDasharray="3 3" />
-                    <line x1="250" y1="0" x2="250" y2="300" stroke="currentColor" strokeWidth="1" strokeDasharray="3 3" />
-                    <line x1="300" y1="0" x2="300" y2="300" stroke="currentColor" strokeWidth="1" strokeDasharray="3 3" />
-                    <line x1="350" y1="0" x2="350" y2="300" stroke="currentColor" strokeWidth="1" strokeDasharray="3 3" />
-
-                    <line x1="0" y1="50" x2="400" y2="50" stroke="currentColor" strokeWidth="1" strokeDasharray="3 3" />
-                    <line x1="0" y1="100" x2="400" y2="100" stroke="currentColor" strokeWidth="1" strokeDasharray="3 3" />
-                    <line x1="0" y1="150" x2="400" y2="150" stroke="currentColor" strokeWidth="1" strokeDasharray="3 3" />
-                    <line x1="0" y1="200" x2="400" y2="200" stroke="currentColor" strokeWidth="1" strokeDasharray="3 3" />
-                    <line x1="0" y1="250" x2="400" y2="250" stroke="currentColor" strokeWidth="1" strokeDasharray="3 3" />
-
-                    {/* Connecting Route Lines - Dashed Golden/Amber Routes */}
-                    {/* Surabaya - Malang */}
-                    <path d="M 88 114 Q 86 141 84 168" fill="none" stroke="#f59e0b" strokeWidth="2" strokeDasharray="4 4" className="opacity-80" />
-                    {/* Surabaya - Probolinggo */}
-                    <path d="M 88 114 Q 120 120 152 135" fill="none" stroke="#f59e0b" strokeWidth="2" strokeDasharray="4 4" className="opacity-80" />
-                    {/* Malang - Lumajang */}
-                    <path d="M 84 168 Q 132 171 180 174" fill="none" stroke="#f59e0b" strokeWidth="2" strokeDasharray="4 4" className="opacity-80" />
-                    {/* Probolinggo - Lumajang */}
-                    <path d="M 152 135 L 180 174" fill="none" stroke="#f59e0b" strokeWidth="2" strokeDasharray="4 4" className="opacity-80" />
-                    {/* Probolinggo - Banyuwangi */}
-                    <path d="M 152 135 Q 192 147 232 159" fill="none" stroke="#f59e0b" strokeWidth="2" strokeDasharray="4 4" className="opacity-80" />
-                    {/* Lumajang - Banyuwangi */}
-                    <path d="M 180 174 Q 206 166 232 159" fill="none" stroke="#f59e0b" strokeWidth="2" strokeDasharray="4 4" className="opacity-80" />
-                    {/* Banyuwangi - Denpasar */}
-                    <path d="M 232 159 Q 278 171 324 183" fill="none" stroke="#f59e0b" strokeWidth="2" strokeDasharray="4 4" className="opacity-80" />
-                    {/* Denpasar - Singaraja */}
-                    <path d="M 324 183 Q 308 157 292 132" fill="none" stroke="#f59e0b" strokeWidth="2" strokeDasharray="4 4" className="opacity-80" />
-                  </svg>
-
-                  {/* Pinpoint Surabaya */}
-                  <div className="absolute top-[38%] left-[22%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
-                    <span className="absolute h-4 w-4 bg-amber-500/30 rounded-full animate-ping" />
-                    <div className="h-2.5 w-2.5 bg-amber-500 rounded-full border-2 border-slate-950 shadow" />
-                    <span className="bg-slate-950/90 text-white text-[9px] font-black px-2 py-0.5 rounded-md mt-1 border border-slate-800 shadow whitespace-nowrap">
-                      Surabaya
-                    </span>
-                  </div>
-
-                  {/* Pinpoint Mojokerto */}
-                  <div className="absolute top-[36%] left-[14%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
-                    <span className="absolute h-4 w-4 bg-amber-500/30 rounded-full animate-ping" />
-                    <div className="h-2.5 w-2.5 bg-amber-500 rounded-full border-2 border-slate-950 shadow" />
-                    <span className="bg-slate-950/90 text-white text-[9px] font-black px-2 py-0.5 rounded-md mt-1 border border-slate-800 shadow whitespace-nowrap">
-                      Mojokerto
-                    </span>
-                  </div>
-
-                  {/* Pinpoint Malang */}
-                  <div className="absolute top-[56%] left-[21%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
-                    <span className="absolute h-4 w-4 bg-amber-500/30 rounded-full animate-ping" />
-                    <div className="h-2.5 w-2.5 bg-amber-500 rounded-full border-2 border-slate-950 shadow" />
-                    <span className="bg-slate-950/90 text-white text-[9px] font-black px-2 py-0.5 rounded-md mt-1 border border-slate-800 shadow whitespace-nowrap">
-                      Malang
-                    </span>
-                  </div>
-
-                  {/* Pinpoint Probolinggo */}
-                  <div className="absolute top-[45%] left-[38%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
-                    <span className="absolute h-4 w-4 bg-amber-500/30 rounded-full animate-ping" />
-                    <div className="h-2.5 w-2.5 bg-amber-500 rounded-full border-2 border-slate-950 shadow" />
-                    <span className="bg-slate-950/90 text-white text-[9px] font-black px-2 py-0.5 rounded-md mt-1 border border-slate-800 shadow whitespace-nowrap">
-                      Probolinggo
-                    </span>
-                  </div>
-
-                  {/* Pinpoint Lumajang */}
-                  <div className="absolute top-[58%] left-[45%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
-                    <span className="absolute h-4 w-4 bg-amber-500/30 rounded-full animate-ping" />
-                    <div className="h-2.5 w-2.5 bg-amber-500 rounded-full border-2 border-slate-950 shadow" />
-                    <span className="bg-slate-950/90 text-white text-[9px] font-black px-2 py-0.5 rounded-md mt-1 border border-slate-800 shadow whitespace-nowrap">
-                      Lumajang
-                    </span>
-                  </div>
-
-                  {/* Pinpoint Banyuwangi */}
-                  <div className="absolute top-[53%] left-[58%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
-                    <span className="absolute h-4 w-4 bg-amber-500/30 rounded-full animate-ping" />
-                    <div className="h-2.5 w-2.5 bg-amber-500 rounded-full border-2 border-slate-950 shadow" />
-                    <span className="bg-slate-950/90 text-white text-[9px] font-black px-2 py-0.5 rounded-md mt-1 border border-slate-800 shadow whitespace-nowrap">
-                      Banyuwangi
-                    </span>
-                  </div>
-
-                  {/* Pinpoint Jembrana */}
-                  <div className="absolute top-[48%] left-[68%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
-                    <span className="absolute h-4 w-4 bg-amber-500/30 rounded-full animate-ping" />
-                    <div className="h-2.5 w-2.5 bg-amber-500 rounded-full border-2 border-slate-950 shadow" />
-                    <span className="bg-slate-950/90 text-white text-[9px] font-black px-2 py-0.5 rounded-md mt-1 border border-slate-800 shadow whitespace-nowrap">
-                      Jembrana
-                    </span>
-                  </div>
-
-                  {/* Pinpoint Buleleng */}
-                  <div className="absolute top-[41%] left-[75%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
-                    <span className="absolute h-4 w-4 bg-amber-500/30 rounded-full animate-ping" />
-                    <div className="h-2.5 w-2.5 bg-amber-500 rounded-full border-2 border-slate-950 shadow" />
-                    <span className="bg-slate-950/90 text-white text-[9px] font-black px-2 py-0.5 rounded-md mt-1 border border-slate-800 shadow whitespace-nowrap">
-                      Buleleng
-                    </span>
-                  </div>
-
-                  {/* Pinpoint Gianyar */}
-                  <div className="absolute top-[58%] left-[82%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
-                    <span className="absolute h-4 w-4 bg-amber-500/30 rounded-full animate-ping" />
-                    <div className="h-2.5 w-2.5 bg-amber-500 rounded-full border-2 border-slate-950 shadow" />
-                    <span className="bg-slate-950/90 text-white text-[9px] font-black px-2 py-0.5 rounded-md mt-1 border border-slate-800 shadow whitespace-nowrap">
-                      Gianyar
-                    </span>
-                  </div>
-
-                  {/* Pinpoint Bangli */}
-                  <div className="absolute top-[50%] left-[83%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
-                    <span className="absolute h-4 w-4 bg-amber-500/30 rounded-full animate-ping" />
-                    <div className="h-2.5 w-2.5 bg-amber-500 rounded-full border-2 border-slate-950 shadow" />
-                    <span className="bg-slate-950/90 text-white text-[9px] font-black px-2 py-0.5 rounded-md mt-1 border border-slate-800 shadow whitespace-nowrap">
-                      Bangli
-                    </span>
-                  </div>
-
-                  {/* Pinpoint Badung */}
-                  <div className="absolute top-[62%] left-[78%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
-                    <span className="absolute h-4 w-4 bg-amber-500/30 rounded-full animate-ping" />
-                    <div className="h-2.5 w-2.5 bg-amber-500 rounded-full border-2 border-slate-950 shadow" />
-                    <span className="bg-slate-950/90 text-white text-[9px] font-black px-2 py-0.5 rounded-md mt-1 border border-slate-800 shadow whitespace-nowrap">
-                      Badung
-                    </span>
-                  </div>
-
-                  {/* Pinpoint Klungkung */}
-                  <div className="absolute top-[57%] left-[87%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center">
-                    <span className="absolute h-4 w-4 bg-amber-500/30 rounded-full animate-ping" />
-                    <div className="h-2.5 w-2.5 bg-amber-500 rounded-full border-2 border-slate-950 shadow" />
-                    <span className="bg-slate-950/90 text-white text-[9px] font-black px-2 py-0.5 rounded-md mt-1 border border-slate-800 shadow whitespace-nowrap">
-                      Klungkung
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Right Column: High Quality Bulleted List of locations with diamond symbols */}
-            <div className="lg:col-span-5 space-y-6">
-              <h3 className="text-xl sm:text-2xl font-black text-slate-950 tracking-tight leading-tight">
-                Jangkauan Service Area
-              </h3>
-              <p className="text-sm text-slate-600 leading-relaxed font-semibold">
-                Kami melayani penjemputan dan pengantaran bebas repot di seluruh kota dan kabupaten utama di Jawa Timur serta Pulau Bali dengan rute terkoneksi lancar.
+              <h4 className="text-base font-black text-slate-950">Koridor Metropolitan &amp; Tol</h4>
+              <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                Surabaya, Mojokerto, Pasuruan, dan Malang dengan konektivitas via Tol Trans Jawa untuk perjalanan tepat waktu dari dan ke Bandara Juanda serta stasiun kereta.
               </p>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {[
-                  "Surabaya",
-                  "Mojokerto",
-                  "Malang",
-                  "Probolinggo",
-                  "Lumajang",
-                  "Banyuwangi",
-                  "Jembrana",
-                  "Buleleng",
-                  "Gianyar",
-                  "Bangli",
-                  "Badung",
-                  "Klungkung"
-                ].map((region, index) => (
-                  <div key={index} className="flex items-center gap-3 bg-white p-3.5 rounded-2xl border border-slate-200/50 shadow-sm">
-                    <div className="h-2 w-2 bg-amber-500 rotate-45 shrink-0" />
-                    <span className="text-xs sm:text-sm font-bold text-slate-800">{region}</span>
-                  </div>
-                ))}
-              </div>
-              
-              <div className="pt-4 text-xs font-bold text-slate-500 uppercase tracking-widest font-mono flex items-center gap-2">
-                <Map className="h-4 w-4 text-amber-500" />
-                <span>Konektivitas Jawa-Bali 24 Jam</span>
-              </div>
             </div>
 
+            <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
+              <div className="h-10 w-10 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-600 font-black">
+                02
+              </div>
+              <h4 className="text-base font-black text-slate-950">Koridor Wisata Gunung &amp; Air Terjun</h4>
+              <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                Probolinggo, Lumajang (Tumpak Sewu), dan Banyuwangi (Kawah Ijen) dengan armada tangguh dan driver bersertifikat jalur pegunungan.
+              </p>
+            </div>
+
+            <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
+              <div className="h-10 w-10 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-600 font-black">
+                03
+              </div>
+              <h4 className="text-base font-black text-slate-950">Koridor Pulau Dewata (Bali)</h4>
+              <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                Jembrana, Buleleng, Bangli, Gianyar (Ubud), Badung (Denpasar/Kuta/Airport DPS), hingga Klungkung (Nusa Penida Link) 24 jam non-stop.
+              </p>
+            </div>
           </div>
+
         </div>
       </section>
 
