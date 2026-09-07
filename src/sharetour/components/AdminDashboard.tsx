@@ -1266,62 +1266,70 @@ Sunset Lovina & Dolphin Cruise\t2026-08-01\t10\t195\tOpen`;
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
-                    {trips.map(trip => (
-                      <tr key={trip.id} className="hover:bg-slate-50/50 transition-colors">
-                        <td className="p-4 flex items-center space-x-3">
-                          <img 
-                            src={trip.coverImage} 
-                            alt={trip.title}
-                            referrerPolicy="no-referrer"
-                            className="w-12 h-10 object-cover rounded-xl border border-slate-200 flex-shrink-0"
-                          />
-                          <div>
-                            <span className="font-display font-black text-slate-900 text-[13px] block">{trip.title}</span>
-                            <span className="text-[10px] text-slate-400 block font-sans font-medium flex items-center space-x-1">
-                              <MapPin className="w-3 h-3 text-slate-350" />
-                              <span>{trip.location}</span>
-                            </span>
-                          </div>
-                        </td>
-                        <td className="p-4 font-mono font-medium text-slate-550">{trip.slug}</td>
-                        <td className="p-4 font-mono font-bold text-slate-700">{trip.duration}</td>
-                        <td className="p-4 font-black font-mono text-emerald-900 text-center text-[13px]">
-                          {formatUSD(trip.startingPrice || 150)}
-                        </td>
-                        <td className="p-4">
-                          {trip.status === "draft" ? (
-                            <span className="bg-amber-100 text-amber-800 border border-amber-250/20 font-bold px-2 py-0.5 rounded text-[9px]">Draft</span>
-                          ) : (
-                            <span className="bg-emerald-600 text-white font-bold px-2 py-0.5 rounded text-[9px]">Live Catalog</span>
-                          )}
-                        </td>
-                        <td className="p-4 text-center">
-                          <div className="flex items-center justify-center space-x-1.5">
-                            <button
-                              onClick={() => setPreviewTrip(trip)}
-                              className="p-2 bg-slate-50 hover:bg-slate-200 border border-slate-200 text-slate-550 rounded-xl transition duration-200 cursor-pointer"
-                              title="Customer-facing Live Preview"
-                            >
-                              <Eye className="w-4 h-4 text-[#315B4F]" />
-                            </button>
-                            <button
-                              onClick={() => initEditTrip(trip)}
-                              className="p-2 bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-100 text-[#315B4F] rounded-xl transition duration-200 cursor-pointer"
-                              title="Edit Blueprint parameters"
-                            >
-                              <Edit className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteTrip(trip.id)}
-                              className="p-2 bg-rose-50 hover:bg-rose-100 border border-rose-200 hover:border-rose-300 text-rose-700 rounded-xl transition duration-200 cursor-pointer"
-                              title="Delete Trip Blueprint"
-                            >
-                              <Trash className="w-4 h-4" />
-                            </button>
-                          </div>
+                    {trips.length > 0 ? (
+                      trips.map(trip => (
+                        <tr key={trip.id} className="hover:bg-slate-50/50 transition-colors">
+                          <td className="p-4 flex items-center space-x-3">
+                            <img 
+                              src={trip.coverImage} 
+                              alt={trip.title}
+                              referrerPolicy="no-referrer"
+                              className="w-12 h-10 object-cover rounded-xl border border-slate-200 flex-shrink-0"
+                            />
+                            <div>
+                              <span className="font-display font-black text-slate-900 text-[13px] block">{trip.title}</span>
+                              <span className="text-[10px] text-slate-400 block font-sans font-medium flex items-center space-x-1">
+                                <MapPin className="w-3 h-3 text-slate-350" />
+                                <span>{trip.location}</span>
+                              </span>
+                            </div>
+                          </td>
+                          <td className="p-4 font-mono font-medium text-slate-550">{trip.slug}</td>
+                          <td className="p-4 font-mono font-bold text-slate-700">{trip.duration}</td>
+                          <td className="p-4 font-black font-mono text-emerald-900 text-center text-[13px]">
+                            {formatUSD(trip.startingPrice || 150)}
+                          </td>
+                          <td className="p-4">
+                            {trip.status === "draft" ? (
+                              <span className="bg-amber-100 text-amber-800 border border-amber-250/20 font-bold px-2 py-0.5 rounded text-[9px]">Draft</span>
+                            ) : (
+                              <span className="bg-emerald-600 text-white font-bold px-2 py-0.5 rounded text-[9px]">Live Catalog</span>
+                            )}
+                          </td>
+                          <td className="p-4 text-center">
+                            <div className="flex items-center justify-center space-x-1.5">
+                              <button
+                                onClick={() => setPreviewTrip(trip)}
+                                className="p-2 bg-slate-50 hover:bg-slate-200 border border-slate-200 text-slate-550 rounded-xl transition duration-200 cursor-pointer"
+                                title="Customer-facing Live Preview"
+                              >
+                                <Eye className="w-4 h-4 text-[#315B4F]" />
+                              </button>
+                              <button
+                                onClick={() => initEditTrip(trip)}
+                                className="p-2 bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-100 text-[#315B4F] rounded-xl transition duration-200 cursor-pointer"
+                                title="Edit Blueprint parameters"
+                              >
+                                <Edit className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteTrip(trip.id)}
+                                className="p-2 bg-rose-50 hover:bg-rose-100 border border-rose-200 hover:border-rose-300 text-rose-700 rounded-xl transition duration-200 cursor-pointer"
+                                title="Delete Trip Blueprint"
+                              >
+                                <Trash className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={6} className="text-center p-12 text-slate-400 font-medium">
+                          No trip blueprints found. Click "Create New Blueprint" above to add a tour.
                         </td>
                       </tr>
-                    ))}
+                    )}
                   </tbody>
                 </table>
               </div>

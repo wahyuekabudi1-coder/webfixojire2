@@ -117,93 +117,93 @@ export default function SettingsRBAC({
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-neutral-400 block uppercase">Nama Legal Perusahaan</label>
+                  <label className="text-[10px] font-bold text-slate-800 block uppercase">Nama Legal Perusahaan</label>
                   <input
                     type="text"
                     required
                     value={configs.companyName}
                     onChange={(e) => setConfigs({ ...configs, companyName: e.target.value })}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900 font-medium"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-neutral-400 block uppercase">Tarif PPN Lokal (%)</label>
+                  <label className="text-[10px] font-bold text-slate-800 block uppercase">Tarif PPN Lokal (%)</label>
                   <input
                     type="number"
                     required
                     value={configs.taxRate}
                     onChange={(e) => setConfigs({ ...configs, taxRate: Number(e.target.value) })}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900 font-medium"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-neutral-400 block uppercase">No WhatsApp Hotline</label>
+                  <label className="text-[10px] font-bold text-slate-800 block uppercase">No WhatsApp Hotline</label>
                   <input
                     type="text"
                     required
                     value={configs.whatsappContact}
                     onChange={(e) => setConfigs({ ...configs, whatsappContact: e.target.value })}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900 font-medium"
                   />
                 </div>
               </div>
             </div>
 
             {/* Email server configs */}
-            <div className="space-y-4 border-t border-neutral-850 pt-5">
-              <h4 className="text-xs font-black text-amber-500 tracking-wider uppercase font-mono flex items-center gap-2">
-                <Mail className="h-4 w-4 text-amber-500" />
+            <div className="space-y-4 border-t border-slate-200 pt-5">
+              <h4 className="text-xs font-black text-amber-600 tracking-wider uppercase font-mono flex items-center gap-2">
+                <Mail className="h-4 w-4 text-amber-600" />
                 <span>Konfigurasi SMTP Mail Server (Notification Center)</span>
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-neutral-400 block uppercase">SMTP Relay Host</label>
+                  <label className="text-[10px] font-bold text-slate-800 block uppercase">SMTP Relay Host</label>
                   <input
                     type="text"
                     required
                     value={configs.smtpHost}
                     onChange={(e) => setConfigs({ ...configs, smtpHost: e.target.value })}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs font-mono focus:outline-none focus:border-amber-500 text-white"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono focus:outline-none focus:border-amber-500 text-slate-900 font-medium"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-neutral-400 block uppercase">SMTP Username (Sender)</label>
+                  <label className="text-[10px] font-bold text-slate-800 block uppercase">SMTP Username (Sender)</label>
                   <input
                     type="text"
                     required
                     value={configs.smtpUser}
                     onChange={(e) => setConfigs({ ...configs, smtpUser: e.target.value })}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs font-mono focus:outline-none focus:border-amber-500 text-white"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono focus:outline-none focus:border-amber-500 text-slate-900 font-medium"
                   />
                 </div>
               </div>
             </div>
 
             {/* API gateway configs */}
-            <div className="space-y-4 border-t border-neutral-850 pt-5">
-              <h4 className="text-xs font-black text-amber-500 tracking-wider uppercase font-mono flex items-center gap-2">
-                <Key className="h-4 w-4 text-amber-500" />
+            <div className="space-y-4 border-t border-slate-200 pt-5">
+              <h4 className="text-xs font-black text-amber-600 tracking-wider uppercase font-mono flex items-center gap-2">
+                <Key className="h-4 w-4 text-amber-600" />
                 <span>Kredensial Gateway ArtoPay (ArtoPay Production &amp; Sandbox Keys)</span>
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-neutral-400 block uppercase">ArtoPay Public Key</label>
+                  <label className="text-[10px] font-bold text-slate-800 block uppercase">ArtoPay Public Key</label>
                   <input
                     type="text"
                     required
                     value={configs.artoPayPublicKey}
                     onChange={(e) => setConfigs({ ...configs, artoPayPublicKey: e.target.value })}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs font-mono focus:outline-none focus:border-amber-500 text-white"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono focus:outline-none focus:border-amber-500 text-slate-900 font-medium"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-neutral-400 block uppercase">ArtoPay Secret Key</label>
+                  <label className="text-[10px] font-bold text-slate-800 block uppercase">ArtoPay Secret Key</label>
                   <input
                     type="password"
                     required
                     value={configs.artoPaySecretKey}
                     onChange={(e) => setConfigs({ ...configs, artoPaySecretKey: e.target.value })}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs font-mono focus:outline-none focus:border-amber-500 text-white"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono focus:outline-none focus:border-amber-500 text-slate-900 font-medium"
                   />
                 </div>
               </div>

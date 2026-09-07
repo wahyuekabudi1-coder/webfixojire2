@@ -413,23 +413,23 @@ export default function BusinessFinance({
             
             <form onSubmit={handleSaveCoupon} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-neutral-400 block uppercase">Kode Kupon Promo</label>
+                <label className="text-[10px] font-bold text-slate-800 block uppercase">Kode Kupon Promo</label>
                 <input
                   type="text"
                   required
                   placeholder="Contoh: SMART77, BALIHEALING"
                   value={couponForm.code}
                   onChange={(e) => setCouponForm({ ...couponForm, code: e.target.value })}
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white font-mono uppercase"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900 placeholder:text-slate-500 font-mono uppercase"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-neutral-400 block uppercase">Metode Potongan</label>
+                <label className="text-[10px] font-bold text-slate-800 block uppercase">Metode Potongan</label>
                 <select
                   value={couponForm.discountType}
                   onChange={(e) => setCouponForm({ ...couponForm, discountType: e.target.value as any })}
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900"
                 >
                   <option value="Percentage">Persentase (%)</option>
                   <option value="Flat">Potongan Nominal Tetap (Net IDR)</option>
@@ -438,34 +438,34 @@ export default function BusinessFinance({
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-neutral-400 block uppercase">Jumlah Potongan</label>
+                  <label className="text-[10px] font-bold text-slate-800 block uppercase">Jumlah Potongan</label>
                   <input
                     type="number"
                     required
                     value={couponForm.amount}
                     onChange={(e) => setCouponForm({ ...couponForm, amount: Number(e.target.value) })}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs font-mono focus:outline-none"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono focus:outline-none focus:border-amber-500 text-slate-900"
                   />
                 </div>
                 {couponForm.discountType === 'Percentage' && (
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-neutral-400 block uppercase">Maks Diskon (IDR)</label>
+                    <label className="text-[10px] font-bold text-slate-800 block uppercase">Maks Diskon (IDR)</label>
                     <input
                       type="number"
                       value={couponForm.maxDiscount}
                       onChange={(e) => setCouponForm({ ...couponForm, maxDiscount: Number(e.target.value) })}
-                      className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs font-mono focus:outline-none"
+                      className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono focus:outline-none focus:border-amber-500 text-slate-900"
                     />
                   </div>
                 )}
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-neutral-400 block uppercase">Status</label>
+                <label className="text-[10px] font-bold text-slate-800 block uppercase">Status</label>
                 <select
                   value={couponForm.status}
                   onChange={(e) => setCouponForm({ ...couponForm, status: e.target.value as any })}
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900"
                 >
                   <option value="Active">Aktif (Dapat digunakan)</option>
                   <option value="Expired">Kedaluwarsa (Nonaktif)</option>
@@ -500,23 +500,23 @@ export default function BusinessFinance({
             
             <form onSubmit={handleAddExpense} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-neutral-400 block uppercase">Deskripsi Kas / Pengeluaran</label>
+                <label className="text-[10px] font-bold text-slate-800 block uppercase">Deskripsi Kas / Pengeluaran</label>
                 <input
                   type="text"
                   required
                   placeholder="Contoh: Pembelian BBM Jeep Bromo"
                   value={expenseForm.description}
                   onChange={(e) => setExpenseForm({ ...expenseForm, description: e.target.value })}
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900 placeholder:text-slate-500"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-neutral-400 block uppercase">Metode Arus Kas</label>
+                <label className="text-[10px] font-bold text-slate-800 block uppercase">Metode Arus Kas</label>
                 <select
                   value={expenseForm.type}
                   onChange={(e) => setExpenseForm({ ...expenseForm, type: e.target.value as any })}
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900"
                 >
                   <option value="Debit">Debit (Biaya Keluar)</option>
                   <option value="Credit">Kredit (Pendapatan Masuk)</option>
@@ -524,13 +524,13 @@ export default function BusinessFinance({
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-neutral-400 block uppercase">Nilai Nominal Rupiah (IDR)</label>
+                <label className="text-[10px] font-bold text-slate-800 block uppercase">Nilai Nominal Rupiah (IDR)</label>
                 <input
                   type="number"
                   required
                   value={expenseForm.amount}
                   onChange={(e) => setExpenseForm({ ...expenseForm, amount: Number(e.target.value) })}
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs font-mono focus:outline-none focus:border-amber-500 text-white"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono focus:outline-none focus:border-amber-500 text-slate-900"
                 />
               </div>
 

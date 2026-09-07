@@ -877,15 +877,15 @@ export default function TaxiExcelManager({
             {/* TAB: AREAS SUB LIST */}
             {masterSubTab === 'areas' && (
               <div className="space-y-4">
-                <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 flex items-center justify-between">
+                <div className="bg-white border border-slate-200 rounded-2xl p-4 flex items-center justify-between">
                   <div className="relative w-full max-w-sm">
-                    <Search className="absolute left-3.5 top-2.5 h-4 w-4 text-neutral-500" />
+                    <Search className="absolute left-3.5 top-2.5 h-4 w-4 text-slate-400" />
                     <input 
                       type="text" 
                       placeholder="Cari area, kode, atau ID..." 
                       value={searchArea}
                       onChange={(e) => setSearchArea(e.target.value)}
-                      className="w-full bg-neutral-950 border border-neutral-800 pl-10 pr-4 py-2 text-xs rounded-xl focus:outline-none focus:border-amber-500 text-neutral-100 font-medium" 
+                      className="w-full bg-white border border-slate-300 pl-10 pr-4 py-2 text-xs rounded-xl focus:outline-none focus:border-amber-500 text-slate-900 placeholder:text-slate-500 font-medium" 
                     />
                   </div>
                 </div>
@@ -959,15 +959,15 @@ export default function TaxiExcelManager({
             {/* TAB: DESTINATIONS SUB LIST */}
             {masterSubTab === 'destinations' && (
               <div className="space-y-4">
-                <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 flex items-center justify-between">
+                <div className="bg-white border border-slate-200 rounded-2xl p-4 flex items-center justify-between">
                   <div className="relative w-full max-w-sm">
-                    <Search className="absolute left-3.5 top-2.5 h-4 w-4 text-neutral-500" />
+                    <Search className="absolute left-3.5 top-2.5 h-4 w-4 text-slate-400" />
                     <input 
                       type="text" 
                       placeholder="Cari destinasi, tempat, area..." 
                       value={searchDest}
                       onChange={(e) => setSearchDest(e.target.value)}
-                      className="w-full bg-neutral-950 border border-neutral-800 pl-10 pr-4 py-2 text-xs rounded-xl focus:outline-none focus:border-amber-500 text-neutral-100 font-medium" 
+                      className="w-full bg-white border border-slate-300 pl-10 pr-4 py-2 text-xs rounded-xl focus:outline-none focus:border-amber-500 text-slate-900 placeholder:text-slate-500 font-medium" 
                     />
                   </div>
                 </div>
@@ -1040,13 +1040,13 @@ export default function TaxiExcelManager({
           <div className="space-y-4 animate-fade-in text-left">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div className="relative w-full max-w-sm">
-                <Search className="absolute left-3.5 top-2.5 h-4 w-4 text-neutral-500" />
+                <Search className="absolute left-3.5 top-2.5 h-4 w-4 text-slate-400" />
                 <input 
                   type="text" 
                   placeholder="Cari rute harga, mobil, atau ID..." 
                   value={searchPriceRule}
                   onChange={(e) => setSearchPriceRule(e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-800 pl-10 pr-4 py-2 text-xs rounded-xl focus:outline-none focus:border-amber-500 text-neutral-100 font-medium" 
+                  className="w-full bg-white border border-slate-300 pl-10 pr-4 py-2 text-xs rounded-xl focus:outline-none focus:border-amber-500 text-slate-900 placeholder:text-slate-500 font-medium" 
                 />
               </div>
 
@@ -1432,42 +1432,42 @@ export default function TaxiExcelManager({
       {/* 1. Modal Form: Area */}
       {isAreaFormOpen && (
         <div className="fixed inset-0 bg-neutral-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-neutral-900 border border-neutral-800 rounded-3xl w-full max-w-md p-6 space-y-4 shadow-2xl text-left">
-            <div className="flex justify-between items-center border-b border-neutral-850 pb-3">
-              <h3 className="text-sm font-black font-mono text-amber-500">
+          <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-md p-6 space-y-4 shadow-2xl text-left">
+            <div className="flex justify-between items-center border-b border-slate-200 pb-3">
+              <h3 className="text-sm font-black font-mono text-amber-600">
                 {editingArea ? 'UBAH DATA MASTER AREA' : 'TAMBAH AREA BARU'}
               </h3>
-              <button onClick={() => setIsAreaFormOpen(false)} className="text-neutral-500 hover:text-neutral-200">
+              <button onClick={() => setIsAreaFormOpen(false)} className="text-slate-400 hover:text-slate-600">
                 <X className="h-5 w-5" />
               </button>
             </div>
 
             <form onSubmit={handleSaveArea} className="space-y-4 text-xs">
               <div className="space-y-1">
-                <label className="text-[10px] font-black font-mono text-neutral-500 block uppercase">ID AREA (NON-EDITABLE)</label>
+                <label className="text-[10px] font-black font-mono text-slate-800 block uppercase">ID AREA (NON-EDITABLE)</label>
                 <input 
                   type="text" 
                   disabled 
                   value={areaForm.id}
-                  className="w-full bg-neutral-950 border border-neutral-850 px-3.5 py-2 rounded-xl text-neutral-500 font-mono font-bold" 
+                  className="w-full bg-slate-100 border border-slate-300 px-3.5 py-2 rounded-xl text-slate-600 font-mono font-bold cursor-not-allowed" 
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-black font-mono text-neutral-500 block uppercase">NAMA AREA ZONA</label>
+                <label className="text-[10px] font-black font-mono text-slate-800 block uppercase">NAMA AREA ZONA</label>
                 <input 
                   type="text" 
                   required
                   placeholder="Contoh: Surabaya, Malang, Batu"
                   value={areaForm.name}
                   onChange={(e) => setAreaForm({ ...areaForm, name: e.target.value })}
-                  className="w-full bg-neutral-950 border border-neutral-800 px-3.5 py-2 rounded-xl text-neutral-200 focus:outline-none focus:border-amber-500" 
+                  className="w-full bg-white border border-slate-300 px-3.5 py-2 rounded-xl text-slate-900 placeholder:text-slate-500 focus:outline-none focus:border-amber-500" 
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-black font-mono text-neutral-500 block uppercase">KODE SINGKATAN</label>
+                  <label className="text-[10px] font-black font-mono text-slate-800 block uppercase">KODE SINGKATAN</label>
                   <input 
                     type="text" 
                     required
@@ -1475,16 +1475,16 @@ export default function TaxiExcelManager({
                     placeholder="Contoh: SUB"
                     value={areaForm.code}
                     onChange={(e) => setAreaForm({ ...areaForm, code: e.target.value.toUpperCase() })}
-                    className="w-full bg-neutral-950 border border-neutral-800 px-3.5 py-2 rounded-xl text-neutral-200 focus:outline-none focus:border-amber-500 font-mono font-black" 
+                    className="w-full bg-white border border-slate-300 px-3.5 py-2 rounded-xl text-slate-900 placeholder:text-slate-500 focus:outline-none focus:border-amber-500 font-mono font-black" 
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] font-black font-mono text-neutral-500 block uppercase">TIPE AREA</label>
+                  <label className="text-[10px] font-black font-mono text-slate-800 block uppercase">TIPE AREA</label>
                   <select 
                     value={areaForm.type}
                     onChange={(e) => setAreaForm({ ...areaForm, type: e.target.value as 'City' | 'Airport' })}
-                    className="w-full bg-neutral-950 border border-neutral-800 px-3 py-2 rounded-xl text-neutral-200 focus:outline-none focus:border-amber-500"
+                    className="w-full bg-white border border-slate-300 px-3 py-2 rounded-xl text-slate-900 focus:outline-none focus:border-amber-500 font-bold"
                   >
                     <option value="City">City (Kota / Resort)</option>
                     <option value="Airport">Airport (Bandara / Terminal)</option>
@@ -1494,44 +1494,44 @@ export default function TaxiExcelManager({
 
               <div className="grid grid-cols-2 gap-3 font-mono">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-black font-mono text-neutral-500 block uppercase">LATITUDE</label>
+                  <label className="text-[10px] font-black font-mono text-slate-800 block uppercase">LATITUDE</label>
                   <input 
                     type="number" 
                     step="any"
                     required
                     value={areaForm.lat}
                     onChange={(e) => setAreaForm({ ...areaForm, lat: parseFloat(e.target.value) || 0 })}
-                    className="w-full bg-neutral-950 border border-neutral-800 px-3.5 py-2 rounded-xl text-neutral-200 focus:outline-none" 
+                    className="w-full bg-white border border-slate-300 px-3.5 py-2 rounded-xl text-slate-900 focus:outline-none focus:border-amber-500" 
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] font-black font-mono text-neutral-500 block uppercase">LONGITUDE</label>
+                  <label className="text-[10px] font-black font-mono text-slate-800 block uppercase">LONGITUDE</label>
                   <input 
                     type="number" 
                     step="any"
                     required
                     value={areaForm.lon}
                     onChange={(e) => setAreaForm({ ...areaForm, lon: parseFloat(e.target.value) || 0 })}
-                    className="w-full bg-neutral-950 border border-neutral-800 px-3.5 py-2 rounded-xl text-neutral-200 focus:outline-none" 
+                    className="w-full bg-white border border-slate-300 px-3.5 py-2 rounded-xl text-slate-900 focus:outline-none focus:border-amber-500" 
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-black font-mono text-neutral-500 block uppercase">STATUS PUBLIKASI</label>
+                <label className="text-[10px] font-black font-mono text-slate-800 block uppercase">STATUS PUBLIKASI</label>
                 <select 
                   value={areaForm.status}
                   onChange={(e) => setAreaForm({ ...areaForm, status: e.target.value as 'Active' | 'Inactive' })}
-                  className="w-full bg-neutral-950 border border-neutral-800 px-3 py-2 rounded-xl text-neutral-200 focus:outline-none focus:border-amber-500 font-bold"
+                  className="w-full bg-white border border-slate-300 px-3 py-2 rounded-xl text-slate-900 focus:outline-none focus:border-amber-500 font-bold"
                 >
                   <option value="Active">Active (Publish)</option>
                   <option value="Inactive">Inactive (Draft)</option>
                 </select>
               </div>
 
-              <div className="pt-3 border-t border-neutral-850 flex justify-end gap-2">
-                <button type="button" onClick={() => setIsAreaFormOpen(false)} className="px-4 py-2 border border-neutral-800 bg-neutral-950 rounded-xl font-bold cursor-pointer hover:text-white">Batal</button>
+              <div className="pt-3 border-t border-slate-200 flex justify-end gap-2">
+                <button type="button" onClick={() => setIsAreaFormOpen(false)} className="px-4 py-2 border border-slate-300 bg-white rounded-xl font-bold cursor-pointer text-slate-700 hover:bg-slate-50">Batal</button>
                 <button type="submit" className="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-neutral-950 font-black rounded-xl cursor-pointer font-mono">SIMPAN AREA</button>
               </div>
             </form>
@@ -1542,33 +1542,33 @@ export default function TaxiExcelManager({
       {/* 2. Modal Form: Destination */}
       {isDestFormOpen && (
         <div className="fixed inset-0 bg-neutral-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-neutral-900 border border-neutral-800 rounded-3xl w-full max-w-md p-6 space-y-4 shadow-2xl text-left">
-            <div className="flex justify-between items-center border-b border-neutral-850 pb-3">
-              <h3 className="text-sm font-black font-mono text-amber-500">
+          <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-md p-6 space-y-4 shadow-2xl text-left">
+            <div className="flex justify-between items-center border-b border-slate-200 pb-3">
+              <h3 className="text-sm font-black font-mono text-amber-600">
                 {editingDest ? 'UBAH DATA DESTINASI' : 'TAMBAH DESTINASI BARU'}
               </h3>
-              <button onClick={() => setIsDestFormOpen(false)} className="text-neutral-500 hover:text-neutral-200">
+              <button onClick={() => setIsDestFormOpen(false)} className="text-slate-400 hover:text-slate-600">
                 <X className="h-5 w-5" />
               </button>
             </div>
 
             <form onSubmit={handleSaveDest} className="space-y-4 text-xs">
               <div className="space-y-1">
-                <label className="text-[10px] font-black font-mono text-neutral-500 block uppercase">ID DESTINASI</label>
+                <label className="text-[10px] font-black font-mono text-slate-800 block uppercase">ID DESTINASI</label>
                 <input 
                   type="text" 
                   disabled 
                   value={destForm.id}
-                  className="w-full bg-neutral-950 border border-neutral-850 px-3.5 py-2 rounded-xl text-neutral-500 font-mono font-bold" 
+                  className="w-full bg-slate-100 border border-slate-300 px-3.5 py-2 rounded-xl text-slate-600 font-mono font-bold cursor-not-allowed" 
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-black font-mono text-neutral-500 block uppercase">PILIH AREA ZONA INDUK (ZONING)</label>
+                <label className="text-[10px] font-black font-mono text-slate-800 block uppercase">PILIH AREA ZONA INDUK (ZONING)</label>
                 <select 
                   value={destForm.area_id}
                   onChange={(e) => setDestForm({ ...destForm, area_id: e.target.value })}
-                  className="w-full bg-neutral-950 border border-neutral-800 px-3 py-2 rounded-xl text-neutral-200 focus:outline-none focus:border-amber-500 font-bold"
+                  className="w-full bg-white border border-slate-300 px-3 py-2 rounded-xl text-slate-900 focus:outline-none focus:border-amber-500 font-bold"
                 >
                   {taxiMasterAreas.map(a => (
                     <option key={a.id} value={a.id}>{a.name} ({a.code})</option>
@@ -1577,57 +1577,57 @@ export default function TaxiExcelManager({
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-black font-mono text-neutral-500 block uppercase">NAMA TEMPAT / ALAMAT UTAMA</label>
+                <label className="text-[10px] font-black font-mono text-slate-800 block uppercase">NAMA TEMPAT / ALAMAT UTAMA</label>
                 <input 
                   type="text" 
                   required
                   placeholder="Contoh: Tunjungan Plaza Mall 1-6"
                   value={destForm.name}
                   onChange={(e) => setDestForm({ ...destForm, name: e.target.value })}
-                  className="w-full bg-neutral-950 border border-neutral-800 px-3.5 py-2 rounded-xl text-neutral-200 focus:outline-none focus:border-amber-500" 
+                  className="w-full bg-white border border-slate-300 px-3.5 py-2 rounded-xl text-slate-900 placeholder:text-slate-500 focus:outline-none focus:border-amber-500" 
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3 font-mono">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-black font-mono text-neutral-500 block uppercase">LATITUDE</label>
+                  <label className="text-[10px] font-black font-mono text-slate-800 block uppercase">LATITUDE</label>
                   <input 
                     type="number" 
                     step="any"
                     required
                     value={destForm.lat}
                     onChange={(e) => setDestForm({ ...destForm, lat: parseFloat(e.target.value) || 0 })}
-                    className="w-full bg-neutral-950 border border-neutral-800 px-3.5 py-2 rounded-xl text-neutral-200 focus:outline-none" 
+                    className="w-full bg-white border border-slate-300 px-3.5 py-2 rounded-xl text-slate-900 focus:outline-none focus:border-amber-500" 
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] font-black font-mono text-neutral-500 block uppercase">LONGITUDE</label>
+                  <label className="text-[10px] font-black font-mono text-slate-800 block uppercase">LONGITUDE</label>
                   <input 
                     type="number" 
                     step="any"
                     required
                     value={destForm.lon}
                     onChange={(e) => setDestForm({ ...destForm, lon: parseFloat(e.target.value) || 0 })}
-                    className="w-full bg-neutral-950 border border-neutral-800 px-3.5 py-2 rounded-xl text-neutral-200 focus:outline-none" 
+                    className="w-full bg-white border border-slate-300 px-3.5 py-2 rounded-xl text-slate-900 focus:outline-none focus:border-amber-500" 
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-black font-mono text-neutral-500 block uppercase">STATUS</label>
+                <label className="text-[10px] font-black font-mono text-slate-800 block uppercase">STATUS</label>
                 <select 
                   value={destForm.status}
                   onChange={(e) => setDestForm({ ...destForm, status: e.target.value as 'Active' | 'Inactive' })}
-                  className="w-full bg-neutral-950 border border-neutral-800 px-3 py-2 rounded-xl text-neutral-200 focus:outline-none focus:border-amber-500 font-bold"
+                  className="w-full bg-white border border-slate-300 px-3 py-2 rounded-xl text-slate-900 focus:outline-none focus:border-amber-500 font-bold"
                 >
                   <option value="Active">Active (Publish)</option>
                   <option value="Inactive">Inactive (Draft)</option>
                 </select>
               </div>
 
-              <div className="pt-3 border-t border-neutral-850 flex justify-end gap-2">
-                <button type="button" onClick={() => setIsDestFormOpen(false)} className="px-4 py-2 border border-neutral-800 bg-neutral-950 rounded-xl font-bold cursor-pointer hover:text-white">Batal</button>
+              <div className="pt-3 border-t border-slate-200 flex justify-end gap-2">
+                <button type="button" onClick={() => setIsDestFormOpen(false)} className="px-4 py-2 border border-slate-300 bg-white rounded-xl font-bold cursor-pointer text-slate-700 hover:bg-slate-50">Batal</button>
                 <button type="submit" className="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-neutral-950 font-black rounded-xl cursor-pointer font-mono">SIMPAN DESTINASI</button>
               </div>
             </form>
@@ -1638,34 +1638,34 @@ export default function TaxiExcelManager({
       {/* 3. Modal Form: Price Rule */}
       {isPriceRuleFormOpen && (
         <div className="fixed inset-0 bg-neutral-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-neutral-900 border border-neutral-800 rounded-3xl w-full max-w-md p-6 space-y-4 shadow-2xl text-left">
-            <div className="flex justify-between items-center border-b border-neutral-850 pb-3">
-              <h3 className="text-sm font-black font-mono text-amber-500">
+          <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-md p-6 space-y-4 shadow-2xl text-left">
+            <div className="flex justify-between items-center border-b border-slate-200 pb-3">
+              <h3 className="text-sm font-black font-mono text-amber-600">
                 {editingPriceRule ? 'UBAH DATA ATURAN TARIF' : 'TAMBAH ATURAN TARIF BARU'}
               </h3>
-              <button onClick={() => setIsPriceRuleFormOpen(false)} className="text-neutral-500 hover:text-neutral-200">
+              <button onClick={() => setIsPriceRuleFormOpen(false)} className="text-slate-400 hover:text-slate-600">
                 <X className="h-5 w-5" />
               </button>
             </div>
 
             <form onSubmit={handleSavePriceRule} className="space-y-4 text-xs">
               <div className="space-y-1">
-                <label className="text-[10px] font-black font-mono text-neutral-500 block uppercase">ID ATURAN TARIF</label>
+                <label className="text-[10px] font-black font-mono text-slate-800 block uppercase">ID ATURAN TARIF</label>
                 <input 
                   type="text" 
                   disabled 
                   value={priceRuleForm.id}
-                  className="w-full bg-neutral-950 border border-neutral-850 px-3.5 py-2 rounded-xl text-neutral-500 font-mono font-bold" 
+                  className="w-full bg-slate-100 border border-slate-300 px-3.5 py-2 rounded-xl text-slate-600 font-mono font-bold cursor-not-allowed" 
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-black font-mono text-neutral-500 block uppercase">AREA ASAL</label>
+                  <label className="text-[10px] font-black font-mono text-slate-800 block uppercase">AREA ASAL</label>
                   <select 
                     value={priceRuleForm.source_id}
                     onChange={(e) => setPriceRuleForm({ ...priceRuleForm, source_id: e.target.value })}
-                    className="w-full bg-neutral-950 border border-neutral-800 px-3 py-2 rounded-xl text-neutral-200 focus:outline-none focus:border-amber-500 font-bold"
+                    className="w-full bg-white border border-slate-300 px-3 py-2 rounded-xl text-slate-900 focus:outline-none focus:border-amber-500 font-bold"
                   >
                     {taxiMasterAreas.map(a => (
                       <option key={a.id} value={a.id}>{a.name}</option>
@@ -1674,11 +1674,11 @@ export default function TaxiExcelManager({
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] font-black font-mono text-neutral-500 block uppercase">AREA TUJUAN</label>
+                  <label className="text-[10px] font-black font-mono text-slate-800 block uppercase">AREA TUJUAN</label>
                   <select 
                     value={priceRuleForm.destination_id}
                     onChange={(e) => setPriceRuleForm({ ...priceRuleForm, destination_id: e.target.value })}
-                    className="w-full bg-neutral-950 border border-neutral-800 px-3 py-2 rounded-xl text-neutral-200 focus:outline-none focus:border-amber-500 font-bold"
+                    className="w-full bg-white border border-slate-300 px-3 py-2 rounded-xl text-slate-900 focus:outline-none focus:border-amber-500 font-bold"
                   >
                     {taxiMasterAreas.map(a => (
                       <option key={a.id} value={a.id}>{a.name}</option>
@@ -1688,11 +1688,11 @@ export default function TaxiExcelManager({
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-black font-mono text-neutral-500 block uppercase">TIPE ARMADA KENDARAAN</label>
+                <label className="text-[10px] font-black font-mono text-slate-800 block uppercase">TIPE ARMADA KENDARAAN</label>
                 <select 
                   value={priceRuleForm.vehicle_type}
                   onChange={(e) => setPriceRuleForm({ ...priceRuleForm, vehicle_type: e.target.value as any })}
-                  className="w-full bg-neutral-950 border border-neutral-800 px-3 py-2 rounded-xl text-neutral-200 focus:outline-none focus:border-amber-500 font-mono font-bold"
+                  className="w-full bg-white border border-slate-300 px-3 py-2 rounded-xl text-slate-900 focus:outline-none focus:border-amber-500 font-mono font-bold"
                 >
                   <option value="Standard">Standard (Avanza, Xenia)</option>
                   <option value="Family">Family (Innova Reborn, Zenix)</option>
@@ -1703,42 +1703,42 @@ export default function TaxiExcelManager({
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1 font-mono">
-                  <label className="text-[10px] font-black font-mono text-neutral-500 block uppercase">TARIF DASAR (USD)</label>
+                  <label className="text-[10px] font-black font-mono text-slate-800 block uppercase">TARIF DASAR (USD)</label>
                   <input 
                     type="number" 
                     required
                     value={priceRuleForm.price_usd}
                     onChange={(e) => setPriceRuleForm({ ...priceRuleForm, price_usd: parseInt(e.target.value, 10) || 0 })}
-                    className="w-full bg-neutral-950 border border-neutral-800 px-3.5 py-2 rounded-xl text-neutral-200 focus:outline-none focus:border-amber-500 font-bold" 
+                    className="w-full bg-white border border-slate-300 px-3.5 py-2 rounded-xl text-slate-900 focus:outline-none focus:border-amber-500 font-bold" 
                   />
                 </div>
 
                 <div className="space-y-1 font-mono">
-                  <label className="text-[10px] font-black font-mono text-neutral-500 block uppercase">TARIF DASAR (IDR)</label>
+                  <label className="text-[10px] font-black font-mono text-slate-800 block uppercase">TARIF DASAR (IDR)</label>
                   <input 
                     type="number" 
                     required
                     value={priceRuleForm.price_idr}
                     onChange={(e) => setPriceRuleForm({ ...priceRuleForm, price_idr: parseInt(e.target.value, 10) || 0 })}
-                    className="w-full bg-neutral-950 border border-neutral-800 px-3.5 py-2 rounded-xl text-neutral-200 focus:outline-none focus:border-amber-500 font-bold" 
+                    className="w-full bg-white border border-slate-300 px-3.5 py-2 rounded-xl text-slate-900 focus:outline-none focus:border-amber-500 font-bold" 
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-black font-mono text-neutral-500 block uppercase">STATUS AKTIF</label>
+                <label className="text-[10px] font-black font-mono text-slate-800 block uppercase">STATUS AKTIF</label>
                 <select 
                   value={priceRuleForm.status}
                   onChange={(e) => setPriceRuleForm({ ...priceRuleForm, status: e.target.value as 'Active' | 'Inactive' })}
-                  className="w-full bg-neutral-950 border border-neutral-800 px-3 py-2 rounded-xl text-neutral-200 focus:outline-none focus:border-amber-500 font-bold"
+                  className="w-full bg-white border border-slate-300 px-3 py-2 rounded-xl text-slate-900 focus:outline-none focus:border-amber-500 font-bold"
                 >
                   <option value="Active">Active (Publish)</option>
                   <option value="Inactive">Inactive (Draft)</option>
                 </select>
               </div>
 
-              <div className="pt-3 border-t border-neutral-850 flex justify-end gap-2">
-                <button type="button" onClick={() => setIsPriceRuleFormOpen(false)} className="px-4 py-2 border border-neutral-800 bg-neutral-950 rounded-xl font-bold cursor-pointer hover:text-white">Batal</button>
+              <div className="pt-3 border-t border-slate-200 flex justify-end gap-2">
+                <button type="button" onClick={() => setIsPriceRuleFormOpen(false)} className="px-4 py-2 border border-slate-300 bg-white rounded-xl font-bold cursor-pointer text-slate-700 hover:bg-slate-50">Batal</button>
                 <button type="submit" className="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-neutral-950 font-black rounded-xl cursor-pointer font-mono">SIMPAN TARIF</button>
               </div>
             </form>

@@ -208,7 +208,7 @@ const MAIN_TOURS_PATH = path.join(process.cwd(), 'src', 'data', 'main_tours.json
 let memoryMainTours: Tour[] | null = null;
 
 function readMainTours(): Tour[] {
-  if (memoryMainTours) {
+  if (memoryMainTours !== null) {
     return memoryMainTours;
   }
 
@@ -216,7 +216,7 @@ function readMainTours(): Tour[] {
     if (fs.existsSync(MAIN_TOURS_PATH)) {
       const raw = fs.readFileSync(MAIN_TOURS_PATH, 'utf8');
       const parsed = JSON.parse(raw) as Tour[];
-      if (Array.isArray(parsed) && parsed.length > 0) {
+      if (Array.isArray(parsed)) {
         memoryMainTours = parsed;
         return memoryMainTours;
       }

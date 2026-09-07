@@ -355,13 +355,13 @@ export default function ResourcesManager({
 
         <div className="flex items-center gap-3">
           <div className="relative max-w-xs w-full">
-            <Search className="absolute left-3 top-2.5 h-4 w-4 text-neutral-500" />
+            <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
             <input
               type="text"
               placeholder="Cari data..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-neutral-950 border border-neutral-800 rounded-xl pl-9 pr-4 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500 text-neutral-200"
+              className="bg-white border border-slate-300 rounded-xl pl-9 pr-4 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500 text-slate-900 placeholder:text-slate-500"
             />
           </div>
           
@@ -768,74 +768,74 @@ export default function ResourcesManager({
 
       {/* VEHICLE POPUP MODAL */}
       {isVehicleModalOpen && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-fade-in">
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl relative">
-            <h3 className="text-sm font-black text-amber-500 font-mono tracking-widest uppercase">ARMADA SERVICE &amp; MAINTENANCE LOGGER</h3>
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white border border-slate-200 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl relative">
+            <h3 className="text-sm font-black text-amber-600 font-mono tracking-widest uppercase">ARMADA SERVICE &amp; MAINTENANCE LOGGER</h3>
             
             <form onSubmit={handleSaveVehicle} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-neutral-400 block uppercase">Brand &amp; Model Mobil</label>
+                <label className="text-[10px] font-bold text-slate-800 block uppercase">Brand &amp; Model Mobil</label>
                 <input
                   type="text"
                   required
                   value={vehicleForm.brandModel}
                   onChange={(e) => setVehicleForm({ ...vehicleForm, brandModel: e.target.value })}
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900 placeholder:text-slate-500"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-neutral-400 block uppercase">Pelat Nomor</label>
+                  <label className="text-[10px] font-bold text-slate-800 block uppercase">Pelat Nomor</label>
                   <input
                     type="text"
                     required
                     value={vehicleForm.plateNumber}
                     onChange={(e) => setVehicleForm({ ...vehicleForm, plateNumber: e.target.value })}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs font-mono focus:outline-none focus:border-amber-500 text-white"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono focus:outline-none focus:border-amber-500 text-slate-900"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-neutral-400 block uppercase">Kapasitas (Pax)</label>
+                  <label className="text-[10px] font-bold text-slate-800 block uppercase">Kapasitas (Pax)</label>
                   <input
                     type="number"
                     required
                     value={vehicleForm.capacity}
                     onChange={(e) => setVehicleForm({ ...vehicleForm, capacity: Number(e.target.value) })}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-neutral-400 block uppercase">Jenis Bahan Bakar</label>
+                  <label className="text-[10px] font-bold text-slate-800 block uppercase">Jenis Bahan Bakar</label>
                   <input
                     type="text"
                     required
                     value={vehicleForm.fuelType}
                     onChange={(e) => setVehicleForm({ ...vehicleForm, fuelType: e.target.value })}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-neutral-400 block uppercase">Tanggal Perawatan Servis</label>
+                  <label className="text-[10px] font-bold text-slate-800 block uppercase">Tanggal Perawatan Servis</label>
                   <input
                     type="date"
                     required
                     value={vehicleForm.nextService}
                     onChange={(e) => setVehicleForm({ ...vehicleForm, nextService: e.target.value })}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-neutral-400 block uppercase">Status Operasional</label>
+                <label className="text-[10px] font-bold text-slate-800 block uppercase">Status Operasional</label>
                 <select
                   value={vehicleForm.status}
                   onChange={(e) => setVehicleForm({ ...vehicleForm, status: e.target.value as any })}
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900"
                 >
                   <option value="Available">Tersedia (Ready)</option>
                   <option value="On Trip">Sedang Berjalan (Active Trip)</option>
@@ -844,7 +844,7 @@ export default function ResourcesManager({
                 </select>
               </div>
 
-              <div className="flex gap-3 pt-4 border-t border-neutral-850">
+              <div className="flex gap-3 pt-4 border-t border-slate-200">
                 <button
                   type="submit"
                   className="flex-grow py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-neutral-950 font-extrabold text-xs transition-all cursor-pointer text-center"
@@ -854,7 +854,7 @@ export default function ResourcesManager({
                 <button
                   type="button"
                   onClick={() => setIsVehicleModalOpen(false)}
-                  className="py-2.5 px-5 rounded-xl border border-neutral-800 text-neutral-400 hover:text-white text-xs font-bold cursor-pointer"
+                  className="py-2.5 px-5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 text-xs font-bold cursor-pointer"
                 >
                   Batal
                 </button>
@@ -866,48 +866,48 @@ export default function ResourcesManager({
 
       {/* DRIVER POPUP MODAL */}
       {isDriverModalOpen && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-fade-in">
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl relative">
-            <h3 className="text-sm font-black text-amber-500 font-mono tracking-widest uppercase">REGISTRASI DRIVER BARU</h3>
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white border border-slate-200 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl relative">
+            <h3 className="text-sm font-black text-amber-600 font-mono tracking-widest uppercase">REGISTRASI DRIVER BARU</h3>
             
             <form onSubmit={handleSaveDriver} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-neutral-400 block uppercase">Nama Lengkap Supir</label>
+                <label className="text-[10px] font-bold text-slate-800 block uppercase">Nama Lengkap Supir</label>
                 <input
                   type="text"
                   required
                   value={driverForm.name}
                   onChange={(e) => setDriverForm({ ...driverForm, name: e.target.value })}
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900 placeholder:text-slate-500"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-neutral-400 block uppercase">Nomor WhatsApp Aktif</label>
+                  <label className="text-[10px] font-bold text-slate-800 block uppercase">Nomor WhatsApp Aktif</label>
                   <input
                     type="text"
                     required
                     value={driverForm.phone}
                     onChange={(e) => setDriverForm({ ...driverForm, phone: e.target.value })}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900 placeholder:text-slate-500"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-neutral-400 block uppercase">Nomor Registrasi SIM</label>
+                  <label className="text-[10px] font-bold text-slate-800 block uppercase">Nomor Registrasi SIM</label>
                   <input
                     type="text"
                     required
                     value={driverForm.licenseNumber}
                     onChange={(e) => setDriverForm({ ...driverForm, licenseNumber: e.target.value })}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs font-mono focus:outline-none focus:border-amber-500 text-white"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono focus:outline-none focus:border-amber-500 text-slate-900"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-neutral-400 block uppercase">Peringkat Rating Awal</label>
+                  <label className="text-[10px] font-bold text-slate-800 block uppercase">Peringkat Rating Awal</label>
                   <input
                     type="number"
                     step="0.1"
@@ -916,27 +916,27 @@ export default function ResourcesManager({
                     required
                     value={driverForm.rating}
                     onChange={(e) => setDriverForm({ ...driverForm, rating: Number(e.target.value) })}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-neutral-400 block uppercase">Total Trips Berhasil</label>
+                  <label className="text-[10px] font-bold text-slate-800 block uppercase">Total Trips Berhasil</label>
                   <input
                     type="number"
                     required
                     value={driverForm.tripsCount}
                     onChange={(e) => setDriverForm({ ...driverForm, tripsCount: Number(e.target.value) })}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-neutral-400 block uppercase">Status Shift</label>
+                <label className="text-[10px] font-bold text-slate-800 block uppercase">Status Shift</label>
                 <select
                   value={driverForm.status}
                   onChange={(e) => setDriverForm({ ...driverForm, status: e.target.value as any })}
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900"
                 >
                   <option value="Online">Online (Shift On)</option>
                   <option value="Offline">Offline (Shift Off)</option>
@@ -945,7 +945,7 @@ export default function ResourcesManager({
                 </select>
               </div>
 
-              <div className="flex gap-3 pt-4 border-t border-neutral-850">
+              <div className="flex gap-3 pt-4 border-t border-slate-200">
                 <button
                   type="submit"
                   className="flex-grow py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-neutral-950 font-extrabold text-xs transition-all cursor-pointer text-center"
@@ -955,7 +955,7 @@ export default function ResourcesManager({
                 <button
                   type="button"
                   onClick={() => setIsDriverModalOpen(false)}
-                  className="py-2.5 px-5 rounded-xl border border-neutral-800 text-neutral-400 hover:text-white text-xs font-bold cursor-pointer"
+                  className="py-2.5 px-5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 text-xs font-bold cursor-pointer"
                 >
                   Batal
                 </button>
@@ -967,37 +967,37 @@ export default function ResourcesManager({
 
       {/* TOUR GUIDE POPUP MODAL */}
       {isGuideModalOpen && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-fade-in">
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl relative">
-            <h3 className="text-sm font-black text-amber-500 font-mono tracking-widest uppercase">
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white border border-slate-200 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl relative">
+            <h3 className="text-sm font-black text-amber-600 font-mono tracking-widest uppercase">
               {guideForm.id ? 'EDIT PROFIL TOUR GUIDE' : 'DAFTARKAN TOUR GUIDE BARU'}
             </h3>
             
             <form onSubmit={handleSaveGuide} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-neutral-400 block uppercase">Nama Lengkap Pemandu</label>
+                <label className="text-[10px] font-bold text-slate-800 block uppercase">Nama Lengkap Pemandu</label>
                 <input
                   type="text"
                   required
                   value={guideForm.name}
                   onChange={(e) => setGuideForm({ ...guideForm, name: e.target.value })}
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900 placeholder:text-slate-500"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-neutral-400 block uppercase">Nomor WhatsApp Aktif</label>
+                  <label className="text-[10px] font-bold text-slate-800 block uppercase">Nomor WhatsApp Aktif</label>
                   <input
                     type="text"
                     required
                     value={guideForm.phone}
                     onChange={(e) => setGuideForm({ ...guideForm, phone: e.target.value })}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900 placeholder:text-slate-500"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-neutral-400 block uppercase">Peringkat Rating Pemandu</label>
+                  <label className="text-[10px] font-bold text-slate-800 block uppercase">Peringkat Rating Pemandu</label>
                   <input
                     type="number"
                     step="0.1"
@@ -1006,29 +1006,29 @@ export default function ResourcesManager({
                     required
                     value={guideForm.rating}
                     onChange={(e) => setGuideForm({ ...guideForm, rating: Number(e.target.value) })}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-neutral-400 block uppercase">Bahasa yang Dikuasai (Pisahkan dengan Koma)</label>
+                <label className="text-[10px] font-bold text-slate-800 block uppercase">Bahasa yang Dikuasai (Pisahkan dengan Koma)</label>
                 <input
                   type="text"
                   required
                   placeholder="Contoh: English, Mandarin, Indonesian"
                   value={guideForm.languages}
                   onChange={(e) => setGuideForm({ ...guideForm, languages: e.target.value })}
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900 placeholder:text-slate-500"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-neutral-400 block uppercase">Status Tugas</label>
+                <label className="text-[10px] font-bold text-slate-800 block uppercase">Status Tugas</label>
                 <select
                   value={guideForm.status}
                   onChange={(e) => setGuideForm({ ...guideForm, status: e.target.value as any })}
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900"
                 >
                   <option value="Available">Available (Tersedia / Siap Jalan)</option>
                   <option value="Booked">Booked (Sedang Bertugas)</option>
@@ -1036,7 +1036,7 @@ export default function ResourcesManager({
                 </select>
               </div>
 
-              <div className="flex gap-3 pt-4 border-t border-neutral-850">
+              <div className="flex gap-3 pt-4 border-t border-slate-200">
                 <button
                   type="submit"
                   className="flex-grow py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-neutral-950 font-extrabold text-xs transition-all cursor-pointer text-center"
@@ -1046,7 +1046,7 @@ export default function ResourcesManager({
                 <button
                   type="button"
                   onClick={() => setIsGuideModalOpen(false)}
-                  className="py-2.5 px-5 rounded-xl border border-neutral-800 text-neutral-400 hover:text-white text-xs font-bold cursor-pointer"
+                  className="py-2.5 px-5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 text-xs font-bold cursor-pointer"
                 >
                   Batal
                 </button>
@@ -1058,54 +1058,54 @@ export default function ResourcesManager({
 
       {/* CUSTOMER PROFILE POPUP MODAL */}
       {isCustomerModalOpen && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-fade-in">
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl relative">
-            <h3 className="text-sm font-black text-amber-500 font-mono tracking-widest uppercase">
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white border border-slate-200 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl relative">
+            <h3 className="text-sm font-black text-amber-600 font-mono tracking-widest uppercase">
               {customerForm.id ? 'EDIT DATA PELANGGAN' : 'REGISTRASI PELANGGAN VIP BARU'}
             </h3>
             
             <form onSubmit={handleSaveCustomer} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-neutral-400 block uppercase">Nama Lengkap Pelanggan</label>
+                <label className="text-[10px] font-bold text-slate-800 block uppercase">Nama Lengkap Pelanggan</label>
                 <input
                   type="text"
                   required
                   value={customerForm.name}
                   onChange={(e) => setCustomerForm({ ...customerForm, name: e.target.value })}
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900 placeholder:text-slate-500"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-neutral-400 block uppercase">Email Kontak</label>
+                  <label className="text-[10px] font-bold text-slate-800 block uppercase">Email Kontak</label>
                   <input
                     type="email"
                     required
                     value={customerForm.email}
                     onChange={(e) => setCustomerForm({ ...customerForm, email: e.target.value })}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900 placeholder:text-slate-500"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-neutral-400 block uppercase">Nomor WhatsApp</label>
+                  <label className="text-[10px] font-bold text-slate-800 block uppercase">Nomor WhatsApp</label>
                   <input
                     type="text"
                     required
                     value={customerForm.phone}
                     onChange={(e) => setCustomerForm({ ...customerForm, phone: e.target.value })}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900 placeholder:text-slate-500"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-neutral-400 block uppercase">Tingkatan Loyalitas Tier</label>
+                  <label className="text-[10px] font-bold text-slate-800 block uppercase">Tingkatan Loyalitas Tier</label>
                   <select
                     value={customerForm.membershipLevel}
                     onChange={(e) => setCustomerForm({ ...customerForm, membershipLevel: e.target.value as any })}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900"
                   >
                     <option value="Platinum">⭐ Platinum VIP</option>
                     <option value="Gold">⭐ Gold Member</option>
@@ -1113,18 +1113,18 @@ export default function ResourcesManager({
                   </select>
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-neutral-400 block uppercase">Total Trips Berhasil</label>
+                  <label className="text-[10px] font-bold text-slate-800 block uppercase">Total Trips Berhasil</label>
                   <input
                     type="number"
                     required
                     value={customerForm.tripsCount}
                     onChange={(e) => setCustomerForm({ ...customerForm, tripsCount: Number(e.target.value) })}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900"
                   />
                 </div>
               </div>
 
-              <div className="flex gap-3 pt-4 border-t border-neutral-850">
+              <div className="flex gap-3 pt-4 border-t border-slate-200">
                 <button
                   type="submit"
                   className="flex-grow py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-neutral-950 font-extrabold text-xs transition-all cursor-pointer text-center"
@@ -1134,7 +1134,7 @@ export default function ResourcesManager({
                 <button
                   type="button"
                   onClick={() => setIsCustomerModalOpen(false)}
-                  className="py-2.5 px-5 rounded-xl border border-neutral-800 text-neutral-400 hover:text-white text-xs font-bold cursor-pointer"
+                  className="py-2.5 px-5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 text-xs font-bold cursor-pointer"
                 >
                   Batal
                 </button>

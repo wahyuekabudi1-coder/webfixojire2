@@ -567,62 +567,62 @@ export default function TaxiAirportBuilders({
       {/* TAXI MODAL BUILDER */}
       {isTaxiModalOpen && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-fade-in">
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative">
-            <h3 className="text-sm font-black text-amber-500 font-mono tracking-widest uppercase">TAXI SERVICE BUILDER ENGINE</h3>
+          <div className="bg-white border border-slate-200 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative">
+            <h3 className="text-sm font-black text-amber-600 font-mono tracking-widest uppercase">TAXI SERVICE BUILDER ENGINE</h3>
             
             <form onSubmit={handleSaveTaxi} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-neutral-400 block uppercase">Kota Pickup (Kota Asal)</label>
+                  <label className="text-[10px] font-bold text-slate-800 block uppercase">Kota Pickup (Kota Asal)</label>
                   <input
                     type="text"
                     required
                     value={taxiForm.pickupCity}
                     onChange={(e) => setTaxiForm({ ...taxiForm, pickupCity: e.target.value })}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900 placeholder:text-slate-500"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-neutral-400 block uppercase">Area / Landmark Asal</label>
+                  <label className="text-[10px] font-bold text-slate-800 block uppercase">Area / Landmark Asal</label>
                   <input
                     type="text"
                     required
                     value={taxiForm.pickupArea}
                     onChange={(e) => setTaxiForm({ ...taxiForm, pickupArea: e.target.value })}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900 placeholder:text-slate-500"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-neutral-400 block uppercase">Kota Destinasi (Kota Tujuan)</label>
+                  <label className="text-[10px] font-bold text-slate-800 block uppercase">Kota Destinasi (Kota Tujuan)</label>
                   <input
                     type="text"
                     required
                     value={taxiForm.destinationCity}
                     onChange={(e) => setTaxiForm({ ...taxiForm, destinationCity: e.target.value })}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900 placeholder:text-slate-500"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-neutral-400 block uppercase">Area / Landmark Tujuan</label>
+                  <label className="text-[10px] font-bold text-slate-800 block uppercase">Area / Landmark Tujuan</label>
                   <input
                     type="text"
                     required
                     value={taxiForm.destinationArea}
                     onChange={(e) => setTaxiForm({ ...taxiForm, destinationArea: e.target.value })}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900 placeholder:text-slate-500"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-neutral-400 block uppercase">Spesifikasi Kendaraan &amp; Kapasitas</label>
+                <label className="text-[10px] font-bold text-slate-800 block uppercase">Spesifikasi Kendaraan &amp; Kapasitas</label>
                 <select
                   value={taxiForm.vehicleIndex}
                   onChange={(e) => setTaxiForm({ ...taxiForm, vehicleIndex: Number(e.target.value) })}
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900"
                 >
                   {VEHICLE_PRESETS.map((p, idx) => (
                     <option key={idx} value={idx}>{p.name} (Kapasitas: {p.passengers} pax, {p.luggage} bagasi)</option>
@@ -632,40 +632,40 @@ export default function TaxiAirportBuilders({
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-neutral-400 block uppercase">Harga Fixed (IDR)</label>
+                  <label className="text-[10px] font-bold text-slate-800 block uppercase">Harga Fixed (IDR)</label>
                   <input
                     type="number"
                     required
                     value={taxiForm.priceIDR}
                     onChange={(e) => setTaxiForm({ ...taxiForm, priceIDR: Number(e.target.value), priceUSD: Math.round(Number(e.target.value) / 15000) })}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs font-mono focus:outline-none focus:border-amber-500 text-white"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono focus:outline-none focus:border-amber-500 text-slate-900"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-neutral-400 block uppercase">Harga USD Equivalen</label>
+                  <label className="text-[10px] font-bold text-slate-800 block uppercase">Harga USD Equivalen</label>
                   <input
                     type="number"
                     required
                     value={taxiForm.priceUSD}
                     onChange={(e) => setTaxiForm({ ...taxiForm, priceUSD: Number(e.target.value) })}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs font-mono focus:outline-none focus:border-amber-500 text-white"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono focus:outline-none focus:border-amber-500 text-slate-900"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-neutral-400 block uppercase">Status Aktif</label>
+                <label className="text-[10px] font-bold text-slate-800 block uppercase">Status Aktif</label>
                 <select
                   value={taxiForm.status}
                   onChange={(e) => setTaxiForm({ ...taxiForm, status: e.target.value as any })}
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900"
                 >
                   <option value="Active">Aktif (Published)</option>
                   <option value="Inactive">Nonaktif (Draft)</option>
                 </select>
               </div>
 
-              <div className="flex gap-3 pt-4 border-t border-neutral-850">
+              <div className="flex gap-3 pt-4 border-t border-slate-200">
                 <button
                   type="submit"
                   className="flex-grow py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-neutral-950 font-extrabold text-xs transition-all cursor-pointer text-center"
@@ -675,7 +675,7 @@ export default function TaxiAirportBuilders({
                 <button
                   type="button"
                   onClick={() => setIsTaxiModalOpen(false)}
-                  className="py-2.5 px-5 rounded-xl border border-neutral-800 text-neutral-400 hover:text-white text-xs font-bold cursor-pointer"
+                  className="py-2.5 px-5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 text-xs font-bold cursor-pointer"
                 >
                   Batal
                 </button>
@@ -687,17 +687,17 @@ export default function TaxiAirportBuilders({
 
       {/* AIRPORT SHUTTLE MODAL */}
       {isAirportModalOpen && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-fade-in">
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative">
-            <h3 className="text-sm font-black text-amber-500 font-mono tracking-widest uppercase">AIRPORT SHUTTLE BUILDER ENGINE</h3>
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white border border-slate-200 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative">
+            <h3 className="text-sm font-black text-amber-600 font-mono tracking-widest uppercase">AIRPORT SHUTTLE BUILDER ENGINE</h3>
             
             <form onSubmit={handleSaveAirport} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-neutral-400 block uppercase">Tipe Penjemputan</label>
+                <label className="text-[10px] font-bold text-slate-800 block uppercase">Tipe Penjemputan</label>
                 <select
                   value={airportForm.direction}
                   onChange={(e) => setAirportForm({ ...airportForm, direction: e.target.value as any })}
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900"
                 >
                   <option value="Arrival">Arrival (Penjemputan dari Bandara ➔ Hotel)</option>
                   <option value="Departure">Departure (Pengantaran dari Hotel ➔ Bandara)</option>
@@ -706,45 +706,45 @@ export default function TaxiAirportBuilders({
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-neutral-400 block uppercase">Nama Bandara (Airport Name)</label>
+                  <label className="text-[10px] font-bold text-slate-800 block uppercase">Nama Bandara (Airport Name)</label>
                   <input
                     type="text"
                     required
                     value={airportForm.airportName}
                     onChange={(e) => setAirportForm({ ...airportForm, airportName: e.target.value })}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900 placeholder:text-slate-500"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-neutral-400 block uppercase">Terminal Penerbangan</label>
+                  <label className="text-[10px] font-bold text-slate-800 block uppercase">Terminal Penerbangan</label>
                   <input
                     type="text"
                     placeholder="Contoh: Terminal 1 Domestik"
                     value={airportForm.terminal}
                     onChange={(e) => setAirportForm({ ...airportForm, terminal: e.target.value })}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900 placeholder:text-slate-500"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-neutral-400 block uppercase">Kawasan Destinasi Penjemputan / Pengantaran</label>
+                <label className="text-[10px] font-bold text-slate-800 block uppercase">Kawasan Destinasi Penjemputan / Pengantaran</label>
                 <input
                   type="text"
                   required
                   placeholder="Contoh: Malang Kota, Ubud Area, Seminyak"
                   value={airportForm.destinationArea}
                   onChange={(e) => setAirportForm({ ...airportForm, destinationArea: e.target.value })}
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900 placeholder:text-slate-500"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-neutral-400 block uppercase">Pilihan Armada &amp; Spesifikasi</label>
+                <label className="text-[10px] font-bold text-slate-800 block uppercase">Pilihan Armada &amp; Spesifikasi</label>
                 <select
                   value={airportForm.vehicleIndex}
                   onChange={(e) => setAirportForm({ ...airportForm, vehicleIndex: Number(e.target.value) })}
-                  className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-white"
+                  className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-amber-500 text-slate-900"
                 >
                   {VEHICLE_PRESETS.map((p, idx) => (
                     <option key={idx} value={idx}>{p.name} (Kapasitas: {p.passengers} pax, {p.luggage} bagasi)</option>
@@ -753,12 +753,12 @@ export default function TaxiAirportBuilders({
               </div>
 
               <div className="flex gap-4">
-                <label className="flex items-center gap-2 text-xs font-bold text-neutral-300 cursor-pointer">
+                <label className="flex items-center gap-2 text-xs font-bold text-slate-800 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={airportForm.meetAndGreet}
                     onChange={(e) => setAirportForm({ ...airportForm, meetAndGreet: e.target.checked })}
-                    className="h-4 w-4 bg-neutral-950 border-neutral-800 text-amber-500 focus:ring-0 rounded"
+                    className="h-4 w-4 bg-white border-slate-300 text-amber-500 focus:ring-0 rounded"
                   />
                   <span>Layanan Meet &amp; Greet (Driver pegang papan nama)</span>
                 </label>
@@ -766,28 +766,28 @@ export default function TaxiAirportBuilders({
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-neutral-400 block uppercase">Harga (IDR)</label>
+                  <label className="text-[10px] font-bold text-slate-800 block uppercase">Harga (IDR)</label>
                   <input
                     type="number"
                     required
                     value={airportForm.priceIDR}
                     onChange={(e) => setAirportForm({ ...airportForm, priceIDR: Number(e.target.value), priceUSD: Math.round(Number(e.target.value) / 15000) })}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs font-mono focus:outline-none focus:border-amber-500 text-white"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono focus:outline-none focus:border-amber-500 text-slate-900"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-neutral-400 block uppercase">Harga USD Equivalen</label>
+                  <label className="text-[10px] font-bold text-slate-800 block uppercase">Harga USD Equivalen</label>
                   <input
                     type="number"
                     required
                     value={airportForm.priceUSD}
                     onChange={(e) => setAirportForm({ ...airportForm, priceUSD: Number(e.target.value) })}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs font-mono focus:outline-none focus:border-amber-500 text-white"
+                    className="w-full bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs font-mono focus:outline-none focus:border-amber-500 text-slate-900"
                   />
                 </div>
               </div>
 
-              <div className="flex gap-3 pt-4 border-t border-neutral-850">
+              <div className="flex gap-3 pt-4 border-t border-slate-200">
                 <button
                   type="submit"
                   className="flex-grow py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-neutral-950 font-extrabold text-xs transition-all cursor-pointer text-center"
@@ -797,7 +797,7 @@ export default function TaxiAirportBuilders({
                 <button
                   type="button"
                   onClick={() => setIsAirportModalOpen(false)}
-                  className="py-2.5 px-5 rounded-xl border border-neutral-800 text-neutral-400 hover:text-white text-xs font-bold cursor-pointer"
+                  className="py-2.5 px-5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 text-xs font-bold cursor-pointer"
                 >
                   Batal
                 </button>

@@ -175,3 +175,96 @@ input::placeholder, textarea::placeholder {
   }
 }
 
+/* ==========================================================================
+   ADMIN PORTAL FORM CONTRAST & ACCESSIBILITY (LIGHT THEME STANDARD)
+   Enforces high-contrast readable dark text, distinct slate-800 labels,
+   medium-gray placeholders, and crisp borders across all admin forms.
+   ========================================================================== */
+
+.admin-portal:not(.admin-dark),
+[data-admin-portal]:not(.admin-dark) {
+  --admin-form-label: #1e293b; /* slate-800: high contrast near-black */
+  --admin-form-text: #0f172a; /* slate-900: deep readable dark text */
+  --admin-form-bg: #ffffff; /* crisp white */
+  --admin-form-border: #cbd5e1; /* slate-300: visible distinct border */
+  --admin-form-placeholder: #64748b; /* slate-500: medium gray */
+  --admin-form-focus: #f59e0b; /* amber-500 */
+}
+
+/* 1. Form Labels */
+.admin-portal:not(.admin-dark) label:not(.toggle-label):not(.badge-label),
+[data-admin-portal]:not(.admin-dark) label:not(.toggle-label):not(.badge-label) {
+  color: #1e293b !important;
+  font-weight: 700 !important;
+}
+
+/* 2. Form Inputs, Textareas, and Selects */
+.admin-portal:not(.admin-dark) input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="file"]),
+.admin-portal:not(.admin-dark) textarea,
+.admin-portal:not(.admin-dark) select,
+[data-admin-portal]:not(.admin-dark) input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="file"]),
+[data-admin-portal]:not(.admin-dark) textarea,
+[data-admin-portal]:not(.admin-dark) select {
+  color: #0f172a !important;
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  -webkit-text-fill-color: #0f172a !important;
+}
+
+/* 3. Placeholder Styling: Clear Medium Gray */
+.admin-portal:not(.admin-dark) input::placeholder,
+.admin-portal:not(.admin-dark) textarea::placeholder,
+[data-admin-portal]:not(.admin-dark) input::placeholder,
+[data-admin-portal]:not(.admin-dark) textarea::placeholder {
+  color: #64748b !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: #64748b !important;
+}
+
+/* 4. Focus State */
+.admin-portal:not(.admin-dark) input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="file"]):focus,
+.admin-portal:not(.admin-dark) textarea:focus,
+.admin-portal:not(.admin-dark) select:focus,
+[data-admin-portal]:not(.admin-dark) input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="file"]):focus,
+[data-admin-portal]:not(.admin-dark) textarea:focus,
+[data-admin-portal]:not(.admin-dark) select:focus {
+  border-color: #f59e0b !important;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25) !important;
+  outline: none !important;
+}
+
+/* 5. Disabled / Readonly Inputs */
+.admin-portal:not(.admin-dark) input:disabled,
+.admin-portal:not(.admin-dark) textarea:disabled,
+.admin-portal:not(.admin-dark) select:disabled,
+[data-admin-portal]:not(.admin-dark) input:disabled,
+[data-admin-portal]:not(.admin-dark) textarea:disabled,
+[data-admin-portal]:not(.admin-dark) select:disabled {
+  background-color: #f1f5f9 !important;
+  color: #334155 !important;
+  border-color: #cbd5e1 !important;
+  -webkit-text-fill-color: #334155 !important;
+  cursor: not-allowed;
+}
+
+/* 6. Dropdown Options */
+.admin-portal:not(.admin-dark) select option,
+[data-admin-portal]:not(.admin-dark) select option {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  font-weight: 500 !important;
+}
+
+/* 7. Numbers, Currency, and Date pickers */
+.admin-portal:not(.admin-dark) input[type="number"],
+.admin-portal:not(.admin-dark) input[type="date"],
+.admin-portal:not(.admin-dark) input[type="time"],
+.admin-portal:not(.admin-dark) input[type="datetime-local"],
+[data-admin-portal]:not(.admin-dark) input[type="number"],
+[data-admin-portal]:not(.admin-dark) input[type="date"],
+[data-admin-portal]:not(.admin-dark) input[type="time"],
+[data-admin-portal]:not(.admin-dark) input[type="datetime-local"] {
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
+}
+

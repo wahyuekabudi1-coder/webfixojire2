@@ -649,15 +649,19 @@ export default function AdminView() {
     textPrimary: isDark ? 'text-neutral-100' : 'text-neutral-900',
     textSecondary: isDark ? 'text-neutral-400' : 'text-neutral-600',
     textMuted: isDark ? 'text-neutral-600' : 'text-neutral-400',
-    input: isDark ? 'bg-neutral-950/80 border-neutral-800 text-white' : 'bg-white border-neutral-300 text-neutral-900 placeholder:text-neutral-400 focus:border-amber-500 focus:ring-1 focus:ring-amber-500/20',
+    input: isDark ? 'bg-neutral-950/80 border-neutral-800 text-white placeholder:text-neutral-500' : 'bg-white border-slate-300 text-slate-900 placeholder:text-slate-500 focus:border-amber-500 focus:ring-1 focus:ring-amber-500/20',
     hover: isDark ? 'hover:bg-neutral-800/60' : 'hover:bg-slate-100',
-    activeTab: isDark ? 'bg-amber-500/10 text-amber-400 font-extrabold border-amber-500/30' : 'bg-amber-500/10 text-amber-700 font-extrabold border-amber-500/30'
+    activeTab: isDark ? 'bg-amber-500/10 text-amber-400 font-extrabold border-amber-500/30' : 'bg-amber-500/10 text-amber-700 font-extrabold border-amber-500/30',
+    label: isDark ? 'text-neutral-300 font-bold' : 'text-slate-800 font-bold'
   };
 
   // Lockscreen View (Stage 1)
   if (!isAdminUnlocked) {
     return (
-      <div className={`min-h-screen ${theme.bg} transition-colors duration-300 relative flex flex-col justify-between overflow-hidden font-sans`}>
+      <div 
+        data-admin-portal="true" 
+        className={`min-h-screen ${theme.bg} transition-colors duration-300 relative flex flex-col justify-between overflow-hidden font-sans admin-portal ${isDark ? 'admin-dark' : 'admin-light'}`}
+      >
         {/* Decorative Grid Gradients */}
         <div className="absolute top-10 left-10 w-96 h-96 bg-amber-500/[0.04] rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-10 right-10 w-96 h-96 bg-blue-500/[0.04] rounded-full blur-3xl pointer-events-none" />
@@ -1043,7 +1047,7 @@ export default function AdminView() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="space-y-1.5">
-                            <label className="text-[10px] font-black text-neutral-400 uppercase tracking-wider">ID Paket (Satu kata, tanpa spasi)</label>
+                            <label className="text-[10px] font-black text-slate-800 uppercase tracking-wider">ID Paket (Satu kata, tanpa spasi)</label>
                             <input 
                               type="text" 
                               required
@@ -1051,15 +1055,15 @@ export default function AdminView() {
                               value={tourForm.id}
                               onChange={(e) => setTourForm({ ...tourForm, id: e.target.value })}
                               placeholder="Contoh: bromo-sunrise" 
-                              className={`w-full ${theme.input} border rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500 font-mono text-white ${editingTour ? 'opacity-50 cursor-not-allowed bg-neutral-900/50' : ''}`} 
+                              className={`w-full ${theme.input} border rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500 font-mono ${editingTour ? 'opacity-60 cursor-not-allowed bg-slate-100' : ''}`} 
                             />
                           </div>
                           <div className="space-y-1.5">
-                            <label className="text-[10px] font-black text-neutral-400 uppercase tracking-wider">Kategori Wisata</label>
+                            <label className="text-[10px] font-black text-slate-800 uppercase tracking-wider">Kategori Wisata</label>
                             <select 
                               value={tourForm.category}
                               onChange={(e) => setTourForm({ ...tourForm, category: e.target.value as any })}
-                              className={`w-full ${theme.input} border rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500 bg-neutral-900 text-white`}
+                              className={`w-full ${theme.input} border rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500`}
                             >
                               <option value="Adventure">Adventure (Petualangan)</option>
                               <option value="Nature">Nature (Alam bebas)</option>
@@ -1070,43 +1074,43 @@ export default function AdminView() {
                         </div>
 
                         <div className="space-y-1.5">
-                          <label className="text-[10px] font-black text-neutral-400 uppercase tracking-wider">Nama Lengkap Paket Wisata</label>
+                          <label className="text-[10px] font-black text-slate-800 uppercase tracking-wider">Nama Lengkap Paket Wisata</label>
                           <input 
                             type="text" 
                             required
                             value={tourForm.name}
                             onChange={(e) => setTourForm({ ...tourForm, name: e.target.value })}
                             placeholder="Contoh: Paket Sunrise Bromo Penanjakan Premium" 
-                            className={`w-full ${theme.input} border rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500 font-semibold text-white`} 
+                            className={`w-full ${theme.input} border rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500 font-semibold`} 
                           />
                         </div>
 
                         <div className="space-y-1.5">
-                          <label className="text-[10px] font-black text-neutral-400 uppercase tracking-wider">Deskripsi Lengkap / Penjelasan Paket</label>
+                          <label className="text-[10px] font-black text-slate-800 uppercase tracking-wider">Deskripsi Lengkap / Penjelasan Paket</label>
                           <textarea 
                             rows={8}
                             required
                             value={tourForm.description}
                             onChange={(e) => setTourForm({ ...tourForm, description: e.target.value })}
                             placeholder="Berikan penjelasan yang memikat mengenai petualangan ini..." 
-                            className={`w-full ${theme.input} border rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500 leading-relaxed text-white`} 
+                            className={`w-full ${theme.input} border rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500 leading-relaxed`} 
                           />
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div className="space-y-1.5">
-                            <label className="text-[10px] font-black text-neutral-400 uppercase tracking-wider">Durasi Waktu</label>
+                            <label className="text-[10px] font-black text-slate-800 uppercase tracking-wider">Durasi Waktu</label>
                             <input 
                               type="text" 
                               required
                               value={tourForm.duration}
                               onChange={(e) => setTourForm({ ...tourForm, duration: e.target.value })}
                               placeholder="⏱️ Contoh: 12 Jam / 3 Hari" 
-                              className={`w-full ${theme.input} border rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500 text-white`} 
+                              className={`w-full ${theme.input} border rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500`} 
                             />
                           </div>
                           <div className="space-y-1.5 md:col-span-2">
-                            <label className="text-[10px] font-black text-neutral-400 uppercase tracking-wider">Harga Dasar Paket (Rupiah / Rp IDR)</label>
+                            <label className="text-[10px] font-black text-slate-800 uppercase tracking-wider">Harga Dasar Paket (Rupiah / Rp IDR)</label>
                             <div className="relative">
                               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-bold text-amber-500 font-mono">Rp</span>
                               <input 
@@ -1122,7 +1126,7 @@ export default function AdminView() {
                                   });
                                 }}
                                 placeholder="750000" 
-                                className={`w-full ${theme.input} border rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-amber-500 font-mono text-white text-sm font-extrabold`} 
+                                className={`w-full ${theme.input} border rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-amber-500 font-mono text-sm font-extrabold`} 
                               />
                             </div>
                           </div>
@@ -1141,30 +1145,30 @@ export default function AdminView() {
                         </h4>
 
                         <div className="space-y-2">
-                          <label className="text-[10px] font-black text-neutral-400 uppercase tracking-wider block">
+                          <label className="text-[10px] font-black text-slate-800 uppercase tracking-wider block">
                             Sorotan Wisata (Highlights)
                           </label>
-                          <span className="text-[10px] text-neutral-500 block">Pisahkan setiap sorotan dengan tanda koma (,) agar terformat otomatis</span>
+                          <span className="text-[10px] text-slate-600 block">Pisahkan setiap sorotan dengan tanda koma (,) agar terformat otomatis</span>
                           <textarea 
                             rows={5}
                             value={tourForm.highlights}
                             onChange={(e) => setTourForm({ ...tourForm, highlights: e.target.value })}
                             placeholder="Contoh: Jeep Premium 4x4, Tiket Masuk Taman Nasional, Sarapan Hangat Kastil, Dokumentasi Profesional" 
-                            className={`w-full ${theme.input} border rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500 leading-relaxed text-white`} 
+                            className={`w-full ${theme.input} border rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500 leading-relaxed`} 
                           />
                         </div>
 
-                        <div className="space-y-2 border-t border-neutral-800/60 pt-4">
-                          <label className="text-[10px] font-black text-neutral-400 uppercase tracking-wider block">
+                        <div className="space-y-2 border-t border-neutral-200/80 pt-4">
+                          <label className="text-[10px] font-black text-slate-800 uppercase tracking-wider block">
                             Perlengkapan yang Harus Dibawa (What to Bring)
                           </label>
-                          <span className="text-[10px] text-neutral-500 block">Tuliskan barang atau perlengkapan yang direkomendasikan untuk dibawa, satu item per baris</span>
+                          <span className="text-[10px] text-slate-600 block">Tuliskan barang atau perlengkapan yang direkomendasikan untuk dibawa, satu item per baris</span>
                           <textarea 
                             rows={6}
                             value={tourForm.whatToBring}
                             onChange={(e) => setTourForm({ ...tourForm, whatToBring: e.target.value })}
                             placeholder="Contoh:&#10;Pakaian hangat &amp; Jaket tebal&#10;Sepatu gunung / trekking antiselip&#10;Kacamata hitam &amp; Tabir surya&#10;Masker respirator (rekomendasi untuk Ijen)&#10;Kamera / Handphone untuk dokumentasi" 
-                            className={`w-full ${theme.input} border rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500 leading-relaxed text-white`} 
+                            className={`w-full ${theme.input} border rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500 leading-relaxed`} 
                           />
                         </div>
                       </div>
@@ -1183,60 +1187,60 @@ export default function AdminView() {
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div className="space-y-1.5">
-                            <label className="text-[10px] font-black text-neutral-400 uppercase tracking-wider">Hari Ke (Day)</label>
+                            <label className="text-[10px] font-black text-slate-800 uppercase tracking-wider">Hari Ke (Day)</label>
                             <input 
                               type="number" 
                               min={1}
                               value={itineraryDayInput}
                               onChange={(e) => setItineraryDayInput(Math.max(1, parseInt(e.target.value) || 1))}
-                              className={`w-full ${theme.input} border rounded-xl px-4 py-2.5 focus:outline-none focus:border-amber-500 font-mono text-white text-xs`}
+                              className={`w-full ${theme.input} border rounded-xl px-4 py-2.5 focus:outline-none focus:border-amber-500 font-mono text-xs`}
                             />
                           </div>
 
                           <div className="space-y-1.5 md:col-span-2">
-                            <label className="text-[10px] font-black text-neutral-400 uppercase tracking-wider">Judul Hari (Opsional)</label>
+                            <label className="text-[10px] font-black text-slate-800 uppercase tracking-wider">Judul Hari (Opsional)</label>
                             <input 
                               type="text" 
                               value={itineraryDayTitleInput}
                               onChange={(e) => setItineraryDayTitleInput(e.target.value)}
                               placeholder="Contoh: Menikmati Golden Sunrise & Lautan Pasir" 
-                              className={`w-full ${theme.input} border rounded-xl px-4 py-2.5 focus:outline-none focus:border-amber-500 text-white text-xs`}
+                              className={`w-full ${theme.input} border rounded-xl px-4 py-2.5 focus:outline-none focus:border-amber-500 text-xs`}
                             />
                           </div>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div className="space-y-1.5">
-                            <label className="text-[10px] font-black text-neutral-400 uppercase tracking-wider">Jam / Waktu (Hour)</label>
+                            <label className="text-[10px] font-black text-slate-800 uppercase tracking-wider">Jam / Waktu (Hour)</label>
                             <input 
                               type="text" 
                               value={itineraryTimeInput}
                               onChange={(e) => setItineraryTimeInput(e.target.value)}
                               placeholder="Contoh: 03:30 - 06:00 atau 08:00" 
-                              className={`w-full ${theme.input} border rounded-xl px-4 py-2.5 focus:outline-none focus:border-amber-500 font-mono text-white text-xs`}
+                              className={`w-full ${theme.input} border rounded-xl px-4 py-2.5 focus:outline-none focus:border-amber-500 font-mono text-xs`}
                             />
                           </div>
 
                           <div className="space-y-1.5 md:col-span-2">
-                            <label className="text-[10px] font-black text-neutral-400 uppercase tracking-wider">Nama Aktivitas / Kegiatan</label>
+                            <label className="text-[10px] font-black text-slate-800 uppercase tracking-wider">Nama Aktivitas / Kegiatan</label>
                             <input 
                               type="text" 
                               value={itineraryTitleInput}
                               onChange={(e) => setItineraryTitleInput(e.target.value)}
                               placeholder="Contoh: Berburu Golden Sunrise" 
-                              className={`w-full ${theme.input} border rounded-xl px-4 py-2.5 focus:outline-none focus:border-amber-500 text-white text-xs font-bold`}
+                              className={`w-full ${theme.input} border rounded-xl px-4 py-2.5 focus:outline-none focus:border-amber-500 text-xs font-bold`}
                             />
                           </div>
                         </div>
 
                         <div className="space-y-1.5">
-                          <label className="text-[10px] font-black text-neutral-400 uppercase tracking-wider">Penjelasan Detail Kegiatan</label>
+                          <label className="text-[10px] font-black text-slate-800 uppercase tracking-wider">Penjelasan Detail Kegiatan</label>
                           <textarea 
                             rows={3}
                             value={itineraryDescInput}
                             onChange={(e) => setItineraryDescInput(e.target.value)}
                             placeholder="Tulis penjelasan rincian jalannya aktivitas ini..." 
-                            className={`w-full ${theme.input} border rounded-xl px-4 py-2.5 focus:outline-none focus:border-amber-500 leading-relaxed text-white text-xs`}
+                            className={`w-full ${theme.input} border rounded-xl px-4 py-2.5 focus:outline-none focus:border-amber-500 leading-relaxed text-xs`}
                           />
                         </div>
 
@@ -1638,26 +1642,26 @@ export default function AdminView() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                           <div className="space-y-2">
-                            <label className="text-[10px] font-black text-emerald-400 uppercase tracking-wider block">Harga Sudah Termasuk (Inclusions)</label>
-                            <span className="text-[10px] text-neutral-500 block">Tuliskan satu item per baris (tekan Enter untuk baris baru)</span>
+                            <label className="text-[10px] font-black text-emerald-800 uppercase tracking-wider block">Harga Sudah Termasuk (Inclusions)</label>
+                            <span className="text-[10px] text-slate-600 block">Tuliskan satu item per baris (tekan Enter untuk baris baru)</span>
                             <textarea 
                               rows={8}
                               value={tourForm.includes}
                               onChange={(e) => setTourForm({ ...tourForm, includes: e.target.value })}
                               placeholder="Contoh:&#10;Tiket Masuk Wisata Resmi&#10;Transportasi AC Mewah&#10;Sopir Berpengalaman" 
-                              className={`w-full ${theme.input} border rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500 leading-relaxed text-white text-xs`} 
+                              className={`w-full ${theme.input} border rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500 leading-relaxed text-xs`} 
                             />
                           </div>
 
                           <div className="space-y-2">
-                            <label className="text-[10px] font-black text-red-400 uppercase tracking-wider block">Tidak Termasuk (Exclusions)</label>
-                            <span className="text-[10px] text-neutral-500 block">Tuliskan satu item per baris (tekan Enter untuk baris baru)</span>
+                            <label className="text-[10px] font-black text-red-800 uppercase tracking-wider block">Tidak Termasuk (Exclusions)</label>
+                            <span className="text-[10px] text-slate-600 block">Tuliskan satu item per baris (tekan Enter untuk baris baru)</span>
                             <textarea 
                               rows={8}
                               value={tourForm.excludes}
                               onChange={(e) => setTourForm({ ...tourForm, excludes: e.target.value })}
                               placeholder="Contoh:&#10;Belanja Oleh-oleh Pribadi&#10;Sewa Kuda di Bromo&#10;Tip untuk Driver &amp; Guide" 
-                              className={`w-full ${theme.input} border rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500 leading-relaxed text-white text-xs`} 
+                              className={`w-full ${theme.input} border rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500 leading-relaxed text-xs`} 
                             />
                           </div>
                         </div>
@@ -5309,23 +5313,23 @@ export default function AdminView() {
                     className="space-y-3.5 pt-2 text-xs text-left"
                   >
                     <div className="space-y-1.5">
-                      <label className="text-[9px] font-mono font-black text-neutral-400 uppercase">PILIH TANGGAL</label>
+                      <label className="text-[9px] font-mono font-black text-slate-800 uppercase">PILIH TANGGAL</label>
                       <input 
                         type="date"
                         name="bdate"
                         required
-                        className={`w-full ${theme.input} border rounded-xl px-4 py-2.5 text-xs text-white font-mono`}
+                        className={`w-full ${theme.input} border rounded-xl px-4 py-2.5 text-xs font-mono`}
                       />
                     </div>
 
                     <div className="space-y-1.5">
-                      <label className="text-[9px] font-mono font-black text-neutral-400 uppercase">ALASAN PENUTUPAN / MEMO</label>
+                      <label className="text-[9px] font-mono font-black text-slate-800 uppercase">ALASAN PENUTUPAN / MEMO</label>
                       <input 
                         type="text"
                         name="bnote"
                         placeholder="Contoh: Libur Hari Raya Galungan"
                         required
-                        className={`w-full ${theme.input} border rounded-xl px-4 py-2.5 text-xs text-white`}
+                        className={`w-full ${theme.input} border rounded-xl px-4 py-2.5 text-xs`}
                       />
                     </div>
 
@@ -5899,7 +5903,10 @@ export default function AdminView() {
   };
 
   return (
-    <div className={`min-h-screen flex ${theme.bg} transition-colors duration-300 font-sans`}>
+    <div 
+      data-admin-portal="true"
+      className={`min-h-screen flex ${theme.bg} transition-colors duration-300 font-sans admin-portal ${isDark ? 'admin-dark' : 'admin-light'}`}
+    >
       {/* Dynamic Toast Alert (Prinstine custom component) */}
       <AnimatePresence>
         {toastMessage && (
@@ -8260,20 +8267,20 @@ export default function AdminView() {
                         </h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="space-y-1">
-                            <label className="text-[10px] font-black text-neutral-500 uppercase">Nama Lengkap Staff</label>
+                            <label className="text-[10px] font-black text-slate-800 uppercase">Nama Lengkap Staff</label>
                             <input type="text" defaultValue="Smart Journey Administrator" className={`w-full ${theme.input} border rounded-xl px-3 py-2 text-xs`} />
                           </div>
                           <div className="space-y-1">
-                            <label className="text-[10px] font-black text-neutral-500 uppercase">ID Karyawan</label>
-                            <input type="text" defaultValue="SJT-2026-904" disabled className={`w-full ${theme.input} border rounded-xl px-3 py-2 text-xs bg-neutral-900/50 cursor-not-allowed`} />
+                            <label className="text-[10px] font-black text-slate-800 uppercase">ID Karyawan</label>
+                            <input type="text" defaultValue="SJT-2026-904" disabled className={`w-full ${theme.input} border rounded-xl px-3 py-2 text-xs cursor-not-allowed`} />
                           </div>
                           <div className="space-y-1">
-                            <label className="text-[10px] font-black text-neutral-500 uppercase">No. Telepon WhatsApp</label>
+                            <label className="text-[10px] font-black text-slate-800 uppercase">No. Telepon WhatsApp</label>
                             <input type="text" defaultValue="+62 813-1122-3344" className={`w-full ${theme.input} border rounded-xl px-3 py-2 text-xs`} />
                           </div>
                           <div className="space-y-1">
-                            <label className="text-[10px] font-black text-neutral-500 uppercase">Divisi Utama</label>
-                            <input type="text" defaultValue="Central Operational Hub" disabled className={`w-full ${theme.input} border rounded-xl px-3 py-2 text-xs bg-neutral-900/50 cursor-not-allowed`} />
+                            <label className="text-[10px] font-black text-slate-800 uppercase">Divisi Utama</label>
+                            <input type="text" defaultValue="Central Operational Hub" disabled className={`w-full ${theme.input} border rounded-xl px-3 py-2 text-xs cursor-not-allowed`} />
                           </div>
                         </div>
                       </div>
@@ -8286,15 +8293,15 @@ export default function AdminView() {
                         </h4>
                         <div className="space-y-3">
                           <div className="space-y-1">
-                            <label className="text-[10px] font-black text-neutral-500 uppercase">Sandi Saat Ini</label>
+                            <label className="text-[10px] font-black text-slate-800 uppercase">Sandi Saat Ini</label>
                             <input type="password" placeholder="••••••••" className={`w-full ${theme.input} border rounded-xl px-3 py-2 text-xs`} />
                           </div>
                           <div className="space-y-1">
-                            <label className="text-[10px] font-black text-neutral-500 uppercase">Sandi Baru</label>
+                            <label className="text-[10px] font-black text-slate-800 uppercase">Sandi Baru</label>
                             <input type="password" placeholder="••••••••" className={`w-full ${theme.input} border rounded-xl px-3 py-2 text-xs`} />
                           </div>
                           <div className="space-y-1">
-                            <label className="text-[10px] font-black text-neutral-500 uppercase">Konfirmasi Sandi Baru</label>
+                            <label className="text-[10px] font-black text-slate-800 uppercase">Konfirmasi Sandi Baru</label>
                             <input type="password" placeholder="••••••••" className={`w-full ${theme.input} border rounded-xl px-3 py-2 text-xs`} />
                           </div>
                         </div>
