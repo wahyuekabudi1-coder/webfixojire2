@@ -6,18 +6,10 @@ import CheckoutModal from '../components/CheckoutModal';
 import TourDetailView from './TourDetailView';
 import Breadcrumbs from '../components/Breadcrumbs';
 import ServiceNavTabs from '../components/ServiceNavTabs';
+import TourFilterBar from '../components/TourFilterBar';
+import { matchesTourFilter } from '../utils/tourFilterUtils';
 import { motion, AnimatePresence } from 'motion/react';
 import ComingSoonPage from '../components/ComingSoonPage';
-
-export const DURATION_FILTERS = [
-  { id: 'all', label: 'Semua Durasi', days: null },
-  { id: '1d', label: '1D', days: 1 },
-  { id: '2d', label: '2D1N', days: 2 },
-  { id: '3d', label: '3D2N', days: 3 },
-  { id: '4d', label: '4D3N', days: 4 },
-  { id: '5d', label: '5D4N', days: 5 },
-  { id: '8d', label: '8D7N', days: 8 }
-];
 
 export default function ToursView() {
   const { formatPrice, searchParams, setSearchParams, tours, setPage } = useApp();
@@ -31,7 +23,8 @@ export default function ToursView() {
     );
   }
 
-  const [selectedDurationPreset, setSelectedDurationPreset] = useState<string>('all'); // 'all', '1d', '2d', '3d', '4d', '5d', '6d', '7d', '8d'
+  const [selectedDuration, setSelectedDuration] = useState<string>('all');
+  const [selectedExperience, setSelectedExperience] = useState<string>('all');
   const [expandedTourId, setExpandedTourId] = useState<string | null>('bromo'); // Expand first tour by default
   const [expandedFaqIndex, setExpandedFaqIndex] = useState<number | null>(0); // Expand first FAQ
 
@@ -69,25 +62,7 @@ export default function ToursView() {
   // Booking details
   const [bookingTour, setBookingTour] = useState<any>(null);
 
-  // Extract number of days helper
-  const getTourDaysNum = (durationStr: string): number => {
-    const match = durationStr.match(/^(\d+)\s*Day/i);
-    return match ? parseInt(match[1], 10) : 1;
-  };
-
-  const filteredTours = tours.filter(t => {
-    const days = getTourDaysNum(t.duration);
-    
-    let matchesDuration = true;
-    if (selectedDurationPreset !== 'all') {
-      const filterObj = DURATION_FILTERS.find(f => f.id === selectedDurationPreset);
-      if (filterObj && filterObj.days !== null) {
-        matchesDuration = days === filterObj.days;
-      }
-    }
-    
-    return matchesDuration;
-  });
+  const filteredTours = tours.filter(t => matchesTourFilter(t, selectedDuration, selectedExperience));
 
   const handleBookTour = (tour: any) => {
     const todayStr = new Date().toISOString().split('T')[0];
@@ -142,44 +117,19 @@ export default function ToursView() {
         {/* TOURS BROWSER */}
         <section className="space-y-12">
           
-          {/* Simple Duration Filter Bar */}
-          <div className="bg-neutral-50 border border-neutral-200/80 rounded-3xl p-6 md:p-8 space-y-6 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="space-y-1">
-                <h3 className="font-extrabold text-lg text-neutral-900 tracking-tight font-sans">
-                  Saring Berdasarkan Durasi Tour
-                </h3>
-                <p className="text-xs text-neutral-500">
-                  Temukan paket perjalanan Jawa Timur terbaik sesuai dengan ketersediaan waktu Anda.
-                </p>
-              </div>
-              
-              {selectedDurationPreset !== 'all' && (
-                <button
-                  onClick={() => setSelectedDurationPreset('all')}
-                  className="text-xs font-bold text-amber-600 hover:text-amber-700 bg-amber-500/10 hover:bg-amber-500/20 px-4 py-2 rounded-xl transition-all self-start sm:self-auto cursor-pointer"
-                >
-                  Tampilkan Semua Durasi
-                </button>
-              )}
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-2.5">
-              {DURATION_FILTERS.map((preset) => (
-                <button
-                  key={preset.id}
-                  onClick={() => setSelectedDurationPreset(preset.id)}
-                  className={`px-4 py-3 rounded-2xl text-xs font-bold transition-all text-center border flex items-center justify-center cursor-pointer ${
-                    selectedDurationPreset === preset.id
-                      ? 'bg-amber-500 text-neutral-950 border-amber-500 shadow-md shadow-amber-500/10 font-extrabold'
-                      : 'bg-white border-neutral-200 text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100'
-                  }`}
-                >
-                  <span className="truncate">{preset.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
+          {/* Professional Tour Filter Bar (Duration & Experience Category) */}
+          <TourFilterBar
+            selectedDuration={selectedDuration}
+            onSelectDuration={setSelectedDuration}
+            selectedExperience={selectedExperience}
+            onSelectExperience={setSelectedExperience}
+            onResetFilters={() => {
+              setSelectedDuration('all');
+              setSelectedExperience('all');
+            }}
+            totalFilteredCount={filteredTours.length}
+            totalAvailableCount={tours.length}
+          />
 
           {/* Catalog grid */}
           {filteredTours.length === 0 ? (
@@ -189,11 +139,12 @@ export default function ToursView() {
               </div>
               <h3 className="text-lg font-bold text-neutral-800">Tidak Ada Paket Tour yang Cocok</h3>
               <p className="text-xs text-neutral-500 leading-relaxed max-w-sm mx-auto">
-                Maaf, tidak ada paket tour dengan durasi "{DURATION_FILTERS.find(f => f.id === selectedDurationPreset)?.label}". Silakan pilih durasi lain atau reset filter Anda.
+                Maaf, tidak ada paket tour yang cocok dengan pilihan durasi dan kategori pengalaman ini. Silakan coba kombinasi lain atau klik tombol atur ulang di bawah ini.
               </p>
               <button
                 onClick={() => {
-                  setSelectedDurationPreset('all');
+                  setSelectedDuration('all');
+                  setSelectedExperience('all');
                 }}
                 className="bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-xs px-6 py-3 rounded-xl transition-all cursor-pointer shadow-sm"
               >

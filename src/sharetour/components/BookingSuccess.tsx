@@ -140,6 +140,14 @@ export default function BookingSuccess({ booking: initialBooking, onNavigateToTr
             <span className="text-[10px] text-gray-400 block uppercase font-mono">{t("Seats Reserved")}</span>
             <span className="font-semibold text-gray-800">{booking.participantsCount} {t("Persons")}</span>
           </div>
+          {Boolean(booking.pickupLocation || (booking.participantData as any)?.pickupLocation) && (
+            <div className="col-span-2">
+              <span className="text-[10px] text-gray-400 block uppercase font-mono">{t("Lokasi Penjemputan")}</span>
+              <span className="font-semibold text-gray-800">
+                {booking.pickupLocation || (booking.participantData as any)?.pickupLocation}
+              </span>
+            </div>
+          )}
           <div className="col-span-2 pt-2 border-t border-emerald-900/10 flex justify-between items-end">
             <span className="text-xs uppercase text-gray-400 font-semibold font-mono">{t("Total Net Cost")}</span>
             <span className="text-base font-display font-bold text-[#315B4F]">{formatPrice(booking.totalPrice)}</span>

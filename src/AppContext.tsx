@@ -6,6 +6,7 @@ import {
   Review
 } from './types';
 import { TOURS, REVIEWS } from './data';
+import { EXCHANGE_RATE_USD_TO_IDR, EXCHANGE_RATE_USD_TO_CNY } from './utils/pricingUtils';
 
 interface AppContextProps {
   activePage: ActivePage;
@@ -585,14 +586,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (currency === 'USD') {
       return `$${usdPrice}`;
     } else if (currency === 'CNY') {
-      const cny = Math.round(usdPrice * 7.2);
+      const cny = Math.round(usdPrice * EXCHANGE_RATE_USD_TO_CNY);
       return `¥${cny.toLocaleString('zh-CN')}`;
     } else {
-      // Format IDR smoothly
-      if (idrPrice >= 1000000) {
-        return `IDR ${(idrPrice / 1000000).toFixed(1)}M`;
-      }
-      return `IDR ${idrPrice.toLocaleString('id-ID')}`;
+      // Clean IDR formatting: Rp X.XXX.XXX (no confusing M suffix)
+      const validIDR = idrPrice > 0 ? idrPrice : Math.round(usdPrice * EXCHANGE_RATE_USD_TO_IDR);
+      return `IDR ${validIDR.toLocaleString('id-ID')}`;
     }
   }, [currency]);
 

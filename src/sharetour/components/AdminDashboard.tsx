@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Trip, Batch, Booking, ItineraryItem, FAQItem, TimeSchedule } from "../types";
+import { formatTourDuration, parseTourDays, parseTourNights } from "../../utils/tourFilterUtils";
 import { 
   createTrip, updateTrip, deleteTrip, 
   createBatch, updateBatch, deleteBatch, 
@@ -490,11 +491,16 @@ Sunset Lovina & Dolphin Cruise\t2026-08-01\t10\t195\tOpen`;
       title: "",
       slug: "",
       location: "",
-      duration: "3 Days 2 Nights",
+      duration: "3 Days / 2 Nights",
+      days: 3,
+      nights: 2,
+      category: "Adventure" as any,
+      experienceCategory: "Adventure" as any,
       description: "",
       coverImage: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format",
       highlight: "",
       startingPrice: 150,
+      wniPrice: 1800000,
       status: "draft",
       included: [
         "Sailing boat / Liveaboard usage for selected itinerary",
@@ -537,15 +543,23 @@ Sunset Lovina & Dolphin Cruise\t2026-08-01\t10\t195\tOpen`;
   const initEditTrip = (t: Trip) => {
     setEditingTripId(t.id);
     setTripFormTab("basic");
+    const tDays = t.days || parseTourDays(t as any);
+    const tNights = typeof t.nights === 'number' ? t.nights : parseTourNights(t as any);
+    const tCat = t.category || t.experienceCategory || "Adventure";
     setTripForm({
       title: t.title,
       slug: t.slug,
       location: t.location,
-      duration: t.duration,
+      duration: t.duration || formatTourDuration(tDays, tNights),
+      days: tDays,
+      nights: tNights,
+      category: tCat,
+      experienceCategory: tCat,
       description: t.description,
       coverImage: t.coverImage,
       highlight: t.highlight || "",
       startingPrice: t.startingPrice || 150,
+      wniPrice: t.wniPrice || ((t.startingPrice || 150) * 16000),
       status: t.status || "published",
       included: [...t.included],
       excluded: [...t.excluded],
@@ -569,7 +583,21 @@ Sunset Lovina & Dolphin Cruise\t2026-08-01\t10\t195\tOpen`;
       return;
     }
     try {
-      const payload: Omit<Trip, "id"> = { ...tripForm, startingPrice: Number(tripForm.startingPrice) };
+      const tourDays = Number(tripForm.days) || 1;
+      const tourNights = typeof tripForm.nights !== 'undefined' ? Number(tripForm.nights) : Math.max(0, tourDays - 1);
+      const computedDuration = formatTourDuration(tourDays, tourNights);
+      const category = (tripForm as any).category || (tripForm as any).experienceCategory || "Adventure";
+
+      const payload: Omit<Trip, "id"> = { 
+        ...tripForm, 
+        days: tourDays,
+        nights: tourNights,
+        duration: computedDuration,
+        category: category as any,
+        experienceCategory: category as any,
+        startingPrice: Number(tripForm.startingPrice),
+        wniPrice: Number((tripForm as any).wniPrice) || (Number(tripForm.startingPrice) * 16000)
+      };
       if (editingTripId) {
         await updateTrip(editingTripId, payload);
       } else {
@@ -2118,14 +2146,75 @@ Sunset Lovina & Dolphin Cruise\t2026-08-01\t10\t195\tOpen`;
                     </div>
 
                     <div className="space-y-1">
-                      <label className="font-bold text-slate-700">Duration Tag Label</label>
-                      <input
-                        type="text"
-                        placeholder="e.g. 3 Days 2 Nights"
-                        value={tripForm.duration}
-                        onChange={(e) => setTripForm({ ...tripForm, duration: e.target.value })}
+                      <label className="font-bold text-slate-700">Kategori Pengalaman (Experience Category)</label>
+                      <select
+                        value={(tripForm as any).category || (tripForm as any).experienceCategory || "Adventure"}
+                        onChange={(e) => setTripForm({ ...tripForm, category: e.target.value as any, experienceCategory: e.target.value as any })}
                         className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700"
-                      />
+                      >
+                        <option value="Adventure">Adventure (Petualangan)</option>
+                        <option value="Nature">Nature (Alam Bebas)</option>
+                        <option value="Culture">Culture (Budaya &amp; Sejarah)</option>
+                        <option value="City">City (Wisata Kota)</option>
+                      </select>
+                      <span className="text-[10px] text-slate-400 block">Menjelaskan jenis wisata (terpisah dari durasi).</span>
+                    </div>
+
+                    {/* DURATION DAYS & NIGHTS */}
+                    <div className="col-span-full space-y-2 bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                        <label className="text-xs font-bold text-slate-800 uppercase flex items-center gap-1.5">
+                          <Clock className="w-3.5 h-3.5 text-[#315B4F]" />
+                          <span>Durasi Tour (Days &amp; Nights)</span>
+                        </label>
+                        <span className="text-xs font-mono font-bold text-[#315B4F] bg-emerald-50 px-2.5 py-0.5 rounded-lg border border-emerald-200">
+                          Display Otomatis: {formatTourDuration(Number(tripForm.days) || 1, Number(tripForm.nights) || 0)}
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                          <span className="text-[10px] font-bold text-slate-600 uppercase">Jumlah Hari (Days)</span>
+                          <input
+                            type="number"
+                            min={1}
+                            max={30}
+                            required
+                            value={tripForm.days || 1}
+                            onChange={(e) => {
+                              const days = Math.max(1, parseInt(e.target.value, 10) || 1);
+                              const nights = typeof tripForm.nights === 'number' ? tripForm.nights : Math.max(0, days - 1);
+                              setTripForm({
+                                ...tripForm,
+                                days,
+                                duration: formatTourDuration(days, nights)
+                              });
+                            }}
+                            className="w-full p-2 bg-white border border-slate-200 rounded-xl font-bold text-slate-700"
+                          />
+                        </div>
+
+                        <div className="space-y-1">
+                          <span className="text-[10px] font-bold text-slate-600 uppercase">Jumlah Malam (Nights)</span>
+                          <input
+                            type="number"
+                            min={0}
+                            max={30}
+                            required
+                            value={typeof tripForm.nights === 'number' ? tripForm.nights : 0}
+                            onChange={(e) => {
+                              const nights = Math.max(0, parseInt(e.target.value, 10) || 0);
+                              const days = Number(tripForm.days) || 1;
+                              setTripForm({
+                                ...tripForm,
+                                nights,
+                                duration: formatTourDuration(days, nights)
+                              });
+                            }}
+                            className="w-full p-2 bg-white border border-slate-200 rounded-xl font-bold text-slate-700"
+                          />
+                        </div>
+                      </div>
                     </div>
 
                     <div className="space-y-1">
@@ -2138,14 +2227,39 @@ Sunset Lovina & Dolphin Cruise\t2026-08-01\t10\t195\tOpen`;
                       />
                     </div>
 
-                    <div className="space-y-1">
-                      <label className="font-bold text-slate-700">Starting price in USD ($)</label>
-                      <input
-                        type="number"
-                        value={tripForm.startingPrice}
-                        onChange={(e) => setTripForm({ ...tripForm, startingPrice: Number(e.target.value) })}
-                        className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono font-bold text-emerald-800"
-                      />
+                    {/* PRICING: WNI (IDR) & WNA (USD) */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 col-span-full bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                      <div className="space-y-1">
+                        <label className="font-bold text-slate-700 text-xs flex items-center gap-1">
+                          <span>Tarif WNI / Domestik (Rp IDR)</span>
+                        </label>
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 font-mono">Rp</span>
+                          <input
+                            type="number"
+                            value={(tripForm as any).wniPrice || ""}
+                            onChange={(e) => setTripForm({ ...tripForm, wniPrice: Number(e.target.value) })}
+                            placeholder="1800000"
+                            className="w-full pl-10 pr-3 py-2 bg-white border border-slate-200 rounded-xl font-mono font-bold text-emerald-800"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="font-bold text-slate-700 text-xs flex items-center gap-1">
+                          <span>Tarif WNA / International ($ USD)</span>
+                        </label>
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 font-mono">$</span>
+                          <input
+                            type="number"
+                            value={tripForm.startingPrice || ""}
+                            onChange={(e) => setTripForm({ ...tripForm, startingPrice: Number(e.target.value) })}
+                            placeholder="150"
+                            className="w-full pl-8 pr-3 py-2 bg-white border border-slate-200 rounded-xl font-mono font-bold text-emerald-800"
+                          />
+                        </div>
+                      </div>
                     </div>
 
                     <div className="space-y-1">

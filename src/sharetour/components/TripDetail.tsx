@@ -68,13 +68,14 @@ export default function TripDetail({
   const selectedBatch = tripBatches.find((b) => b.id === selectedBatchId);
 
   const getEffectiveUnitPrice = (batch?: Batch) => {
+    const isWNA = nationalityType === 'WNA' || nationalityType === 'WNA_CHINA' || nationalityType === 'WNA_EUROPE';
     if (!batch) {
-      if (nationalityType === 'WNA') {
+      if (isWNA) {
         return trip.wnaStartingPrice || (trip.startingPrice ? trip.startingPrice + 20 : 170);
       }
       return trip.startingPrice || 150;
     }
-    if (nationalityType === 'WNA') {
+    if (isWNA) {
       return batch.wnaPrice || batch.price + 20;
     }
     return batch.price;
@@ -728,7 +729,7 @@ export default function TripDetail({
               </div>
             </div>
 
-            {/* WNI / WNA Nationality Category Selector */}
+            {/* Domestic / Foreigner Nationality Category Selector */}
             <div className={`p-4 rounded-2xl border space-y-3 transition-all ${
               selectedBatchId 
                 ? "bg-gradient-to-br from-emerald-50/80 to-[#315B4F]/5 border-[#315B4F]/25 shadow-sm ring-1 ring-[#315B4F]/10" 
@@ -737,9 +738,9 @@ export default function TripDetail({
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
                   <Globe className="w-4 h-4 text-[#315B4F]" />
-                  <span>{t("Pilih Kewarganegaraan")}</span>
+                  <span>{t("Kategori Tamu / Guest Category")}</span>
                 </span>
-                <span className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-full font-mono uppercase tracking-wider ${
+                <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full font-mono tracking-wider ${
                   nationalityType === 'WNI' 
                     ? "bg-emerald-100 text-[#315B4F] border border-emerald-200" 
                     : nationalityType === 'WNA_CHINA'
@@ -749,14 +750,14 @@ export default function TripDetail({
                         : "bg-gray-100 text-gray-500 border border-gray-200"
                 }`}>
                   {nationalityType === 'WNI' 
-                    ? "🇮🇩 WNI (Domestik)" 
+                    ? "🇮🇩 Domestic" 
                     : nationalityType === 'WNA_CHINA' 
-                      ? "🇨🇳 WNA (China)" 
+                      ? "🇨🇳 Foreigner (China)" 
                       : nationalityType === 'WNA_EUROPE' 
-                        ? "🇪🇺 WNA (Eropa)" 
+                        ? "🌐 Foreigner (International)" 
                         : nationalityType === 'WNA'
-                          ? "🌐 WNA (Asing)"
-                          : "Pilih Kewarganegaraan"
+                          ? "🌐 Foreigner"
+                          : t("Pilih Kategori Tamu")
                   }
                 </span>
               </div>
@@ -772,12 +773,15 @@ export default function TripDetail({
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-extrabold text-xs">🇮🇩 WNI</span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-sm leading-none">🇮🇩</span>
+                      <span className="font-extrabold text-xs">Domestic</span>
+                    </div>
                     {nationalityType === 'WNI' && <Check className="w-4 h-4 text-[#D6B16D]" />}
                   </div>
                   <div className="mt-1">
-                    <span className={`block text-[10px] ${nationalityType === 'WNI' ? "text-emerald-100 font-medium" : "text-gray-400"}`}>
-                      Wisatawan Lokal
+                    <span className={`block text-[10px] ${nationalityType === 'WNI' ? "text-emerald-100" : "text-gray-400"}`}>
+                      KTP / Paspor RI
                     </span>
                     <span className={`block text-[11px] font-bold font-mono ${nationalityType === 'WNI' ? "text-[#D6B16D]" : "text-[#315B4F]"}`}>
                       {formatPrice(selectedBatch ? selectedBatch.price : (trip.startingPrice || 150))}
@@ -799,14 +803,17 @@ export default function TripDetail({
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-extrabold text-xs">🌐 WNA</span>
+                    <div className="flex items-center gap-1.5">
+                      <Globe className={`w-3.5 h-3.5 ${(nationalityType === 'WNA_CHINA' || nationalityType === 'WNA_EUROPE' || nationalityType === 'WNA') ? "text-[#D6B16D]" : "text-[#315B4F]"}`} />
+                      <span className="font-extrabold text-xs">Foreigner</span>
+                    </div>
                     {(nationalityType === 'WNA_CHINA' || nationalityType === 'WNA_EUROPE' || nationalityType === 'WNA') && (
                       <Check className="w-4 h-4 text-[#D6B16D]" />
                     )}
                   </div>
                   <div className="mt-1">
-                    <span className={`block text-[10px] ${(nationalityType === 'WNA_CHINA' || nationalityType === 'WNA_EUROPE' || nationalityType === 'WNA') ? "text-emerald-100 font-medium" : "text-gray-400"}`}>
-                      Wisatawan Asing
+                    <span className={`block text-[10px] ${(nationalityType === 'WNA_CHINA' || nationalityType === 'WNA_EUROPE' || nationalityType === 'WNA') ? "text-emerald-100" : "text-gray-400"}`}>
+                      Non-Indonesian
                     </span>
                     <span className={`block text-[11px] font-bold font-mono ${(nationalityType === 'WNA_CHINA' || nationalityType === 'WNA_EUROPE' || nationalityType === 'WNA') ? "text-[#D6B16D]" : "text-[#315B4F]"}`}>
                       {formatPrice(selectedBatch ? (selectedBatch.wnaPrice || selectedBatch.price + 20) : (trip.wnaStartingPrice || (trip.startingPrice || 150) + 20))}
@@ -815,26 +822,29 @@ export default function TripDetail({
                 </button>
               </div>
 
-              {/* Subcategory toggle when WNA is selected */}
+              {/* Subcategory toggle when Foreigner is selected */}
               {(nationalityType === 'WNA' || nationalityType === 'WNA_CHINA' || nationalityType === 'WNA_EUROPE') && (
                 <div className="pt-2 border-t border-emerald-200/60 space-y-2 animate-fade-in">
-                  <span className="text-[10px] font-extrabold text-gray-700 block">Kategori Negara WNA:</span>
+                  <span className="text-[10px] font-bold text-gray-700 block">Pilih Asal Negara / Region:</span>
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       type="button"
                       onClick={() => setNationalityType('WNA_CHINA')}
                       className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
                         nationalityType === 'WNA_CHINA'
-                          ? "bg-emerald-900 text-white border-emerald-900 shadow-sm ring-1 ring-emerald-900/30 font-bold"
+                          ? "bg-[#315B4F] text-white border-[#315B4F] shadow-sm ring-1 ring-[#315B4F]/30 font-bold"
                           : "bg-white text-gray-800 border-gray-200 hover:bg-emerald-50/60"
                       }`}
                     >
                       <div className="flex items-center justify-between text-[11px]">
-                        <span>🇨🇳 China Daratan</span>
+                        <span className="flex items-center gap-1.5">
+                          <span className="text-sm leading-none">🇨🇳</span>
+                          <span>China</span>
+                        </span>
                         {nationalityType === 'WNA_CHINA' && <Check className="w-3.5 h-3.5 text-[#D6B16D]" />}
                       </div>
                       <span className={`text-[9px] mt-0.5 block ${nationalityType === 'WNA_CHINA' ? "text-emerald-200" : "text-gray-400"}`}>
-                        Memerlukan ID WeChat & RED
+                        WeChat / RED ID
                       </span>
                     </button>
 
@@ -843,16 +853,19 @@ export default function TripDetail({
                       onClick={() => setNationalityType('WNA_EUROPE')}
                       className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
                         nationalityType === 'WNA_EUROPE'
-                          ? "bg-emerald-900 text-white border-emerald-900 shadow-sm ring-1 ring-emerald-900/30 font-bold"
+                          ? "bg-[#315B4F] text-white border-[#315B4F] shadow-sm ring-1 ring-[#315B4F]/30 font-bold"
                           : "bg-white text-gray-800 border-gray-200 hover:bg-emerald-50/60"
                       }`}
                     >
                       <div className="flex items-center justify-between text-[11px]">
-                        <span>🇪🇺 Eropa / Non-China</span>
+                        <span className="flex items-center gap-1.5">
+                          <Globe className="w-3.5 h-3.5 text-blue-500" />
+                          <span>International</span>
+                        </span>
                         {nationalityType === 'WNA_EUROPE' && <Check className="w-3.5 h-3.5 text-[#D6B16D]" />}
                       </div>
                       <span className={`text-[9px] mt-0.5 block ${nationalityType === 'WNA_EUROPE' ? "text-emerald-200" : "text-gray-400"}`}>
-                        Memerlukan WhatsApp & Paspor
+                        Global / WhatsApp
                       </span>
                     </button>
                   </div>
@@ -860,7 +873,7 @@ export default function TripDetail({
               )}
 
               <p className="text-[10px] text-gray-500 italic">
-                *Tarif WNA mencakup biaya tiket masuk Taman Nasional Bromo / Ijen untuk wisatawan mancanegara.
+                *{t("Tarif Foreigner mencakup biaya tiket masuk Taman Nasional Bromo / Ijen untuk wisatawan mancanegara.")}
               </p>
             </div>
 
@@ -872,8 +885,8 @@ export default function TripDetail({
                   <span className="font-bold text-[#315B4F] font-mono">{formatDate(selectedBatch.departureDate)}</span>
                 </div>
                 <div className="flex items-center justify-between text-gray-500">
-                  <span>{t("Kategori")}</span>
-                  <span className={`font-mono font-bold uppercase rounded-md px-2 py-0.5 text-[10px] ${
+                  <span>{t("Kategori Tamu")}</span>
+                  <span className={`font-mono font-bold rounded-md px-2 py-0.5 text-[10px] ${
                     nationalityType === 'WNI' 
                       ? "text-[#315B4F] bg-emerald-50 border border-emerald-200" 
                       : nationalityType === 'WNA_CHINA'
@@ -881,10 +894,10 @@ export default function TripDetail({
                         : "text-blue-800 bg-blue-50 border border-blue-200"
                   }`}>
                     {nationalityType === 'WNI' 
-                      ? "🇮🇩 WNI (Domestik)" 
+                      ? "🇮🇩 Domestic" 
                       : nationalityType === 'WNA_CHINA' 
-                        ? "🇨🇳 WNA (China Daratan)" 
-                        : "🇪🇺 WNA (Eropa & Non-China)"
+                        ? "🇨🇳 Foreigner (China)" 
+                        : "🌐 Foreigner (International)"
                     }
                   </span>
                 </div>
@@ -938,7 +951,7 @@ export default function TripDetail({
               {!selectedBatchId 
                 ? t("Pilih Tanggal Keberangkatan")
                 : !nationalityType
-                  ? t("Pilih Kewarganegaraan (WNI / WNA)")
+                  ? t("Pilih Kategori Tamu (Domestic / Foreigner)")
                   : t("Continue to Registration")
               }
             </button>

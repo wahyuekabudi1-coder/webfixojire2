@@ -10,6 +10,8 @@ import {
 import CheckoutModal from '../components/CheckoutModal';
 import { motion, AnimatePresence } from 'motion/react';
 import { OFFICIAL_PARTNERS, PartnerApp, PARTNERS_DATA_VERSION } from '../data/partnersData';
+import TourFilterBar from '../components/TourFilterBar';
+import { matchesTourFilter } from '../utils/tourFilterUtils';
 
 const WHY_US_ICONS: Record<number, React.ReactNode> = {
   1: <Users className="h-5 w-5 sm:h-6 sm:w-6" />,
@@ -112,6 +114,14 @@ export default function HomeView() {
   const [guests, setGuests] = useState(2);
   const [tourType, setTourType] = useState('Adventure');
   const [searchResults, setSearchResults] = useState<any>(null);
+
+  // New Tour Filter State: Duration & Experience Category
+  const [selectedDuration, setSelectedDuration] = useState<string>('all');
+  const [selectedExperience, setSelectedExperience] = useState<string>('all');
+
+  const filteredHomeTours = tours.filter((t) => 
+    matchesTourFilter(t, selectedDuration, selectedExperience)
+  );
 
   // Checkout Modal State
   const [selectedTourForBooking, setSelectedTourForBooking] = useState<any>(null);
@@ -443,6 +453,188 @@ export default function HomeView() {
               </div>
 
             </form>
+          </div>
+        </div>
+      </section>
+
+      {/* FIND YOUR PERFECT TRIP (DURATION & EXPERIENCE CATEGORY) */}
+      <section id="find-your-perfect-trip-section" className="py-12 sm:py-16 bg-neutral-50/60 border-b border-neutral-200/80 scroll-mt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+          
+          <TourFilterBar
+            selectedDuration={selectedDuration}
+            onSelectDuration={setSelectedDuration}
+            selectedExperience={selectedExperience}
+            onSelectExperience={setSelectedExperience}
+            onResetFilters={() => {
+              setSelectedDuration('all');
+              setSelectedExperience('all');
+            }}
+            totalFilteredCount={filteredHomeTours.length}
+            totalAvailableCount={tours.length}
+          />
+
+          {/* TOUR RESULTS */}
+          <div id="tour-results" className="space-y-6 scroll-mt-24">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h3 className="text-xl sm:text-2xl font-black text-neutral-900 tracking-tight">
+                  {language === 'zh' ? '行程推荐结果' : language === 'id' ? 'Hasil Paket Tour' : 'Tour Results'}
+                </h3>
+                <p className="text-xs sm:text-sm text-neutral-500 font-medium">
+                  {selectedDuration !== 'all' || selectedExperience !== 'all'
+                    ? (language === 'zh' ? `已为您找到 ${filteredHomeTours.length} 个符合条件的行程` : language === 'id' ? `Menampilkan ${filteredHomeTours.length} paket tour yang cocok dengan pilihan filter Anda` : `Showing ${filteredHomeTours.length} tours matching your selected criteria`)
+                    : (language === 'zh' ? '浏览全部精选行程，或使用上方筛选器按天数与体验风格查找' : language === 'id' ? 'Jelajahi seluruh paket tour atau gunakan filter di atas untuk menemukan durasi & pengalaman yang tepat' : 'Browse all curated tours or use the filter above to find your exact duration and style')}
+                </p>
+              </div>
+
+              {(selectedDuration !== 'all' || selectedExperience !== 'all') && (
+                <button
+                  onClick={() => {
+                    setSelectedDuration('all');
+                    setSelectedExperience('all');
+                  }}
+                  className="text-xs font-bold text-amber-600 hover:text-amber-700 bg-amber-500/10 hover:bg-amber-500/20 px-3.5 py-1.5 rounded-xl transition-all self-start sm:self-auto cursor-pointer"
+                >
+                  {language === 'zh' ? '重置筛选' : language === 'id' ? 'Atur Ulang Filter' : 'Reset Filters'}
+                </button>
+              )}
+            </div>
+
+            {filteredHomeTours.length === 0 ? (
+              <div className="text-center py-16 px-4 bg-white rounded-3xl border border-neutral-200/80 max-w-lg mx-auto space-y-4 shadow-sm">
+                <div className="p-3.5 bg-amber-500/10 text-amber-600 rounded-full inline-block">
+                  <Clock className="w-7 h-7 text-amber-500" />
+                </div>
+                <h4 className="text-lg font-bold text-neutral-900">
+                  {language === 'zh' ? '未找到符合条件的行程' : language === 'id' ? 'Tidak Ada Paket Tour yang Cocok' : 'No Tours Match Your Criteria'}
+                </h4>
+                <p className="text-xs text-neutral-500 leading-relaxed max-w-sm mx-auto">
+                  {tours.length === 0
+                    ? (language === 'zh' ? '后台暂无可用行程，请前往管理后台添加新行程。' : language === 'id' ? 'Belum ada paket wisata di sistem. Tambahkan tour baru melalui Portal Admin.' : 'No tours created in system yet. Add new tours through the Admin Portal.')
+                    : (language === 'zh' ? '请尝试调整天数或体验分类，或点击重置所有筛选。' : language === 'id' ? 'Silakan pilih kombinasi durasi atau kategori pengalaman lain, atau klik tombol atur ulang di bawah ini.' : 'Try choosing a different duration or category, or click reset below.')}
+                </p>
+                {tours.length > 0 && (
+                  <button
+                    onClick={() => {
+                      setSelectedDuration('all');
+                      setSelectedExperience('all');
+                    }}
+                    className="bg-neutral-900 hover:bg-neutral-800 text-white font-bold text-xs px-6 py-2.5 rounded-xl transition-all cursor-pointer shadow-sm"
+                  >
+                    {language === 'zh' ? '重置筛选' : language === 'id' ? 'Atur Ulang Filter' : 'Reset Filters'}
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center">
+                {filteredHomeTours.map((rawTour) => {
+                  const tour = getTour(rawTour);
+                  const isWishlisted = wishlist.includes(tour.id);
+                  return (
+                    <div
+                      key={tour.id}
+                      id={`tour-card-results-${tour.id}`}
+                      onClick={() => {
+                        setSearchParams({ ...searchParams, selectedTourId: tour.id });
+                        setPage('tours');
+                      }}
+                      className="bg-white rounded-[32px] overflow-hidden shadow-[0_12px_30px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_50px_rgba(15,118,110,0.08)] hover:-translate-y-2 transition-all duration-500 group flex flex-col justify-between w-full max-w-[380px] border border-neutral-200/70 h-full cursor-pointer"
+                    >
+                      {/* Image Block */}
+                      <div className="relative aspect-[16/10] m-3 overflow-hidden rounded-[24px] shrink-0">
+                        <img
+                          src={tour.image}
+                          alt={tour.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                          referrerPolicy="no-referrer"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10" />
+
+                        {/* Top Left: Category Badge */}
+                        <span className="absolute top-4 left-4 bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-400 text-neutral-950 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-lg shadow-amber-500/35 border border-white/60 flex items-center gap-1.5 z-10">
+                          <Sparkles className="w-3 h-3 fill-neutral-950 text-neutral-950" />
+                          <span>{tour.category || 'Adventure'}</span>
+                        </span>
+
+                        {/* Top Right: Wishlist Icon */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleWishlist(tour.id);
+                          }}
+                          className="absolute top-4 right-4 bg-white/80 backdrop-blur-md p-2.5 rounded-full shadow-sm hover:bg-white text-slate-400 hover:text-red-500 hover:scale-110 active:scale-95 transition-all cursor-pointer z-10"
+                          aria-label="Add to wishlist"
+                        >
+                          <Heart 
+                            className={`h-4 w-4 transition-all ${
+                              isWishlisted 
+                                ? 'fill-red-500 text-red-500 scale-110' 
+                                : 'text-[#111827]'
+                            }`} 
+                          />
+                        </button>
+                      </div>
+
+                      {/* Below Image Content Area */}
+                      <div className="px-6 pb-6 pt-3 flex-grow flex flex-col justify-between space-y-4">
+                        <div className="space-y-2.5">
+                          {/* Rating & Review row */}
+                          <div className="flex items-center gap-1">
+                            <div className="flex gap-0.5">
+                              {[...Array(5)].map((_, i) => (
+                                <Star key={i} className="h-3 w-3.5 fill-[#F59E0B] text-[#F59E0B]" />
+                              ))}
+                            </div>
+                            <span className="text-xs font-bold text-[#111827] ml-1">{tour.rating || 4.9}</span>
+                            <span className="text-xs text-[#6B7280]">({tour.reviewCount || 0} {t('common.reviews')})</span>
+                          </div>
+
+                          {/* Tour Title */}
+                          <h4 className="font-bold text-sm sm:text-base text-[#111827] leading-tight group-hover:text-[#0F766E] transition-colors line-clamp-1">
+                            {tour.name}
+                          </h4>
+
+                          {/* Small Information Row with Clean Duration badge */}
+                          <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 pt-1 text-[11px] text-[#6B7280] font-bold border-t border-neutral-100 mt-2">
+                            <span className="flex items-center gap-1 text-[#0F766E] font-black">
+                              <Clock className="h-3.5 w-3.5" />
+                              <span>{tour.duration}</span>
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <Users className="h-3.5 w-3.5 text-[#0F766E]" />
+                              <span>{language === 'zh' ? '私家独立包车' : language === 'id' ? 'Tur Privat' : 'Private Tour'}</span>
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Pricing and Call To Action */}
+                        <div className="pt-3 border-t border-neutral-100 flex items-center justify-between gap-2 mt-auto">
+                          <div className="flex flex-col">
+                            <span className="text-[9px] uppercase tracking-wider text-[#6B7280] font-extrabold">{t('common.startingFrom')}</span>
+                            <div className="flex items-baseline gap-0.5">
+                              <span className="text-lg font-black text-[#111827]">{formatPrice(tour.startingPrice)}</span>
+                              <span className="text-[10px] text-[#6B7280] font-bold"> / {t('common.perPerson')}</span>
+                            </div>
+                          </div>
+
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSearchParams({ ...searchParams, selectedTourId: tour.id });
+                              setPage('tours');
+                            }}
+                            className="bg-[#0F766E] hover:bg-[#0d635c] text-white font-black px-4 py-2.5 rounded-xl text-xs uppercase tracking-widest transition-all hover:shadow-md hover:shadow-[#0F766E]/10 active:scale-95 cursor-pointer flex items-center gap-1"
+                          >
+                            <span>{t('common.viewDetails')}</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       </section>

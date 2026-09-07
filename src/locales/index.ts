@@ -121,8 +121,8 @@ const legacyDictionary: Record<string, Partial<Record<Language, string>>> = {
   'footer.adminAccess': { id: 'Akses Admin', en: 'Admin Access', zh: '后台管理' },
   'footer.adminWebsite': { id: 'Admin Smart Journey', en: 'Admin Smart Journey', zh: '主网站后台管理' },
   'footer.adminShareTour': { id: 'Admin Share Tour', en: 'Admin Share Tour', zh: '拼团/拼车后台管理' },
-  'footer.allRightsReserved': { id: 'Hak cipta dilindungi undang-undang', en: 'All rights reserved', zh: '版权所有' },
-  'footer.copyright': { id: '© 2026 PT Sawah Jaya Trans. Hak Cipta Dilindungi.', en: '© 2026 PT Sawah Jaya Trans. All Rights Reserved.', zh: '© 2026 PT Sawah Jaya Trans. 版权所有。' },
+  'footer.allRightsReserved': { id: 'All rights reserved', en: 'All rights reserved', zh: 'All rights reserved' },
+  'footer.copyright': { id: '© 2026 PT Sawah Jaya Trans. All rights reserved.', en: '© 2026 PT Sawah Jaya Trans. All rights reserved.', zh: '© 2026 PT Sawah Jaya Trans. All rights reserved.' },
 
   // WeChat Modal
   'wechat.title': { id: 'Layanan Pelanggan Resmi WeChat', en: 'Official WeChat Customer Service', zh: 'Smart Journey 官方微信客服' },

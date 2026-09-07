@@ -21,6 +21,7 @@ import { Trip as ShareTourTrip, Batch as ShareTourBatch, Booking as ShareTourBoo
 import { OFFICIAL_PARTNERS, PARTNERS_DATA_VERSION } from '../data/partnersData';
 import { SocialMediaItem, getStoredSocialMedia, saveStoredSocialMedia } from '../data/socialMediaData';
 import AnalyticsDashboard from '../components/admin/AnalyticsDashboard';
+import { formatTourDuration, parseTourDays, parseTourNights } from '../utils/tourFilterUtils';
 
 interface ItineraryFormItem {
   id: string;
@@ -151,9 +152,13 @@ export default function AdminView() {
     id: '',
     name: '',
     description: '',
-    duration: '',
-    startingPrice: 50,
-    startingPriceIDR: 750000,
+    duration: '2 Days / 1 Night',
+    days: 2,
+    nights: 1,
+    startingPrice: 120, // WNA in USD
+    startingPriceIDR: 1500000, // WNI in IDR
+    wniPrice: 1500000,
+    wnaPrice: 120,
     image: '',
     category: 'Adventure' as 'Adventure' | 'Nature' | 'Culture' | 'City',
     highlights: '',
@@ -1012,8 +1017,19 @@ export default function AdminView() {
                   const parsedExcludes = tourForm.excludes.split('\n').map(ex => ex.trim()).filter(Boolean);
                   const parsedWhatToBring = tourForm.whatToBring.split('\n').map(w => w.trim()).filter(Boolean);
                   
+                  const tourDays = Number(tourForm.days) || 1;
+                  const tourNights = typeof tourForm.nights !== 'undefined' ? Number(tourForm.nights) : Math.max(0, tourDays - 1);
+                  const computedDuration = formatTourDuration(tourDays, tourNights);
+                  
                   const finalTour = {
                     ...tourForm,
+                    days: tourDays,
+                    nights: tourNights,
+                    duration: computedDuration,
+                    startingPrice: Number(tourForm.startingPrice) || Number(tourForm.wnaPrice) || 50,
+                    startingPriceIDR: Number(tourForm.startingPriceIDR) || Number(tourForm.wniPrice) || 750000,
+                    wniPrice: Number(tourForm.startingPriceIDR) || Number(tourForm.wniPrice) || 750000,
+                    wnaPrice: Number(tourForm.startingPrice) || Number(tourForm.wnaPrice) || 50,
                     highlights: parsedHighlights,
                     itinerary: parsedItinerary,
                     includes: parsedIncludes,
@@ -1042,7 +1058,7 @@ export default function AdminView() {
                       <div className={`${theme.card} border rounded-2xl p-6 space-y-5 shadow-sm`}>
                         <h4 className="text-xs font-black uppercase tracking-wider font-mono text-amber-500 border-b border-neutral-800 pb-3 flex items-center gap-2">
                           <FileText className="h-4 w-4" />
-                          <span>Informasi Dasar &amp; Tarif Penawaran</span>
+                          <span>Informasi Dasar, Kategori &amp; Tarif Penawaran</span>
                         </h4>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1059,17 +1075,18 @@ export default function AdminView() {
                             />
                           </div>
                           <div className="space-y-1.5">
-                            <label className="text-[10px] font-black text-slate-800 uppercase tracking-wider">Kategori Wisata</label>
+                            <label className="text-[10px] font-black text-slate-800 uppercase tracking-wider">Kategori Pengalaman (Experience Category)</label>
                             <select 
                               value={tourForm.category}
                               onChange={(e) => setTourForm({ ...tourForm, category: e.target.value as any })}
-                              className={`w-full ${theme.input} border rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500`}
+                              className={`w-full ${theme.input} border rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500 font-semibold`}
                             >
                               <option value="Adventure">Adventure (Petualangan)</option>
-                              <option value="Nature">Nature (Alam bebas)</option>
-                              <option value="Culture">Culture (Budaya/Sejarah)</option>
+                              <option value="Nature">Nature (Alam Bebas)</option>
+                              <option value="Culture">Culture (Budaya &amp; Sejarah)</option>
                               <option value="City">City (Wisata Kota)</option>
                             </select>
+                            <span className="text-[10px] text-slate-500 block">Menjelaskan jenis wisata (terpisah dari durasi).</span>
                           </div>
                         </div>
 
@@ -1088,7 +1105,7 @@ export default function AdminView() {
                         <div className="space-y-1.5">
                           <label className="text-[10px] font-black text-slate-800 uppercase tracking-wider">Deskripsi Lengkap / Penjelasan Paket</label>
                           <textarea 
-                            rows={8}
+                            rows={6}
                             required
                             value={tourForm.description}
                             onChange={(e) => setTourForm({ ...tourForm, description: e.target.value })}
@@ -1097,37 +1114,133 @@ export default function AdminView() {
                           />
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div className="space-y-1.5">
-                            <label className="text-[10px] font-black text-slate-800 uppercase tracking-wider">Durasi Waktu</label>
-                            <input 
-                              type="text" 
-                              required
-                              value={tourForm.duration}
-                              onChange={(e) => setTourForm({ ...tourForm, duration: e.target.value })}
-                              placeholder="⏱️ Contoh: 12 Jam / 3 Hari" 
-                              className={`w-full ${theme.input} border rounded-xl px-4 py-3 focus:outline-none focus:border-amber-500`} 
-                            />
+                        {/* FIELD DURASI: DAYS & NIGHTS DENGAN PREVIEW OTOMATIS */}
+                        <div className="space-y-3 bg-slate-500/5 p-4 rounded-2xl border border-slate-200/60">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <label className="text-[10px] font-black text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                              <Clock className="h-3.5 w-3.5 text-amber-500" />
+                              <span>Durasi Perjalanan (Duration &amp; Nights)</span>
+                            </label>
+                            <span className="text-xs font-mono font-bold text-amber-600 bg-amber-500/10 px-3 py-1 rounded-xl border border-amber-500/20">
+                              Display Otomatis: {formatTourDuration(Number(tourForm.days) || 1, Number(tourForm.nights) || 0)}
+                            </span>
                           </div>
-                          <div className="space-y-1.5 md:col-span-2">
-                            <label className="text-[10px] font-black text-slate-800 uppercase tracking-wider">Harga Dasar Paket (Rupiah / Rp IDR)</label>
-                            <div className="relative">
-                              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xs font-bold text-amber-500 font-mono">Rp</span>
-                              <input 
-                                type="number" 
-                                required
-                                value={tourForm.startingPriceIDR || ''}
-                                onChange={(e) => {
-                                  const idr = Number(e.target.value);
-                                  setTourForm({ 
-                                    ...tourForm, 
-                                    startingPriceIDR: idr,
-                                    startingPrice: Math.round(idr / 16000) || 1
-                                  });
-                                }}
-                                placeholder="750000" 
-                                className={`w-full ${theme.input} border rounded-xl pl-12 pr-4 py-3 focus:outline-none focus:border-amber-500 font-mono text-sm font-extrabold`} 
-                              />
+                          
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="space-y-1.5">
+                              <span className="text-[10px] font-black text-slate-700 uppercase">Jumlah Hari (Days)</span>
+                              <div className="relative">
+                                <input 
+                                  type="number" 
+                                  min={1}
+                                  max={30}
+                                  required
+                                  value={tourForm.days || 1}
+                                  onChange={(e) => {
+                                    const days = Math.max(1, parseInt(e.target.value, 10) || 1);
+                                    const nights = typeof tourForm.nights === 'number' ? tourForm.nights : Math.max(0, days - 1);
+                                    setTourForm({ 
+                                      ...tourForm, 
+                                      days, 
+                                      duration: formatTourDuration(days, nights)
+                                    });
+                                  }}
+                                  className={`w-full ${theme.input} border rounded-xl pl-4 pr-14 py-2.5 focus:outline-none focus:border-amber-500 font-bold`} 
+                                />
+                                <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">Hari</span>
+                              </div>
+                            </div>
+
+                            <div className="space-y-1.5">
+                              <span className="text-[10px] font-black text-slate-700 uppercase">Jumlah Malam (Nights)</span>
+                              <div className="relative">
+                                <input 
+                                  type="number" 
+                                  min={0}
+                                  max={30}
+                                  required
+                                  value={typeof tourForm.nights === 'number' ? tourForm.nights : 0}
+                                  onChange={(e) => {
+                                    const nights = Math.max(0, parseInt(e.target.value, 10) || 0);
+                                    const days = Number(tourForm.days) || 1;
+                                    setTourForm({ 
+                                      ...tourForm, 
+                                      nights,
+                                      duration: formatTourDuration(days, nights)
+                                    });
+                                  }}
+                                  className={`w-full ${theme.input} border rounded-xl pl-4 pr-14 py-2.5 focus:outline-none focus:border-amber-500 font-bold`} 
+                                />
+                                <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">Malam</span>
+                              </div>
+                            </div>
+                          </div>
+                          <p className="text-[10px] text-slate-500">
+                            Admin tidak perlu mengetik "2D1N" secara manual. Sistem otomatis memformat display: "{formatTourDuration(Number(tourForm.days) || 1, Number(tourForm.nights) || 0)}".
+                          </p>
+                        </div>
+
+                        {/* STRUKTUR HARGA PRIVATE TOUR: WNI & WNA TERPISAH */}
+                        <div className="space-y-3 bg-slate-500/5 p-4 rounded-2xl border border-slate-200/60">
+                          <label className="text-[10px] font-black text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                            <CreditCard className="h-3.5 w-3.5 text-amber-500" />
+                            <span>Struktur Harga Private Tour (WNI &amp; WNA)</span>
+                          </label>
+                          <p className="text-[10px] text-slate-500">
+                            Satu paket wisata memiliki 2 tarif independen. Harga WNA tidak dihitung otomatis dari WNI dan dapat Anda atur secara bebas.
+                          </p>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                            {/* WNI Price */}
+                            <div className="space-y-1.5">
+                              <label className="text-[10px] font-black text-emerald-700 uppercase tracking-wider block">
+                                Harga WNI / Domestik (IDR / Rupiah)
+                              </label>
+                              <div className="relative">
+                                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-emerald-600 font-mono">Rp</span>
+                                <input 
+                                  type="number" 
+                                  required
+                                  value={tourForm.startingPriceIDR || ''}
+                                  onChange={(e) => {
+                                    const val = Number(e.target.value);
+                                    setTourForm({ 
+                                      ...tourForm, 
+                                      startingPriceIDR: val,
+                                      wniPrice: val
+                                    });
+                                  }}
+                                  placeholder="1500000" 
+                                  className={`w-full ${theme.input} border rounded-xl pl-11 pr-4 py-2.5 focus:outline-none focus:border-emerald-500 font-mono text-sm font-extrabold`} 
+                                />
+                              </div>
+                              <span className="text-[9px] text-slate-500 block">Contoh: Rp 1.500.000 untuk wisatawan domestik</span>
+                            </div>
+
+                            {/* WNA Price */}
+                            <div className="space-y-1.5">
+                              <label className="text-[10px] font-black text-amber-700 uppercase tracking-wider block">
+                                Harga WNA / International (USD / Dollar)
+                              </label>
+                              <div className="relative">
+                                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-amber-600 font-mono">$</span>
+                                <input 
+                                  type="number" 
+                                  required
+                                  value={tourForm.startingPrice || ''}
+                                  onChange={(e) => {
+                                    const val = Number(e.target.value);
+                                    setTourForm({ 
+                                      ...tourForm, 
+                                      startingPrice: val,
+                                      wnaPrice: val
+                                    });
+                                  }}
+                                  placeholder="120" 
+                                  className={`w-full ${theme.input} border rounded-xl pl-8 pr-4 py-2.5 focus:outline-none focus:border-amber-500 font-mono text-sm font-extrabold`} 
+                                />
+                              </div>
+                              <span className="text-[9px] text-slate-500 block">Contoh: USD 120 untuk turis mancanegara</span>
                             </div>
                           </div>
                         </div>
@@ -1857,9 +1970,13 @@ export default function AdminView() {
                     id: `tour-${Date.now()}`,
                     name: '',
                     description: '',
-                    duration: '',
-                    startingPrice: 50,
-                    startingPriceIDR: 750000,
+                    duration: '2 Days / 1 Night',
+                    days: 2,
+                    nights: 1,
+                    startingPrice: 120,
+                    startingPriceIDR: 1500000,
+                    wniPrice: 1500000,
+                    wnaPrice: 120,
                     image: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4',
                     category: 'Adventure',
                     highlights: '',
@@ -1910,7 +2027,7 @@ export default function AdminView() {
                       <th className="p-4">KODE ID</th>
                       <th className="p-4">NAMA &amp; KATEGORI PAKET</th>
                       <th className="p-4">DURASI</th>
-                      <th className="p-4">HARGA MULAI</th>
+                      <th className="p-4">TARIF (WNI / WNA)</th>
                       <th className="p-4">STATUS</th>
                       <th className="p-4 text-right">TINDAKAN</th>
                     </tr>
@@ -1936,20 +2053,18 @@ export default function AdminView() {
                           </div>
                         </td>
                         <td className="p-4">
-                          <button
-                            onClick={() => {
-                              setDurationFilter(tour.duration);
-                              triggerToast(`Memfilter paket dengan durasi: ${tour.duration}`);
-                            }}
-                            className="flex items-center gap-1.5 font-bold text-neutral-300 hover:text-amber-500 transition-colors cursor-pointer group text-left px-2 py-1 rounded-lg hover:bg-amber-500/10 border border-transparent hover:border-amber-500/20"
-                            title={`Klik untuk menyaring durasi "${tour.duration}"`}
-                          >
-                            <span className="group-hover:underline">⏱️ {tour.duration}</span>
-                            <Search className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity text-amber-500 shrink-0" />
-                          </button>
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold bg-neutral-800 text-neutral-200 border border-neutral-700">
+                            <Clock className="h-3 w-3 text-amber-400" />
+                            <span>{tour.duration || formatTourDuration(parseTourDays(tour), parseTourNights(tour))}</span>
+                          </span>
                         </td>
-                        <td className="p-4 font-mono font-bold text-emerald-400">
-                          Rp {(tour.startingPriceIDR || tour.startingPrice * 16000).toLocaleString('id-ID')}
+                        <td className="p-4 font-mono text-xs">
+                          <div className="font-extrabold text-emerald-400">
+                            WNI: Rp {(tour.startingPriceIDR || tour.wniPrice || (tour.startingPrice * 16000)).toLocaleString('id-ID')}
+                          </div>
+                          <div className="text-amber-400 font-bold mt-0.5">
+                            WNA: ${(tour.startingPrice || tour.wnaPrice || 0).toLocaleString()} USD
+                          </div>
                         </td>
                         <td className="p-4">
                           <span className="inline-flex items-center gap-1 text-[10px] font-mono font-black uppercase text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full">
@@ -1993,15 +2108,21 @@ export default function AdminView() {
                             <button 
                               onClick={() => {
                                 setEditingTour(tour);
+                                const tourD = tour.days || parseTourDays(tour);
+                                const tourN = typeof tour.nights === 'number' ? tour.nights : parseTourNights(tour);
                                 setTourForm({
                                   id: tour.id,
                                   name: tour.name,
                                   description: tour.description,
-                                  duration: tour.duration,
-                                  startingPrice: tour.startingPrice,
-                                  startingPriceIDR: tour.startingPriceIDR,
+                                  duration: tour.duration || formatTourDuration(tourD, tourN),
+                                  days: tourD,
+                                  nights: tourN,
+                                  startingPrice: tour.startingPrice || tour.wnaPrice || 50,
+                                  startingPriceIDR: tour.startingPriceIDR || tour.wniPrice || 750000,
+                                  wniPrice: tour.startingPriceIDR || tour.wniPrice || 750000,
+                                  wnaPrice: tour.startingPrice || tour.wnaPrice || 50,
                                   image: tour.image,
-                                  category: tour.category,
+                                  category: tour.category || 'Adventure',
                                   highlights: tour.highlights?.join(', ') || '',
                                   itinerary: tour.itinerary?.join('\n') || '',
                                   rating: tour.rating || 5.0,

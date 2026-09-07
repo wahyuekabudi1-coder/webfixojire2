@@ -16,6 +16,8 @@ import {
   Check
 } from "lucide-react";
 import { useLanguageCurrency } from "../LanguageCurrencyContext";
+import TourFilterBar from "../../components/TourFilterBar";
+import { matchesTourFilter } from "../../utils/tourFilterUtils";
 
 interface TripListingProps {
   trips: Trip[];
@@ -26,7 +28,8 @@ interface TripListingProps {
 
 export default function TripListing({ trips, batches, onSelectTrip, onNavigateToCheckStatus }: TripListingProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedDuration, setSelectedDuration] = useState("All");
+  const [selectedDuration, setSelectedDuration] = useState<string>("all");
+  const [selectedExperience, setSelectedExperience] = useState<string>("all");
   const [activeStep, setActiveStep] = useState(0);
   const { t, formatPrice } = useLanguageCurrency();
 
@@ -34,23 +37,27 @@ export default function TripListing({ trips, batches, onSelectTrip, onNavigateTo
     const isPublished = trip.status === undefined || trip.status === "published";
     if (!isPublished) return false;
 
+    // Filter by Duration & Experience Category
+    if (!matchesTourFilter(trip as any, selectedDuration, selectedExperience)) {
+      return false;
+    }
+
+    if (!searchQuery.trim()) return true;
+
     // Use lowercase translations as fallback in search query matching
     const translatedTitle = t(trip.title).toLowerCase();
     const translatedLocation = t(trip.location).toLowerCase();
     const translatedDescription = t(trip.description).toLowerCase();
+    const q = searchQuery.toLowerCase();
 
-    const matchesSearch = 
-      trip.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      trip.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      trip.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      translatedTitle.includes(searchQuery.toLowerCase()) ||
-      translatedLocation.includes(searchQuery.toLowerCase()) ||
-      translatedDescription.includes(searchQuery.toLowerCase());
-    
-    if (selectedDuration === "All") return matchesSearch;
-    if (selectedDuration === "short") return matchesSearch && trip.duration.includes("2 Days");
-    if (selectedDuration === "medium") return matchesSearch && trip.duration.includes("3 Days");
-    return matchesSearch;
+    return (
+      trip.title.toLowerCase().includes(q) ||
+      trip.location.toLowerCase().includes(q) ||
+      trip.description.toLowerCase().includes(q) ||
+      translatedTitle.includes(q) ||
+      translatedLocation.includes(q) ||
+      translatedDescription.includes(q)
+    );
   });
 
   return (
@@ -123,42 +130,41 @@ export default function TripListing({ trips, batches, onSelectTrip, onNavigateTo
       </section>
 
       {/* 2. TRIPS CONTROLS & LUXURY SEARCH BAR */}
-      <section 
-        className="bg-white p-4 sm:p-5 rounded-[50px] border border-gray-100 shadow-[0_12px_30px_rgba(0,0,0,0.04)] space-y-4 lg:space-y-0 lg:flex lg:items-center lg:justify-between gap-6"
-        id="search-filter-controls"
-      >
-        <div className="relative flex-1">
-          <Search className="w-5 h-5 absolute left-5 top-1/2 -translate-y-1/2 text-[#315B4F]" />
+      <section className="space-y-4" id="search-filter-controls">
+        <div className="bg-white p-3 sm:p-4 rounded-2xl border border-gray-100 shadow-[0_12px_30px_rgba(0,0,0,0.04)] flex items-center gap-3">
+          <Search className="w-5 h-5 text-[#315B4F] shrink-0 ml-2" />
           <input
             id="trip-search"
             type="text"
             placeholder={t("Search and filter tours...")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-14 pr-5 py-3 bg-transparent text-gray-800 font-sans text-sm placeholder-gray-400 focus:outline-none"
+            className="w-full py-2 bg-transparent text-gray-800 font-sans text-sm placeholder-gray-400 focus:outline-none"
           />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="text-xs text-gray-400 hover:text-gray-600 px-2 py-1 cursor-pointer font-bold"
+            >
+              Clear
+            </button>
+          )}
         </div>
 
-        {/* Filter Duration Pills */}
-        <div className="flex flex-wrap items-center gap-2 px-4">
-          <span className="text-[11px] font-sans font-bold text-gray-400 uppercase tracking-widest mr-2">{t("Duration") || "Duration"}:</span>
-          {["All", "short", "medium"].map((dur) => (
-            <button
-              key={dur}
-              id={`filter-dur-${dur}`}
-              onClick={() => setSelectedDuration(dur)}
-              className={`px-4 py-2 rounded-xl text-xs font-sans font-medium hover:bg-gray-100 transition-all cursor-pointer ${
-                selectedDuration === dur
-                  ? "bg-[#315B4F] text-white shadow-sm font-semibold"
-                  : "bg-gray-50 text-gray-600"
-              }`}
-            >
-              {dur === "All" && t("All Days")}
-              {dur === "short" && `2 ${t("Days") || "Days"}`}
-              {dur === "medium" && `3 ${t("Days") || "Days"}`}
-            </button>
-          ))}
-        </div>
+        {/* Professional Tour Filter Bar (Duration & Experience Category) */}
+        <TourFilterBar
+          selectedDuration={selectedDuration}
+          onSelectDuration={setSelectedDuration}
+          selectedExperience={selectedExperience}
+          onSelectExperience={setSelectedExperience}
+          onResetFilters={() => {
+            setSelectedDuration("all");
+            setSelectedExperience("all");
+            setSearchQuery("");
+          }}
+          totalFilteredCount={filteredTrips.length}
+          totalAvailableCount={trips.length}
+        />
       </section>
 
       {/* 3. SIGNATURE TOURS CARD SHOWCASE */}
@@ -263,9 +269,9 @@ export default function TripListing({ trips, batches, onSelectTrip, onNavigateTo
             })
           ) : (
             <div className="col-span-full bg-gray-50/50 p-12 text-center rounded-2xl border border-dashed border-gray-200">
-              <p className="text-gray-450 text-sm font-sans">{t("No vacations or trips found matching your current search parameters.")}</p>
+              <p className="text-gray-500 text-sm font-sans">{t("No vacations or trips found matching your current search parameters.")}</p>
               <button
-                onClick={() => { setSearchQuery(""); setSelectedDuration("All"); }}
+                onClick={() => { setSearchQuery(""); setSelectedDuration("all"); setSelectedExperience("all"); }}
                 className="mt-4 inline-flex items-center space-x-1 text-xs text-[#315B4F] font-bold underline cursor-pointer hover:text-[#203c34] font-sans"
               >
                 {t("Reset Search Filters")}

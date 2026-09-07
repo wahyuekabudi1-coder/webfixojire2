@@ -22,13 +22,19 @@ export interface Trip {
   slug: string;
   location: string;
   duration: string;
+  days?: number;
+  nights?: number;
+  category?: 'Adventure' | 'Nature' | 'Culture' | 'City' | string;
+  experienceCategory?: 'Adventure' | 'Nature' | 'Culture' | 'City' | string;
   description: string;
   coverImage: string;
   included: string[];
   excluded: string[];
   itinerary: ItineraryItem[];
-  startingPrice: number;
+  startingPrice: number; // WNA price in USD
   wnaStartingPrice?: number;
+  wniStartingPrice?: number; // WNI price in IDR
+  startingPriceIDR?: number; // explicit alias for wniStartingPrice
   highlight?: string;
   faq?: FAQItem[];
   gallery?: string[];
@@ -36,6 +42,7 @@ export interface Trip {
   status?: "draft" | "published";
   price?: number;
   wnaPrice?: number;
+  wniPrice?: number;
 }
 
 export interface Batch {

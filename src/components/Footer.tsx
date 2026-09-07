@@ -366,7 +366,7 @@ export default function Footer() {
             >
               PT Sawah Jaya Trans
             </span>
-            . {t('footer.allRightsReserved')}.
+            . All rights reserved.
           </p>
 
           {/* Admin Access Buttons (Visible strictly when clicked 8 to 12 times; disappears automatically if > 12 or after 3 minutes) */}

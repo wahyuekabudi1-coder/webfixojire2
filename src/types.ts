@@ -3,14 +3,19 @@ export interface Tour {
   name: string;
   description: string;
   duration: string;
-  startingPrice: number; // in USD or IDR (we can support a toggle or show both, let's display elegant USD/IDR conversion!)
-  startingPriceIDR: number;
+  days?: number;
+  nights?: number;
+  startingPrice: number; // in USD (WNA Price)
+  startingPriceIDR: number; // in IDR (WNI Price)
+  wniPrice?: number; // explicit alias for startingPriceIDR
+  wnaPrice?: number; // explicit alias for startingPrice in USD
   rating: number;
   reviewCount: number;
   image: string;
   highlights: string[];
   itinerary: string[];
   category: 'Adventure' | 'Nature' | 'Culture' | 'City' | string;
+  experienceCategory?: 'Adventure' | 'Nature' | 'Culture' | 'City' | string;
   includes?: string[];
   excludes?: string[];
   gallery?: string[];

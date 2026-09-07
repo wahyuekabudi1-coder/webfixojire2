@@ -1610,7 +1610,23 @@ app.post(['/api/artopay/payment-intent', '/artopay/payment-intent', '/api/paymen
       orderId: String(orderId),
       description: description || `Payment for order ${orderId}`,
       customerId: customerId || `cust_${String(orderId).replace(/[^a-zA-Z0-9]/g, '_')}`,
-      metadata: metadata || {}
+      metadata: {
+        ...(existingOrder ? {
+          bookingId: existingOrder.id,
+          bookingCode: existingOrder.bookingCode,
+          tourId: existingOrder.tripId,
+          tourName: existingOrder.tripTitle,
+          customerName: existingOrder.fullName || existingOrder.customerName,
+          customerEmail: existingOrder.email || existingOrder.customerEmail,
+          customerPhone: existingOrder.phone || existingOrder.customerPhone,
+          travelDate: existingOrder.departureDate,
+          nationality: existingOrder.nationalityType,
+          pax: existingOrder.participantsCount,
+          amount: formattedAmount,
+          currency: currency || 'IDR'
+        } : {}),
+        ...(metadata || {})
+      }
     };
 
     if (businessUnitCode) {
@@ -1709,7 +1725,7 @@ app.post(['/api/artopay/payment-intent', '/artopay/payment-intent', '/api/paymen
     // Update DB with active paymentIntentId
     if (existingOrderIndex !== -1 && db.bookings[existingOrderIndex]) {
       db.bookings[existingOrderIndex].paymentIntentId = paymentId;
-      db.bookings[existingOrderIndex].paymentStatus = 'Pending';
+      db.bookings[existingOrderIndex].paymentStatus = 'Pending Payment';
       db.bookings[existingOrderIndex].status = 'Pending';
       writeDB(db);
     }

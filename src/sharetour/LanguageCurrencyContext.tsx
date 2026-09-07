@@ -13,6 +13,7 @@ import {
   getLocalizedDestinations,
 } from "../locales";
 import { Tour, Vehicle } from "../types";
+import { formatCurrencyAmount } from "../utils/pricingUtils";
 
 export type { Language, Currency };
 
@@ -1147,38 +1148,9 @@ export const LanguageCurrencyProvider: React.FC<{ children: React.ReactNode }> =
     return getLocalizedAirport(code, language);
   };
 
-  // Convert USD to native currency and format beautiful outputs
+  // Convert USD to native currency and format beautiful outputs safely
   const formatPrice = (priceUSD: number): string => {
-    if (isNaN(priceUSD) || priceUSD === null || priceUSD === undefined) return "";
-    
-    if (currency === "IDR") {
-      // 1 USD = 16,000 IDR
-      const idrValue = priceUSD * 16000;
-      return new Intl.NumberFormat("id-ID", {
-        style: "currency",
-        currency: "IDR",
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      }).format(idrValue).replace("Rp", "Rp ");
-    } else if (currency === "CNY") {
-      // 2. CNY: 1 USD = 7.2 CNY
-      const cnyValue = priceUSD * 7.2;
-      const formatted = new Intl.NumberFormat("zh-CN", {
-        style: "currency",
-        currency: "CNY",
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 1
-      }).format(cnyValue);
-      return formatted;
-    } else {
-      // 3. USD: 1 USD = 1 USD
-      return new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-      }).format(priceUSD);
-    }
+    return formatCurrencyAmount(priceUSD, currency);
   };
 
   // Update document language attribute dynamically when language changes

@@ -1,9 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Trip, Batch, Booking } from "../types";
-import { ChevronLeft, Sparkles, ShieldCheck, Send, MapPin, Clock, Globe, Lock, Check } from "lucide-react";
+import { 
+  ChevronLeft, Sparkles, ShieldCheck, Send, MapPin, Clock, Globe, Lock, Check,
+  ArrowRight, CheckCircle2, User, Phone, Mail, Compass
+} from "lucide-react";
 import { createBooking } from "../api";
 import { useLanguageCurrency } from "../LanguageCurrencyContext";
 import { processArtoPayPayment } from "../../lib/artopay";
+import { 
+  calculatePrivateTourPricing, 
+  calculateShareTourPricing, 
+  formatCurrencyAmount 
+} from "../../utils/pricingUtils";
 
 interface BookingFormProps {
   trip: Trip;
@@ -13,6 +21,9 @@ interface BookingFormProps {
   departureDate?: string;
   initialParticipants?: number;
   initialUnitPrice?: number;
+  initialUnitPriceUSD?: number;
+  initialUnitPriceIDR?: number;
+  surchargeMultiplier?: number;
   nationalityType?: 'WNI' | 'WNA' | 'WNA_CHINA' | 'WNA_EUROPE' | null;
   onBack: () => void;
   onSuccess: (booking: Booking) => void;
@@ -26,11 +37,14 @@ export default function BookingForm({
   departureDate,
   initialParticipants = 1,
   initialUnitPrice,
+  initialUnitPriceUSD,
+  initialUnitPriceIDR,
+  surchargeMultiplier = 1.0,
   nationalityType = 'WNI',
   onBack,
   onSuccess
 }: BookingFormProps) {
-  const { t, formatPrice, language } = useLanguageCurrency();
+  const { t, formatPrice, currency, language } = useLanguageCurrency();
 
   const isPrivate = (bookingType === 'private' || tourBookingType === 'private' || !batch);
   const selectedDepartureDate = isPrivate 
@@ -56,6 +70,8 @@ export default function BookingForm({
   const [whatsapp, setWhatsapp] = useState(""); // No WhatsApp (Aktif)
   const [email, setEmail] = useState(""); // Email
   const [flightNumber, setFlightNumber] = useState(""); // No Penerbangan
+  const [pickupLocation, setPickupLocation] = useState(""); // Lokasi Penjemputan
+  const [specialRequests, setSpecialRequests] = useState(""); // Catatan Khusus
 
   // Participants Counter
   const maxSeatsAllowed = isPrivate ? 25 : (batch ? Math.min(12, batch.availableSeats) : 12);
@@ -95,22 +111,32 @@ export default function BookingForm({
     setCompanionNames(updated);
   };
 
-  const getUnitPrice = () => {
-    if (initialUnitPrice && initialUnitPrice > 0) return initialUnitPrice;
+  // Unified Single Source of Truth Price Calculation
+  const pricingBreakdown = useMemo(() => {
     if (isPrivate) {
-      if (currentNationality === 'WNI') return trip.price || trip.startingPrice || 150;
-      return trip.wnaPrice || trip.wnaStartingPrice || (trip.price || trip.startingPrice || 150) + 20;
+      return calculatePrivateTourPricing(
+        {
+          startingPrice: initialUnitPriceUSD || trip.startingPrice || trip.price || 135,
+          startingPriceIDR: initialUnitPriceIDR || trip.startingPriceIDR || trip.wniPrice,
+          wnaPrice: initialUnitPriceUSD || trip.wnaPrice || trip.wnaStartingPrice,
+          wniPrice: initialUnitPriceIDR || trip.wniPrice || trip.startingPriceIDR
+        },
+        currentNationality,
+        numParticipants,
+        surchargeMultiplier || 1.0
+      );
+    } else {
+      return calculateShareTourPricing(
+        trip,
+        batch,
+        currentNationality,
+        numParticipants
+      );
     }
-    if (batch) {
-      return (currentNationality === 'WNI')
-        ? batch.price
-        : (batch.wnaPrice || batch.price + 20);
-    }
-    return trip.price || trip.startingPrice || 150;
-  };
+  }, [isPrivate, trip, batch, currentNationality, numParticipants, initialUnitPriceUSD, initialUnitPriceIDR, surchargeMultiplier]);
 
-  const currentUnitPrice = getUnitPrice();
-  const totalPrice = numParticipants * currentUnitPrice;
+  const unitPriceFormatted = formatCurrencyAmount(pricingBreakdown.unitPriceUSD, currency);
+  const totalPriceFormatted = formatCurrencyAmount(pricingBreakdown.totalPriceUSD, currency);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -134,6 +160,11 @@ export default function BookingForm({
       }
     }
 
+    if (!pickupLocation.trim()) {
+      setErrorMsg(t("Harap isi lokasi penjemputan (Nama Hotel / Alamat / Stasiun / Bandara)."));
+      return;
+    }
+
     setLoading(true);
     setErrorMsg("");
 
@@ -141,8 +172,6 @@ export default function BookingForm({
     companionNames.forEach((n) => {
       if (n.trim()) participantsList.push(n.trim());
     });
-
-    const calculatedTotalPrice = numParticipants * currentUnitPrice;
 
     try {
       const payload: any = {
@@ -159,10 +188,15 @@ export default function BookingForm({
         customerPhone: whatsapp.trim(),
         participantsCount: numParticipants,
         participantsNames: participantsList,
-        proofOfPayment: "NOT_APPLICABLE_SLEEK_THEME",
-        totalPrice: calculatedTotalPrice,
-        totalPriceIDR: calculatedTotalPrice,
+        proofOfPayment: "OJIRE_GATEWAY",
+        status: "Pending",
+        paymentStatus: "Pending Payment",
+        totalPrice: pricingBreakdown.totalPriceUSD,
+        totalPriceIDR: pricingBreakdown.totalPriceIDR,
         nationalityType: currentNationality,
+        pickupLocation: pickupLocation.trim(),
+        specialRequests: specialRequests.trim(),
+        paymentMethod: "OJIRE_GATEWAY",
         participantData: {
           name: name.trim(),
           englishName: englishName.trim(),
@@ -172,6 +206,9 @@ export default function BookingForm({
           whatsapp: whatsapp.trim(),
           email: email.toLowerCase().trim(),
           flightNumber: flightNumber ? flightNumber.toUpperCase().trim() : "",
+          pickupLocation: pickupLocation.trim(),
+          specialRequests: specialRequests.trim(),
+          paymentMethod: "OJIRE_GATEWAY",
           nationalityType: currentNationality
         },
         adminNotes: ""
@@ -179,32 +216,49 @@ export default function BookingForm({
 
       const result = await createBooking(payload);
 
-      // Trigger ArtoPay SDK Payment Gateway
+      // Trigger OJIRE Payment Gateway directly with exact IDR amount
       try {
         await processArtoPayPayment({
           orderId: result.bookingCode || result.id,
-          amount: calculatedTotalPrice,
+          amount: pricingBreakdown.paymentAmountIDR,
           currency: 'IDR',
-          description: isPrivate ? `Private Tour: ${trip.title}` : `Open Trip: ${trip.title} (${selectedDepartureDate})`,
+          description: isPrivate 
+            ? `Private Tour: ${trip.title} (${selectedDepartureDate}, ${numParticipants} Pax)` 
+            : `Open Trip: ${trip.title} (${selectedDepartureDate}, ${numParticipants} Pax)`,
           customerName: name.trim(),
           customerEmail: email.toLowerCase().trim(),
           customerPhone: whatsapp.trim(),
+          metadata: {
+            bookingId: result.id,
+            bookingCode: result.bookingCode,
+            tourId: trip.id,
+            tourName: trip.title,
+            travelDate: selectedDepartureDate,
+            nationality: currentNationality,
+            pax: numParticipants,
+            amountUSD: pricingBreakdown.totalPriceUSD,
+            amountIDR: pricingBreakdown.totalPriceIDR,
+            amount: pricingBreakdown.paymentAmountIDR,
+            currency: 'IDR',
+            pickupLocation: pickupLocation.trim(),
+            specialRequests: specialRequests.trim()
+          },
           onSuccess: (payRes) => {
-            console.log("ArtoPay Payment Completed:", payRes);
+            console.log("OJIRE Payment Completed:", payRes);
             onSuccess(result);
           },
           onPending: (payRes) => {
-            console.log("ArtoPay Payment Pending:", payRes);
+            console.log("OJIRE Payment Pending:", payRes);
             onSuccess(result);
           },
           onError: (payErr) => {
-            console.error("ArtoPay Payment Gateway Error:", payErr);
-            setErrorMsg(payErr.message || t("Gagal menghubungkan ke ArtoPay Gateway. Silakan periksa kredensial API key."));
+            console.error("OJIRE Payment Gateway Error:", payErr);
+            setErrorMsg(payErr.message || t("Gagal menghubungkan ke Payment Gateway OJIRE. Silakan coba kembali atau periksa koneksi internet."));
           }
         });
       } catch (payError: any) {
-        console.error("ArtoPay checkout trigger exception:", payError);
-        setErrorMsg(payError.message || t("Gagal memproses transaksi ArtoPay Gateway."));
+        console.error("OJIRE checkout trigger exception:", payError);
+        setErrorMsg(payError.message || t("Gagal memproses transaksi Payment Gateway OJIRE."));
       }
     } catch (e: any) {
       setErrorMsg(e.message || t("Failed to submit booking registration. Please verify connection and try again."));
@@ -215,114 +269,121 @@ export default function BookingForm({
 
   return (
     <div className="space-y-8 pb-16 animate-fade-in" id="booking-registration-module">
-      {/* Back to information link */}
-      <button
-        onClick={onBack}
-        className="inline-flex items-center space-x-1.5 text-gray-500 hover:text-[#315B4F] text-sm font-semibold transition-colors cursor-pointer"
-      >
-        <ChevronLeft className="w-5 h-5 text-[#315B4F]" />
-        <span>{t("Cancel & Back to Trip Details")}</span>
-      </button>
+      {/* Safe Back Navigation: Returns to Tour Detail without losing selected state */}
+      <div className="flex items-center justify-between">
+        <button
+          id="btn-back-to-tour-detail"
+          onClick={onBack}
+          className="inline-flex items-center space-x-2 text-gray-700 hover:text-[#315B4F] text-xs sm:text-sm font-bold transition-all cursor-pointer bg-white px-4 py-2.5 rounded-xl border border-gray-200 shadow-2xs hover:shadow-xs group"
+        >
+          <ChevronLeft className="w-4 h-4 text-[#315B4F] group-hover:-translate-x-0.5 transition-transform" />
+          <span>{isPrivate ? "← Kembali ke Detail Tour" : t("Cancel & Back to Trip Details")}</span>
+        </button>
 
-      {/* Grid: Left column is reservation brief, Right is core input */}
+        <span className="text-[11px] font-mono text-gray-500 hidden sm:inline-flex items-center gap-1">
+          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+          <span>Checkout Terenkripsi 256-bit</span>
+        </span>
+      </div>
+
+      {/* Grid: Left column is BOOKING SUMMARY, Right is CUSTOMER INFORMATION & PAYMENT */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         
-        {/* Left Column: Booking Brief */}
+        {/* Left Column: BOOKING SUMMARY */}
         <div className="space-y-6">
-          <div className="bg-[#315B4F] text-white rounded-3xl p-6 shadow-md relative overflow-hidden">
-            {/* Decorative circles */}
-            <div className="absolute -right-16 -top-16 w-40 h-40 rounded-full bg-white/5 pointer-events-none"></div>
-            <div className="absolute -left-12 -bottom-12 w-32 h-32 rounded-full bg-[#D6B16D]/10 pointer-events-none"></div>
-
-            <div className="relative space-y-4">
-              <span className="text-[10px] text-[#D6B16D] font-mono tracking-widest uppercase font-bold">
-                {t("Trip Registration")}
+          <div className="bg-white rounded-3xl border border-gray-200 p-6 shadow-sm space-y-5">
+            <div className="border-b border-gray-100 pb-3 flex items-center justify-between">
+              <div>
+                <span className="text-[10px] text-[#315B4F] font-mono tracking-widest uppercase font-bold block">
+                  {isPrivate ? "PRIVATE TOUR CHECKOUT" : t("Trip Registration")}
+                </span>
+                <h2 className="text-base font-display font-black text-gray-900 tracking-wide">
+                  BOOKING SUMMARY
+                </h2>
+              </div>
+              <span className="text-[10px] bg-emerald-50 text-[#315B4F] border border-emerald-200 font-bold px-2.5 py-1 rounded-full uppercase tracking-wider font-mono">
+                {isPrivate ? "Private Tour" : "Open Trip"}
               </span>
-              <div className="space-y-1">
-                <h1 className="font-display font-black text-lg leading-tight text-white drop-shadow-sm">
-                  {t(trip.title)}
-                </h1>
-                <p className="text-xs text-emerald-100 flex items-center space-x-1">
-                  <MapPin className="w-3 h-3 text-[#D6B16D]" />
-                  <span>{t(trip.location)}</span>
-                </p>
-              </div>
-
-              <div className="border-t border-white/10 pt-4 flex items-center justify-between text-xs text-emerald-200">
-                <span>{t("Selected Schedule")}</span>
-                <span className="font-bold text-white">{formatDate(selectedDepartureDate)}</span>
-              </div>
-              <div className="flex items-center justify-between text-xs text-emerald-200">
-                <span>{t("Duration")}</span>
-                <span className="font-bold text-white">{t(trip.duration)}</span>
-              </div>
             </div>
-          </div>
 
-          <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm space-y-4">
-            <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-gray-400">
-              {t("Pricing Details")}
-            </h2>
+            <div className="space-y-3.5 text-xs">
+              <div>
+                <span className="text-[10px] text-gray-400 uppercase font-mono block">Tour</span>
+                <span className="font-bold text-gray-900 text-sm block leading-snug">{trip.title}</span>
+                <span className="text-[11px] text-gray-500 flex items-center gap-1 mt-0.5">
+                  <MapPin className="w-3 h-3 text-[#315B4F] shrink-0" />
+                  <span>{trip.location}</span>
+                </span>
+              </div>
 
-            {/* Nationality Display (Selected from previous page) */}
-            <div className="bg-emerald-50/80 p-3.5 rounded-2xl border border-emerald-100 flex items-center justify-between">
-              <div className="space-y-0.5">
-                <span className="text-[10px] font-mono uppercase font-bold text-gray-500 block">Kategori Kewarganegaraan:</span>
-                <span className="text-xs font-extrabold text-[#315B4F]">
+              <div className="grid grid-cols-2 gap-2 pt-2 border-t border-gray-100">
+                <div>
+                  <span className="text-[10px] text-gray-400 uppercase font-mono block">Date</span>
+                  <span className="font-bold text-gray-800">{formatDate(selectedDepartureDate)}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-gray-400 uppercase font-mono block">Duration</span>
+                  <span className="font-bold text-gray-800">{trip.duration}</span>
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-gray-100">
+                <span className="text-[10px] text-gray-400 uppercase font-mono block">Guest Category</span>
+                <span className="font-bold text-[#315B4F] text-xs">
                   {currentNationality === 'WNI' 
-                    ? "🇮🇩 WNI (Wisatawan Domestik)" 
+                    ? "🇮🇩 Domestic" 
                     : currentNationality === 'WNA_CHINA' 
-                      ? "🇨🇳 WNA (China Daratan)" 
-                      : "🇪🇺 WNA (Eropa & Internasional)"
+                      ? "🇨🇳 Foreigner (China)" 
+                      : "🌐 Foreigner (International)"
                   }
                 </span>
               </div>
-              <span className={`text-[10px] font-extrabold px-2.5 py-1 rounded-full font-mono uppercase tracking-wider ${
-                currentNationality === 'WNI' 
-                  ? "bg-emerald-100 text-[#315B4F] border border-emerald-200" 
-                  : currentNationality === 'WNA_CHINA'
-                    ? "bg-amber-100 text-amber-900 border border-amber-200"
-                    : "bg-blue-100 text-blue-800 border border-blue-200"
-              }`}>
-                {currentNationality === 'WNI' ? "WNI" : currentNationality === 'WNA_CHINA' ? "China" : "Eropa / Int"}
-              </span>
-            </div>
 
-            <div className="space-y-3 pt-1 text-xs">
-              <div className="flex justify-between items-center text-gray-500">
-                <span>
-                  {t("Tarif per Orang")} (
-                  {currentNationality === 'WNI' 
-                    ? "WNI" 
-                    : currentNationality === 'WNA_CHINA' 
-                      ? "WNA China" 
-                      : "WNA Eropa"
-                  })
-                </span>
-                <span className="font-bold text-gray-800">{formatPrice(currentUnitPrice)}</span>
+              <div className="flex justify-between items-center pt-2 border-t border-gray-100">
+                <div>
+                  <span className="text-[10px] text-gray-400 uppercase font-mono block">Guests</span>
+                  <span className="font-bold text-gray-800">{numParticipants} Pax</span>
+                </div>
+                <div className="text-right">
+                  <span className="text-[10px] text-gray-400 uppercase font-mono block">Tarif / Orang</span>
+                  <span className="font-bold text-gray-800">{unitPriceFormatted}</span>
+                </div>
               </div>
-              <div className="flex justify-between items-center text-gray-500">
-                <span>{t("Total Registering Seats")}</span>
-                <span className="font-bold text-[#315B4F] bg-emerald-50 px-2 py-0.5 rounded">
-                  {numParticipants} {t(numParticipants > 1 ? "Travelers" : "Traveler")}
-                </span>
-              </div>
-              <div className="border-t border-gray-150 pt-3 flex justify-between items-end">
-                <span className="font-bold text-gray-700">{t("Subtotal Fee Due")}</span>
-                <span className="font-display font-black text-lg text-[#315B4F]">
-                  {formatPrice(totalPrice)}
+
+              {/* Highlighted Total Box */}
+              <div className="bg-[#315B4F]/5 p-4 rounded-2xl border border-[#315B4F]/20 flex justify-between items-end mt-2">
+                <div>
+                  <span className="text-[10px] uppercase text-[#315B4F] font-black font-mono tracking-wider block">
+                    TOTAL HARGA
+                  </span>
+                  <span className="text-[10px] text-gray-500 font-medium">Sudah termasuk pajak &amp; tiket</span>
+                </div>
+                <span className="font-display font-black text-xl text-[#315B4F]">
+                  {totalPriceFormatted}
                 </span>
               </div>
             </div>
 
-            <div className="bg-amber-50/50 border border-amber-200/45 rounded-2xl p-4 text-[11px] text-amber-800 leading-relaxed space-y-1.5 font-sans">
-              <div className="font-bold flex items-center space-x-1">
-                <ShieldCheck className="w-4 h-4 text-amber-600" />
-                <span>{t("Information-First Flow")}</span>
+            {/* Trust Badges */}
+            <div className="bg-gray-50 rounded-2xl p-4 text-[11px] text-gray-600 space-y-2.5 border border-gray-100">
+              <div className="flex items-center gap-2 font-bold text-gray-800">
+                <ShieldCheck className="w-4 h-4 text-[#315B4F]" />
+                <span>Jaminan Transaksi &amp; Reservasi</span>
               </div>
-              <p>
-                {t("Smart Journey handles payment processing offline. Form input is direct; your placement is locked based on registration details below.")}
-              </p>
+              <ul className="space-y-1.5 text-[11px] text-gray-500">
+                <li className="flex items-center gap-1.5 text-emerald-700 font-medium">
+                  <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <span>Konfirmasi instan &amp; e-voucher digital</span>
+                </li>
+                <li className="flex items-center gap-1.5 text-emerald-700 font-medium">
+                  <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <span>Bebas biaya tersembunyi</span>
+                </li>
+                <li className="flex items-center gap-1.5 text-emerald-700 font-medium">
+                  <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <span>Penjemputan tepat waktu garansi Smart Journey</span>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
@@ -338,10 +399,10 @@ export default function BookingForm({
                 </h2>
                 <span className="text-xs font-mono font-bold text-[#315B4F] bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
                   {currentNationality === 'WNI' 
-                    ? "🇮🇩 WNI / Domestik" 
+                    ? "🇮🇩 Domestic" 
                     : currentNationality === 'WNA_CHINA' 
-                      ? "🇨🇳 WNA China Daratan" 
-                      : "🇪🇺 WNA Eropa & Internasional"
+                      ? "🇨🇳 Foreigner (China)" 
+                      : "🌐 Foreigner (International)"
                   }
                 </span>
               </div>
@@ -524,6 +585,48 @@ export default function BookingForm({
                   className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#315B4F]/50 focus:border-[#315B4F]"
                 />
               </div>
+
+              {/* Pickup Location (Lokasi Penjemputan) */}
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-xs font-bold text-gray-700 block">
+                  {currentNationality === 'WNA_CHINA' ? "9. " : "7. "}
+                  {t("Lokasi Penjemputan")} <span className="text-rose-500">*</span>
+                  <span className="text-[10px] text-gray-400 font-normal block">
+                    Nama hotel, alamat villa, atau nama stasiun/bandara kedatangan (e.g. Hotel Tugu Malang, Bandara Juanda T2 Surabaya)
+                  </span>
+                </label>
+                <div className="relative">
+                  <MapPin className="w-4 h-4 text-[#315B4F] absolute left-3.5 top-3.5" />
+                  <input
+                    id="book-pickupLocation"
+                    type="text"
+                    required
+                    placeholder="Contoh: Hotel Santika Premiere Malang / Bandara Juanda Surabaya"
+                    value={pickupLocation}
+                    onChange={(e) => setPickupLocation(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#315B4F]/50 focus:border-[#315B4F]"
+                  />
+                </div>
+              </div>
+
+              {/* Special Request (Catatan Khusus) */}
+              <div className="space-y-1.5 md:col-span-2">
+                <label className="text-xs font-bold text-gray-700 block">
+                  {currentNationality === 'WNA_CHINA' ? "10. " : "8. "}
+                  {t("Special Request / Catatan Khusus")} <span className="text-xs text-gray-400 font-normal">({t("Optional")})</span>
+                  <span className="text-[10px] text-gray-400 font-normal block">
+                    Permintaan khusus, preferensi makanan/vegetarian, kursi bayi, atau kebutuhan lainnya
+                  </span>
+                </label>
+                <textarea
+                  id="book-specialRequests"
+                  rows={2}
+                  placeholder="Tuliskan permintaan khusus Anda jika ada (opsional)..."
+                  value={specialRequests}
+                  onChange={(e) => setSpecialRequests(e.target.value)}
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#315B4F]/50 focus:border-[#315B4F] resize-none"
+                />
+              </div>
             </div>
 
             {/* Participants Count */}
@@ -585,26 +688,34 @@ export default function BookingForm({
               )}
             </div>
 
-            {/* Submission Block */}
-            <div className="pt-6 border-t border-gray-100">
+            {/* Submission Block: LANJUT KE PEMBAYARAN */}
+            <div className="pt-6 border-t border-gray-100 space-y-3">
               <button
                 id="btn-submit-booking-form"
                 type="submit"
                 disabled={loading}
-                className={`w-full py-4 rounded-2xl text-white font-display font-bold text-xs uppercase tracking-widest transition-all shadow-md flex items-center justify-center space-x-2 ${
+                className={`w-full py-4 px-6 rounded-2xl text-white font-display font-black text-sm uppercase tracking-wider transition-all shadow-xl flex flex-col items-center justify-center gap-1.5 ${
                   loading 
                     ? "bg-gray-400 cursor-not-allowed opacity-80" 
-                    : "bg-[#315B4F] hover:bg-[#1f3a32] cursor-pointer"
+                    : "bg-[#315B4F] hover:bg-[#203c34] active:scale-[0.99] cursor-pointer shadow-[#315B4F]/25 hover:shadow-2xl"
                 }`}
               >
-                <Send className="w-4 h-4 text-[#D6B16D]" />
-                <span>
-                  {loading 
-                    ? t("Registering Locked Quota...") 
-                    : `${t("Submit Registration Request")} (${formatPrice(totalPrice)})`
-                  }
+                <div className="flex items-center justify-center gap-2">
+                  <Lock className="w-4 h-4 text-[#D6B16D]" />
+                  <span>
+                    {loading ? "Menghubungkan ke OJIRE..." : "LANJUT KE PEMBAYARAN"}
+                  </span>
+                  <ArrowRight className="w-4 h-4" />
+                </div>
+                <span className="text-[11px] text-amber-300 font-mono font-semibold tracking-wide">
+                  TOTAL: {totalPriceFormatted}
                 </span>
               </button>
+
+              <div className="flex items-center justify-center gap-2 text-[11px] text-gray-500 text-center">
+                <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Pilihan metode pembayaran (QRIS, Virtual Account, Kartu Kredit) akan dipilih langsung secara aman di Payment Gateway OJIRE.</span>
+              </div>
             </div>
           </form>
         </div>

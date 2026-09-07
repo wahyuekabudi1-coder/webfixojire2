@@ -12,9 +12,9 @@ import BookingSuccess from '../sharetour/components/BookingSuccess';
 import { Trip, Batch, Booking } from '../sharetour/types';
 import { motion, AnimatePresence } from 'motion/react';
 import CustomerReviewsSection from '../components/CustomerReviewsSection';
-import ServiceNavTabs from '../components/ServiceNavTabs';
 import Breadcrumbs from '../components/Breadcrumbs';
 import { trackTourDetailView, trackBookNowClick } from '../lib/analytics';
+import { calculatePrivateTourPricing, EXCHANGE_RATE_USD_TO_IDR } from '../utils/pricingUtils';
 
 interface TourDetailViewProps {
   tourId: string;
@@ -220,13 +220,27 @@ export default function TourDetailView({ tourId, onBack }: TourDetailViewProps) 
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [tourId]);
 
+  const currentMultiplier = React.useMemo(() => {
+    if (!selectedDate) return 1.0;
+    const peakSch = (schedules || []).find(s => s.date === selectedDate && s.type === 'peak');
+    if (peakSch) {
+      return peakSch.surcharge > 0 ? (1 + (peakSch.surcharge / 100)) : 1.15;
+    }
+    const dayOfWeek = new Date(selectedDate).getDay();
+    return (dayOfWeek === 0 || dayOfWeek === 6) ? 1.15 : 1.0;
+  }, [selectedDate, schedules]);
+
+  const wniPricing = calculatePrivateTourPricing(tour, 'WNI', 1, currentMultiplier);
+  const wnaChinaPricing = calculatePrivateTourPricing(tour, 'WNA_CHINA', 1, currentMultiplier);
+  const wnaEuropePricing = calculatePrivateTourPricing(tour, 'WNA_EUROPE', 1, currentMultiplier);
+
   const packageTiers = [
     {
       id: 'WNI' as const,
-      name: 'Paket WNI (Wisatawan Domestik)',
-      description: 'Paket tur privat khusus Warga Negara Indonesia. Memerlukan KTP / Paspor Indonesia.',
-      priceUSD: tour.startingPrice,
-      priceIDR: tour.startingPriceIDR,
+      name: 'Paket Domestik (Indonesia)',
+      description: 'Paket tur privat khusus Warga Negara Indonesia (KTP / Paspor RI).',
+      priceUSD: wniPricing.unitPriceUSD,
+      priceIDR: wniPricing.unitPriceIDR,
       features: [
         'Transportasi privat AC dingin (Avanza / Innova)',
         'Jeep 4x4 Privat khusus grup Anda',
@@ -236,28 +250,28 @@ export default function TourDetailView({ tourId, onBack }: TourDetailViewProps) 
     },
     {
       id: 'WNA_CHINA' as const,
-      name: 'Paket WNA (China Daratan)',
-      description: 'Paket tur privat khusus wisatawan China Daratan. Memerlukan ID WeChat & RED ID (XiaoHongShu).',
-      priceUSD: Math.round(tour.startingPrice * 1.25),
-      priceIDR: tour.startingPriceIDR + 300000,
+      name: 'Paket Foreigner (China)',
+      description: 'Paket tur privat khusus wisatawan China Daratan (ID WeChat & RED ID).',
+      priceUSD: wnaChinaPricing.unitPriceUSD,
+      priceIDR: wnaChinaPricing.unitPriceIDR,
       features: [
         'Transportasi privat AC dingin (Avanza / Innova)',
         'Jeep 4x4 Privat khusus grup Anda',
-        'Tiket masuk Taman Nasional tarif Wisatawan Mancanegara (WNA)',
-        'Layanan komunikasi & panduan via WeChat ID',
+        'Tiket masuk Taman Nasional tarif Wisatawan Mancanegara',
+        'Layanan komunikasi & panduan via WeChat',
         'Bantuan registrasi & dokumentasi perjalanan'
       ]
     },
     {
       id: 'WNA_EUROPE' as const,
-      name: 'Paket WNA (Eropa & Internasional)',
-      description: 'Paket tur privat khusus wisatawan Eropa, Amerika, & Internasional. Memerlukan No. WhatsApp & Paspor.',
-      priceUSD: Math.round(tour.startingPrice * 1.25),
-      priceIDR: tour.startingPriceIDR + 300000,
+      name: 'Paket Foreigner (International)',
+      description: 'Paket tur privat wisatawan mancanegara internasional (WhatsApp & Paspor).',
+      priceUSD: wnaEuropePricing.unitPriceUSD,
+      priceIDR: wnaEuropePricing.unitPriceIDR,
       features: [
         'Transportasi privat AC dingin (Avanza / Innova)',
         'Jeep 4x4 Privat khusus grup Anda',
-        'Tiket masuk Taman Nasional tarif Wisatawan Mancanegara (WNA)',
+        'Tiket masuk Taman Nasional tarif Wisatawan Mancanegara',
         'English-speaking professional tour guide',
         'Bantuan registrasi & layanan pelanggan WhatsApp'
       ]
@@ -290,6 +304,13 @@ export default function TourDetailView({ tourId, onBack }: TourDetailViewProps) 
   }
 
   if (isBookingOpen) {
+    const selectedPricing = calculatePrivateTourPricing(
+      tour,
+      selectedTierId,
+      guestCount,
+      currentMultiplier
+    );
+
     const shareTrip: Trip = {
       id: tour.id,
       title: tour.name,
@@ -301,10 +322,12 @@ export default function TourDetailView({ tourId, onBack }: TourDetailViewProps) 
       included: tour.highlights || [],
       excluded: tour.exclusions || [],
       itinerary: [],
-      startingPrice: selectedTier.priceIDR,
-      wnaStartingPrice: selectedTier.priceIDR,
-      price: selectedTier.priceIDR,
-      wnaPrice: selectedTier.priceIDR
+      startingPrice: selectedPricing.unitPriceUSD,
+      wnaStartingPrice: selectedPricing.unitPriceUSD,
+      price: selectedPricing.unitPriceUSD,
+      wnaPrice: selectedPricing.unitPriceUSD,
+      startingPriceIDR: selectedPricing.unitPriceIDR,
+      wniPrice: selectedPricing.unitPriceIDR
     };
 
     const mappedNationality: 'WNI' | 'WNA_CHINA' | 'WNA_EUROPE' = 
@@ -320,7 +343,10 @@ export default function TourDetailView({ tourId, onBack }: TourDetailViewProps) 
           tourBookingType="private"
           departureDate={selectedDate || new Date().toISOString().split('T')[0]}
           initialParticipants={guestCount}
-          initialUnitPrice={selectedTier.priceIDR}
+          initialUnitPriceUSD={selectedPricing.unitPriceUSD}
+          initialUnitPriceIDR={selectedPricing.unitPriceIDR}
+          initialUnitPrice={selectedPricing.unitPriceUSD}
+          surchargeMultiplier={currentMultiplier}
           nationalityType={mappedNationality}
           onBack={() => setIsBookingOpen(false)}
           onSuccess={(b) => {
@@ -457,9 +483,6 @@ export default function TourDetailView({ tourId, onBack }: TourDetailViewProps) 
 
   return (
     <div className="bg-white text-neutral-850 min-h-screen pt-20 pb-20">
-
-      {/* Service Switcher Navigation Bar */}
-      <ServiceNavTabs />
 
       {/* Top Breadcrumb & Return Navigation bar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 my-4 flex flex-wrap items-center justify-between gap-3">
@@ -957,24 +980,20 @@ export default function TourDetailView({ tourId, onBack }: TourDetailViewProps) 
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
                     <Globe className="w-4 h-4 text-[#315B4F]" />
-                    <span>Pilih Kewarganegaraan</span>
+                    <span>Kategori Tamu / Guest Category</span>
                   </span>
-                  <span className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-full font-mono uppercase tracking-wider ${
+                  <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full font-mono tracking-wider ${
                     selectedTierId === 'WNI' 
                       ? "bg-emerald-100 text-[#315B4F] border border-emerald-200" 
                       : selectedTierId === 'WNA_CHINA'
                         ? "bg-amber-100 text-amber-900 border border-amber-200"
-                        : selectedTierId === 'WNA_EUROPE'
-                          ? "bg-blue-100 text-blue-800 border border-blue-200"
-                          : "bg-gray-100 text-gray-500 border border-gray-200"
+                        : "bg-blue-100 text-blue-800 border border-blue-200"
                   }`}>
                     {selectedTierId === 'WNI' 
-                      ? "🇮🇩 WNI (Domestik)" 
+                      ? "🇮🇩 Domestic" 
                       : selectedTierId === 'WNA_CHINA' 
-                        ? "🇨🇳 WNA (China)" 
-                        : selectedTierId === 'WNA_EUROPE'
-                          ? "🇪🇺 WNA (Eropa)"
-                          : "Pilih Kewarganegaraan"
+                        ? "🇨🇳 Foreigner (China)" 
+                        : "🌐 Foreigner (International)"
                     }
                   </span>
                 </div>
@@ -990,12 +1009,15 @@ export default function TourDetailView({ tourId, onBack }: TourDetailViewProps) 
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-extrabold text-xs">🇮🇩 WNI</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-sm leading-none">🇮🇩</span>
+                        <span className="font-extrabold text-xs">Domestic</span>
+                      </div>
                       {selectedTierId === 'WNI' && <Check className="w-4 h-4 text-[#D6B16D]" />}
                     </div>
                     <div className="mt-1">
-                      <span className={`block text-[10px] ${selectedTierId === 'WNI' ? "text-emerald-100 font-medium" : "text-gray-400"}`}>
-                        Wisatawan Lokal
+                      <span className={`block text-[10px] ${selectedTierId === 'WNI' ? "text-emerald-100" : "text-gray-400"}`}>
+                        KTP / Paspor RI
                       </span>
                       <span className={`block text-[11px] font-bold font-mono ${selectedTierId === 'WNI' ? "text-[#D6B16D]" : "text-[#315B4F]"}`}>
                         {formatPrice(packageTiers[0].priceUSD, packageTiers[0].priceIDR)}
@@ -1017,14 +1039,17 @@ export default function TourDetailView({ tourId, onBack }: TourDetailViewProps) 
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-extrabold text-xs">🌐 WNA</span>
+                      <div className="flex items-center gap-1.5">
+                        <Globe className={`w-3.5 h-3.5 ${(selectedTierId === 'WNA_CHINA' || selectedTierId === 'WNA_EUROPE') ? "text-[#D6B16D]" : "text-[#315B4F]"}`} />
+                        <span className="font-extrabold text-xs">Foreigner</span>
+                      </div>
                       {(selectedTierId === 'WNA_CHINA' || selectedTierId === 'WNA_EUROPE') && (
                         <Check className="w-4 h-4 text-[#D6B16D]" />
                       )}
                     </div>
                     <div className="mt-1">
-                      <span className={`block text-[10px] ${(selectedTierId === 'WNA_CHINA' || selectedTierId === 'WNA_EUROPE') ? "text-emerald-100 font-medium" : "text-gray-400"}`}>
-                        Wisatawan Asing
+                      <span className={`block text-[10px] ${(selectedTierId === 'WNA_CHINA' || selectedTierId === 'WNA_EUROPE') ? "text-emerald-100" : "text-gray-400"}`}>
+                        Non-Indonesian
                       </span>
                       <span className={`block text-[11px] font-bold font-mono ${(selectedTierId === 'WNA_CHINA' || selectedTierId === 'WNA_EUROPE') ? "text-[#D6B16D]" : "text-[#315B4F]"}`}>
                         {formatPrice(packageTiers[1].priceUSD, packageTiers[1].priceIDR)}
@@ -1033,10 +1058,10 @@ export default function TourDetailView({ tourId, onBack }: TourDetailViewProps) 
                   </button>
                 </div>
 
-                {/* Subcategory toggle when WNA is selected */}
+                {/* Subcategory toggle when Foreigner is selected */}
                 {(selectedTierId === 'WNA_CHINA' || selectedTierId === 'WNA_EUROPE') && (
                   <div className="pt-2 border-t border-emerald-200/60 space-y-2 animate-fade-in">
-                    <span className="text-[10px] font-extrabold text-gray-700 block">Kategori Negara WNA:</span>
+                    <span className="text-[10px] font-bold text-gray-700 block">Pilih Asal Negara / Region:</span>
                     <div className="grid grid-cols-2 gap-2">
                       <button
                         type="button"
@@ -1048,11 +1073,14 @@ export default function TourDetailView({ tourId, onBack }: TourDetailViewProps) 
                         }`}
                       >
                         <div className="flex items-center justify-between text-[11px]">
-                          <span>🇨🇳 China Daratan</span>
+                          <span className="flex items-center gap-1.5">
+                            <span className="text-sm leading-none">🇨🇳</span>
+                            <span>China</span>
+                          </span>
                           {selectedTierId === 'WNA_CHINA' && <Check className="w-3.5 h-3.5 text-[#D6B16D]" />}
                         </div>
                         <span className={`text-[9px] mt-0.5 block ${selectedTierId === 'WNA_CHINA' ? "text-emerald-200" : "text-gray-400"}`}>
-                          Memerlukan ID WeChat &amp; RED
+                          WeChat / RED ID
                         </span>
                       </button>
 
@@ -1066,11 +1094,14 @@ export default function TourDetailView({ tourId, onBack }: TourDetailViewProps) 
                         }`}
                       >
                         <div className="flex items-center justify-between text-[11px]">
-                          <span>🇪🇺 Eropa / Non-China</span>
+                          <span className="flex items-center gap-1.5">
+                            <Globe className="w-3.5 h-3.5 text-blue-500" />
+                            <span>International</span>
+                          </span>
                           {selectedTierId === 'WNA_EUROPE' && <Check className="w-3.5 h-3.5 text-[#D6B16D]" />}
                         </div>
                         <span className={`text-[9px] mt-0.5 block ${selectedTierId === 'WNA_EUROPE' ? "text-emerald-200" : "text-gray-400"}`}>
-                          Memerlukan WhatsApp &amp; Paspor
+                          Global / WhatsApp
                         </span>
                       </button>
                     </div>
@@ -1111,8 +1142,8 @@ export default function TourDetailView({ tourId, onBack }: TourDetailViewProps) 
                     <span className="font-bold text-[#315B4F] font-mono">{selectedDate}</span>
                   </div>
                   <div className="flex items-center justify-between text-gray-500">
-                    <span>Kategori Kewarganegaraan</span>
-                    <span className={`font-mono font-bold uppercase rounded-md px-2 py-0.5 text-[10px] ${
+                    <span>Kategori Tamu</span>
+                    <span className={`font-mono font-bold rounded-md px-2 py-0.5 text-[10px] ${
                       selectedTierId === 'WNI' 
                         ? "text-[#315B4F] bg-emerald-50 border border-emerald-200" 
                         : selectedTierId === 'WNA_CHINA'
@@ -1120,10 +1151,10 @@ export default function TourDetailView({ tourId, onBack }: TourDetailViewProps) 
                           : "text-blue-800 bg-blue-50 border border-blue-200"
                     }`}>
                       {selectedTierId === 'WNI' 
-                        ? "🇮🇩 WNI (Domestik)" 
+                        ? "🇮🇩 Domestic" 
                         : selectedTierId === 'WNA_CHINA' 
-                          ? "🇨🇳 WNA (China Daratan)" 
-                          : "🇪🇺 WNA (Eropa & Non-China)"
+                          ? "🇨🇳 Foreigner (China)" 
+                          : "🌐 Foreigner (International)"
                       }
                     </span>
                   </div>
@@ -1136,15 +1167,19 @@ export default function TourDetailView({ tourId, onBack }: TourDetailViewProps) 
                     <span className="font-bold text-gray-800">{formatPrice(selectedTier.priceUSD, selectedTier.priceIDR)}</span>
                   </div>
                   <div className="flex items-center justify-between border-t border-gray-200 pt-2 font-bold">
-                    <span className="text-gray-900 font-extrabold uppercase text-[11px]">Total Estimasi</span>
+                    <div className="flex flex-col">
+                      <span className="text-gray-900 font-extrabold uppercase text-xs tracking-wider">TOTAL HARGA</span>
+                      <span className="text-[10px] text-gray-400 font-mono">Total Booking ({guestCount} Pax)</span>
+                    </div>
                     <span className="text-base sm:text-lg font-black text-[#315B4F]">
                       {formatPrice(selectedTier.priceUSD * guestCount, selectedTier.priceIDR * guestCount)}
                     </span>
                   </div>
 
-                  {/* PROCEED BUTTON */}
+                  {/* SINGLE PRIMARY PROCEED BUTTON */}
                   <div className="pt-2 space-y-2">
                     <button
+                      id="btn-proceed-to-checkout"
                       type="button"
                       onClick={() => {
                         if (tour) {
@@ -1152,11 +1187,14 @@ export default function TourDetailView({ tourId, onBack }: TourDetailViewProps) 
                         }
                         setIsBookingOpen(true);
                       }}
-                      className="w-full bg-[#315B4F] hover:bg-[#203c34] text-white font-display font-bold py-4 px-6 rounded-2xl text-xs sm:text-sm uppercase tracking-widest flex items-center justify-center gap-2 shadow-md transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+                      className="w-full bg-[#315B4F] hover:bg-[#203c34] text-white font-display font-bold py-4 px-6 rounded-2xl text-xs sm:text-sm uppercase tracking-widest flex flex-col items-center justify-center gap-0.5 shadow-lg shadow-[#315B4F]/20 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
                     >
-                      <Sparkles className="h-4 w-4 text-[#D6B16D]" />
-                      <span>Lanjut ke Pembayaran (Proceed to Checkout)</span>
-                      <ArrowRight className="h-4 w-4" />
+                      <div className="flex items-center gap-2">
+                        <Sparkles className="h-4 w-4 text-[#D6B16D]" />
+                        <span className="text-xs sm:text-sm font-black">LANJUT KE PEMBAYARAN</span>
+                        <ArrowRight className="h-4 w-4" />
+                      </div>
+                      <span className="text-[10px] text-amber-300 font-mono tracking-wider font-semibold">PROCEED TO CHECKOUT</span>
                     </button>
 
                     <div className="space-y-1.5 pt-1">
@@ -1296,35 +1334,63 @@ export default function TourDetailView({ tourId, onBack }: TourDetailViewProps) 
         />
       </div>
 
-      {/* Sticky Floating Bottom Action Bar */}
+      {/* Sticky Floating Bottom Action Bar - Linear Booking Progression */}
       {!isBookingOpen && (
-        <div className="fixed bottom-0 left-0 right-0 bg-[#315B4F]/95 backdrop-blur-md border-t border-[#467b6b] z-40 shadow-2xl px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-6 flex items-center justify-between transition-all animate-fade-in">
-          <div className="flex flex-col items-start text-left max-w-[40%] sm:max-w-xs">
-            <span className="text-[9px] text-amber-300 font-bold uppercase tracking-widest font-mono">Destinasi Pilihan</span>
-            <span className="text-xs sm:text-sm font-black text-white truncate w-full">{tour.name}</span>
+        <div className="fixed bottom-0 left-0 right-0 bg-[#1f3a32]/95 backdrop-blur-md border-t border-[#315B4F] z-40 shadow-2xl px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-6 flex items-center justify-between transition-all animate-fade-in">
+          <div className="flex flex-col items-start text-left min-w-0 pr-2">
+            {selectedDate && selectedTier ? (
+              <>
+                <span className="text-[10px] text-amber-300 font-bold uppercase tracking-wider font-mono flex items-center gap-1">
+                  <span>TOTAL HARGA</span>
+                  <span className="text-gray-300 font-normal">({guestCount} Pax • {selectedTierId === 'WNI' ? 'Domestic' : 'Foreigner'})</span>
+                </span>
+                <span className="text-sm sm:text-base font-black text-white truncate">
+                  {formatPrice(selectedTier.priceUSD * guestCount, selectedTier.priceIDR * guestCount)}
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="text-[10px] text-gray-300 font-bold uppercase tracking-wider font-mono">
+                  Mulai Dari
+                </span>
+                <span className="text-sm sm:text-base font-black text-amber-300 truncate">
+                  {formatPrice(tour.startingPrice, tour.startingPriceIDR)} <span className="text-xs text-gray-300 font-normal">/ pax</span>
+                </span>
+              </>
+            )}
           </div>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <button
-              onClick={() => {
-                const el = document.getElementById('booking-section');
-                if (el) {
-                  el.scrollIntoView({ behavior: 'smooth' });
-                }
-              }}
-              className="bg-amber-400 hover:bg-amber-300 active:bg-amber-500 text-neutral-950 font-black px-3.5 py-2.5 sm:px-5 sm:py-3 rounded-xl text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-lg transition-all cursor-pointer border border-amber-300 min-h-[44px]"
-            >
-              <User className="h-4 w-4 shrink-0" />
-              <span>Private Tour</span>
-            </button>
-            <button
-              onClick={() => {
-                setPage('share-tour');
-              }}
-              className="bg-amber-400 hover:bg-amber-300 active:bg-amber-500 text-neutral-950 font-black px-3.5 py-2.5 sm:px-5 sm:py-3 rounded-xl text-[10px] sm:text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-lg transition-all cursor-pointer border border-amber-300 min-h-[44px]"
-            >
-              <Users className="h-4 w-4 shrink-0" />
-              <span>Open Trip / Join Share Tour</span>
-            </button>
+          <div className="flex items-center gap-2 shrink-0">
+            {selectedDate && selectedTier ? (
+              <button
+                id="btn-sticky-proceed"
+                type="button"
+                onClick={() => {
+                  if (tour) {
+                    trackBookNowClick(tour.name, 'Private Tour', tour.id);
+                  }
+                  setIsBookingOpen(true);
+                }}
+                className="bg-amber-400 hover:bg-amber-300 active:bg-amber-500 text-neutral-950 font-black px-4 py-2.5 sm:px-6 sm:py-3 rounded-xl text-xs sm:text-sm uppercase tracking-wider flex items-center gap-2 shadow-lg transition-all cursor-pointer border border-amber-300 min-h-[44px]"
+              >
+                <span>Lanjut ke Pembayaran</span>
+                <ArrowRight className="h-4 w-4 shrink-0" />
+              </button>
+            ) : (
+              <button
+                id="btn-sticky-select-date"
+                type="button"
+                onClick={() => {
+                  const el = document.getElementById('booking-section');
+                  if (el) {
+                    el.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
+                className="bg-amber-400 hover:bg-amber-300 active:bg-amber-500 text-neutral-950 font-black px-4 py-2.5 sm:px-6 sm:py-3 rounded-xl text-xs sm:text-sm uppercase tracking-wider flex items-center gap-2 shadow-lg transition-all cursor-pointer border border-amber-300 min-h-[44px]"
+              >
+                <Calendar className="h-4 w-4 shrink-0" />
+                <span>Pilih Tanggal &amp; Pesan</span>
+              </button>
+            )}
           </div>
         </div>
       )}

@@ -397,8 +397,8 @@ export const zhTranslations = {
     secure: '100% 安全可靠',
     secureSubtitle: '官方认证与银行级安全交易保障。',
     licensed: '正规客运营运资质',
-    allRightsReserved: '版权所有',
-    copyright: '© 2026 PT Sawah Jaya Trans. 版权所有。',
+    allRightsReserved: 'All rights reserved',
+    copyright: '© 2026 PT Sawah Jaya Trans. All rights reserved.',
   },
 
   // WeChat Modal

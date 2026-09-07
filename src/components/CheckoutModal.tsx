@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useApp } from '../AppContext';
-import { X, ShieldCheck, CheckCircle2, Star, Sparkles, User, Mail, Phone, Calendar, ArrowRight, ChevronRight, Fuel, Briefcase, CreditCard, Loader2 } from 'lucide-react';
+import { X, ShieldCheck, CheckCircle2, Star, Sparkles, User, Mail, Phone, Calendar, ArrowRight, ChevronRight, Fuel, Briefcase, CreditCard, Loader2, Globe } from 'lucide-react';
 import { VEHICLES } from '../data';
 import { motion, AnimatePresence } from 'motion/react';
 import { processArtoPayPayment } from '../lib/artopay';
+import { usdToIDR, idrToUSD } from '../utils/pricingUtils';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -60,23 +61,26 @@ export default function CheckoutModal({
     if (serviceType === 'tour') {
       const guests = initialDetails.guests || 1;
       let unitUSD = basePriceUSD;
-      let unitIDR = basePriceIDR;
       if (initialDetails?.nationalityType) {
         if (nationalityType === 'WNI') {
           unitUSD = initialDetails.nationalityType === 'WNI' ? basePriceUSD : Math.round(basePriceUSD / 1.25);
-          unitIDR = initialDetails.nationalityType === 'WNI' ? basePriceIDR : Math.max(1, basePriceIDR - 300000);
         } else {
           unitUSD = initialDetails.nationalityType === 'WNI' ? Math.round(basePriceUSD * 1.25) : basePriceUSD;
-          unitIDR = initialDetails.nationalityType === 'WNI' ? (basePriceIDR + 300000) : basePriceIDR;
         }
       }
-      return { usd: Math.round(unitUSD * guests), idr: Math.round(unitIDR * guests) };
+      const totalUSD = Math.round(unitUSD * guests);
+      const totalIDR = basePriceIDR > 0 && initialDetails.nationalityType === nationalityType 
+        ? Math.round(basePriceIDR * guests) 
+        : usdToIDR(totalUSD);
+      return { usd: totalUSD, idr: totalIDR };
     }
     const mult = getVehicleMultiplier();
     const days = initialDetails.days || 1;
     const guests = 1;
     const finalUSD = Math.round(basePriceUSD * mult * days * guests);
-    const finalIDR = Math.round(basePriceIDR * mult * days * guests);
+    const finalIDR = basePriceIDR > 0 
+      ? Math.round(basePriceIDR * mult * days * guests) 
+      : usdToIDR(finalUSD);
     return { usd: finalUSD, idr: finalIDR };
   };
 
@@ -411,7 +415,7 @@ export default function CheckoutModal({
                   {serviceType === 'tour' && (
                     <div className="space-y-2">
                       <label className="text-xs font-bold text-amber-400 uppercase tracking-wider pl-1 block">
-                        Kategori Kewarganegaraan
+                        Kategori Tamu / Guest Category
                       </label>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                         <button
@@ -423,8 +427,8 @@ export default function CheckoutModal({
                               : 'bg-white/5 border-white/10 text-neutral-400 hover:text-white'
                           }`}
                         >
-                          <span>🇮🇩 WNI</span>
-                          <span className="text-[10px] opacity-75 font-normal">(Domestik)</span>
+                          <span className="text-sm">🇮🇩</span>
+                          <span>Domestic</span>
                         </button>
 
                         <button
@@ -436,8 +440,8 @@ export default function CheckoutModal({
                               : 'bg-white/5 border-white/10 text-neutral-400 hover:text-white'
                           }`}
                         >
-                          <span>🇨🇳 WNA China</span>
-                          <span className="text-[10px] opacity-75 font-normal">(Daratan)</span>
+                          <span className="text-sm">🇨🇳</span>
+                          <span>Foreigner (China)</span>
                         </button>
 
                         <button
@@ -449,8 +453,8 @@ export default function CheckoutModal({
                               : 'bg-white/5 border-white/10 text-neutral-400 hover:text-white'
                           }`}
                         >
-                          <span>🇪🇺 WNA Eropa</span>
-                          <span className="text-[10px] opacity-75 font-normal">(&amp; Int)</span>
+                          <Globe className="w-3.5 h-3.5 text-blue-400" />
+                          <span>Foreigner (International)</span>
                         </button>
                       </div>
                     </div>
