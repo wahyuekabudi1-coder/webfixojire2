@@ -6,7 +6,7 @@ import {
   Review
 } from './types';
 import { TOURS, REVIEWS } from './data';
-import { EXCHANGE_RATE_USD_TO_IDR, EXCHANGE_RATE_USD_TO_CNY } from './utils/pricingUtils';
+import { EXCHANGE_RATE_USD_TO_IDR, EXCHANGE_RATE_USD_TO_CNY, ENABLE_FOREIGN_CURRENCIES } from './utils/pricingUtils';
 
 interface AppContextProps {
   activePage: ActivePage;
@@ -133,10 +133,19 @@ if (typeof window !== 'undefined' && localStorage.getItem(CLEAN_STATE_KEY) !== '
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [activePage, setActivePageState] = useState<ActivePage>('home');
   const [currency, setCurrencyState] = useState<'USD' | 'IDR' | 'CNY'>(() => {
-    return (localStorage.getItem('sj_currency') as 'USD' | 'IDR' | 'CNY') || 'USD';
+    // Tombol mata uang Dolar ($) dan Yen/Yuan (¥) sementara dimatikan (jangan dihapus)
+    if (!ENABLE_FOREIGN_CURRENCIES) {
+      try { localStorage.setItem('sj_currency', 'IDR'); } catch(e){}
+      return 'IDR';
+    }
+    return (localStorage.getItem('sj_currency') as 'USD' | 'IDR' | 'CNY') || 'IDR';
   });
 
   const setCurrency = (curr: 'USD' | 'IDR' | 'CNY') => {
+    // Jika mata uang asing dimatikan, cegah perubahan ke USD atau CNY
+    if (!ENABLE_FOREIGN_CURRENCIES && curr !== 'IDR') {
+      return;
+    }
     setCurrencyState(curr);
     localStorage.setItem('sj_currency', curr);
   };

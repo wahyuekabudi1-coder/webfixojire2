@@ -1941,9 +1941,22 @@ app.get(['/api/orders/:orderId/payment-status', '/api/artopay/status/:orderId'],
   }
 });
 
+// Direct PDF Download route with forced attachment header
+app.get(['/download-booking-guide', '/api/download-booking-guide', '/download/booking-flow-pdf', '/api/download/booking-flow-pdf', '/download/panduan-booking.pdf'], (req, res) => {
+  const filePath = path.join(process.cwd(), 'public', 'smart_journey_booking_flow_guide.pdf');
+  if (fs.existsSync(filePath)) {
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename="Panduan_Alur_Pemesanan_Wisata_Smart_Journey.pdf"');
+    return res.sendFile(filePath);
+  }
+  return res.status(404).send('PDF not found');
+});
+
 // -------------------------------------------------------------
 // Frontend Asset Handling (Vite / Static production)
 // -------------------------------------------------------------
+
+app.use(express.static(path.join(process.cwd(), 'public')));
 
 async function startServer() {
   if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useApp } from '../AppContext';
 import { useLanguageCurrency } from '../sharetour/LanguageCurrencyContext';
 import { Menu, X, ChevronDown, Calendar, Globe, Plane, Car, Route, Star, Compass, Handshake, Share2, Users, Check } from 'lucide-react';
+import { ENABLE_FOREIGN_CURRENCIES } from '../utils/pricingUtils';
 import { AnimatePresence, motion } from 'motion/react';
 
 export default function Header() {
@@ -67,9 +68,12 @@ export default function Header() {
 
   const handleLanguageChange = (newLang: 'id' | 'en' | 'zh') => {
     setLanguage(newLang);
-    if (newLang === 'id' && currency === 'USD') setCurrency('IDR');
-    else if (newLang === 'zh' && currency === 'USD') setCurrency('CNY');
-    else if (newLang === 'en' && (currency === 'IDR' || currency === 'CNY')) setCurrency('USD');
+    // Tombol mata uang Dolar ($) dan Yen (¥) sementara dinonaktifkan
+    if (ENABLE_FOREIGN_CURRENCIES) {
+      if (newLang === 'id' && currency === 'USD') setCurrency('IDR');
+      else if (newLang === 'zh' && currency === 'USD') setCurrency('CNY');
+      else if (newLang === 'en' && (currency === 'IDR' || currency === 'CNY')) setCurrency('USD');
+    }
     setIsLangOpen(false);
     setIsMobileLangOpen(false);
     setIsDrawerLangOpen(false);
@@ -286,40 +290,54 @@ export default function Header() {
               </AnimatePresence>
             </div>
 
-            {/* Desktop Currency Switcher (Original Exact 3-line Stack) */}
-            <div className="flex flex-col items-center justify-center bg-neutral-100/90 border border-neutral-200/90 p-0.5 rounded-lg shadow-xs" id="desktop-currency-switcher" title="Select Currency">
+            {/* Desktop Currency Switcher (Tombol Dolar $ dan Yen ¥ sementara dimatikan, jangan dihapus) */}
+            <div className="flex flex-col items-center justify-center bg-neutral-100/90 border border-neutral-200/90 p-0.5 rounded-lg shadow-xs" id="desktop-currency-switcher" title="Mata Uang">
+              {/* Tombol Dolar ($) - Sementara dimatikan, jangan dihapus */}
               <button
-                onClick={() => setCurrency('USD')}
-                className={`w-6 h-4 rounded text-[11px] font-black leading-none flex items-center justify-center transition-all duration-150 cursor-pointer ${
-                  currency === 'USD'
-                    ? 'bg-amber-500 text-neutral-950 shadow-xs font-black'
-                    : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200/60 font-bold'
+                type="button"
+                disabled={!ENABLE_FOREIGN_CURRENCIES}
+                onClick={() => ENABLE_FOREIGN_CURRENCIES && setCurrency('USD')}
+                className={`w-6 h-4 rounded text-[11px] font-black leading-none flex items-center justify-center transition-all duration-150 ${
+                  !ENABLE_FOREIGN_CURRENCIES
+                    ? 'text-neutral-300 opacity-30 cursor-not-allowed select-none'
+                    : currency === 'USD'
+                    ? 'bg-amber-500 text-neutral-950 shadow-xs font-black cursor-pointer'
+                    : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200/60 font-bold cursor-pointer'
                 }`}
-                title="USD ($)"
+                title={!ENABLE_FOREIGN_CURRENCIES ? "Dolar ($) - Sementara dinonaktifkan" : "USD ($)"}
                 aria-label="Set currency to US Dollar ($)"
               >
                 $
               </button>
+
+              {/* Tombol Rupiah (IDR) - Aktif */}
               <button
+                type="button"
                 onClick={() => setCurrency('IDR')}
                 className={`w-6 h-4 rounded text-[9.5px] font-black leading-none flex items-center justify-center transition-all duration-150 cursor-pointer ${
                   currency === 'IDR'
                     ? 'bg-amber-500 text-neutral-950 shadow-xs font-black'
                     : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200/60 font-bold'
                 }`}
-                title="IDR (Rp)"
+                title="IDR (Rp) - Aktif"
                 aria-label="Set currency to Indonesian Rupiah (Rp)"
               >
                 Rp
               </button>
+
+              {/* Tombol Yen / Yuan (¥) - Sementara dimatikan, jangan dihapus */}
               <button
-                onClick={() => setCurrency('CNY')}
-                className={`w-6 h-4 rounded text-[11px] font-black leading-none flex items-center justify-center transition-all duration-150 cursor-pointer ${
-                  currency === 'CNY'
-                    ? 'bg-amber-500 text-neutral-950 shadow-xs font-black'
-                    : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200/60 font-bold'
+                type="button"
+                disabled={!ENABLE_FOREIGN_CURRENCIES}
+                onClick={() => ENABLE_FOREIGN_CURRENCIES && setCurrency('CNY')}
+                className={`w-6 h-4 rounded text-[11px] font-black leading-none flex items-center justify-center transition-all duration-150 ${
+                  !ENABLE_FOREIGN_CURRENCIES
+                    ? 'text-neutral-300 opacity-30 cursor-not-allowed select-none'
+                    : currency === 'CNY'
+                    ? 'bg-amber-500 text-neutral-950 shadow-xs font-black cursor-pointer'
+                    : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200/60 font-bold cursor-pointer'
                 }`}
-                title="CNY (¥)"
+                title={!ENABLE_FOREIGN_CURRENCIES ? "Yen / Yuan (¥) - Sementara dinonaktifkan" : "CNY (¥)"}
                 aria-label="Set currency to Chinese Yuan (¥)"
               >
                 ¥
@@ -443,23 +461,33 @@ export default function Header() {
                       <span className="font-bold font-mono">IDR</span>
                       {currency === 'IDR' && <Check className="h-3 w-3 text-amber-600" />}
                     </button>
+                    {/* Tombol Dolar (USD) - Sementara dimatikan, jangan dihapus */}
                     <button
-                      onClick={() => handleCurrencyChange('USD')}
-                      className={`w-full text-left px-2.5 py-1.5 text-xs flex items-center justify-between transition-colors cursor-pointer ${
-                        currency === 'USD' ? 'bg-amber-50 text-amber-800 font-bold' : 'text-neutral-700 active:bg-neutral-100'
+                      disabled={!ENABLE_FOREIGN_CURRENCIES}
+                      onClick={() => ENABLE_FOREIGN_CURRENCIES && handleCurrencyChange('USD')}
+                      className={`w-full text-left px-2.5 py-1.5 text-xs flex items-center justify-between transition-colors ${
+                        !ENABLE_FOREIGN_CURRENCIES
+                          ? 'text-neutral-400 opacity-40 cursor-not-allowed select-none'
+                          : currency === 'USD' ? 'bg-amber-50 text-amber-800 font-bold cursor-pointer' : 'text-neutral-700 active:bg-neutral-100 cursor-pointer'
                       }`}
+                      title={!ENABLE_FOREIGN_CURRENCIES ? "Dolar (USD) - Sementara dinonaktifkan" : "USD ($)"}
                     >
-                      <span className="font-bold font-mono">USD</span>
-                      {currency === 'USD' && <Check className="h-3 w-3 text-amber-600" />}
+                      <span className="font-bold font-mono">USD {!ENABLE_FOREIGN_CURRENCIES && <span className="text-[10px] text-neutral-400 font-normal">(Off)</span>}</span>
+                      {ENABLE_FOREIGN_CURRENCIES && currency === 'USD' && <Check className="h-3 w-3 text-amber-600" />}
                     </button>
+                    {/* Tombol Yen / CNY - Sementara dimatikan, jangan dihapus */}
                     <button
-                      onClick={() => handleCurrencyChange('CNY')}
-                      className={`w-full text-left px-2.5 py-1.5 text-xs flex items-center justify-between transition-colors cursor-pointer ${
-                        currency === 'CNY' ? 'bg-amber-50 text-amber-800 font-bold' : 'text-neutral-700 active:bg-neutral-100'
+                      disabled={!ENABLE_FOREIGN_CURRENCIES}
+                      onClick={() => ENABLE_FOREIGN_CURRENCIES && handleCurrencyChange('CNY')}
+                      className={`w-full text-left px-2.5 py-1.5 text-xs flex items-center justify-between transition-colors ${
+                        !ENABLE_FOREIGN_CURRENCIES
+                          ? 'text-neutral-400 opacity-40 cursor-not-allowed select-none'
+                          : currency === 'CNY' ? 'bg-amber-50 text-amber-800 font-bold cursor-pointer' : 'text-neutral-700 active:bg-neutral-100 cursor-pointer'
                       }`}
+                      title={!ENABLE_FOREIGN_CURRENCIES ? "Yen / CNY - Sementara dinonaktifkan" : "CNY (¥)"}
                     >
-                      <span className="font-bold font-mono">CNY</span>
-                      {currency === 'CNY' && <Check className="h-3 w-3 text-amber-600" />}
+                      <span className="font-bold font-mono">CNY/Yen {!ENABLE_FOREIGN_CURRENCIES && <span className="text-[10px] text-neutral-400 font-normal">(Off)</span>}</span>
+                      {ENABLE_FOREIGN_CURRENCIES && currency === 'CNY' && <Check className="h-3 w-3 text-amber-600" />}
                     </button>
                   </motion.div>
                 )}
@@ -693,23 +721,33 @@ export default function Header() {
                               <span className="font-bold font-mono">IDR</span>
                               {currency === 'IDR' && <Check className="h-4 w-4 text-amber-600" />}
                             </button>
+                            {/* Tombol Dolar (USD) - Sementara dimatikan, jangan dihapus */}
                             <button
-                              onClick={() => handleCurrencyChange('USD')}
-                              className={`w-full text-left px-3.5 py-2.5 text-xs flex items-center justify-between cursor-pointer ${
-                                currency === 'USD' ? 'bg-amber-50 text-amber-800 font-bold' : 'text-neutral-700 hover:bg-neutral-50'
+                              disabled={!ENABLE_FOREIGN_CURRENCIES}
+                              onClick={() => ENABLE_FOREIGN_CURRENCIES && handleCurrencyChange('USD')}
+                              className={`w-full text-left px-3.5 py-2.5 text-xs flex items-center justify-between ${
+                                !ENABLE_FOREIGN_CURRENCIES
+                                  ? 'text-neutral-400 opacity-40 cursor-not-allowed select-none'
+                                  : currency === 'USD' ? 'bg-amber-50 text-amber-800 font-bold cursor-pointer' : 'text-neutral-700 hover:bg-neutral-50 cursor-pointer'
                               }`}
+                              title={!ENABLE_FOREIGN_CURRENCIES ? "Dolar (USD) - Sementara dinonaktifkan" : "USD ($)"}
                             >
-                              <span className="font-bold font-mono">USD</span>
-                              {currency === 'USD' && <Check className="h-4 w-4 text-amber-600" />}
+                              <span className="font-bold font-mono">USD {!ENABLE_FOREIGN_CURRENCIES && <span className="text-[10px] text-neutral-400 font-normal">(Off)</span>}</span>
+                              {ENABLE_FOREIGN_CURRENCIES && currency === 'USD' && <Check className="h-4 w-4 text-amber-600" />}
                             </button>
+                            {/* Tombol Yen / CNY - Sementara dimatikan, jangan dihapus */}
                             <button
-                              onClick={() => handleCurrencyChange('CNY')}
-                              className={`w-full text-left px-3.5 py-2.5 text-xs flex items-center justify-between cursor-pointer ${
-                                currency === 'CNY' ? 'bg-amber-50 text-amber-800 font-bold' : 'text-neutral-700 hover:bg-neutral-50'
+                              disabled={!ENABLE_FOREIGN_CURRENCIES}
+                              onClick={() => ENABLE_FOREIGN_CURRENCIES && handleCurrencyChange('CNY')}
+                              className={`w-full text-left px-3.5 py-2.5 text-xs flex items-center justify-between ${
+                                !ENABLE_FOREIGN_CURRENCIES
+                                  ? 'text-neutral-400 opacity-40 cursor-not-allowed select-none'
+                                  : currency === 'CNY' ? 'bg-amber-50 text-amber-800 font-bold cursor-pointer' : 'text-neutral-700 hover:bg-neutral-50 cursor-pointer'
                               }`}
+                              title={!ENABLE_FOREIGN_CURRENCIES ? "Yen / CNY - Sementara dinonaktifkan" : "CNY (¥)"}
                             >
-                              <span className="font-bold font-mono">CNY</span>
-                              {currency === 'CNY' && <Check className="h-4 w-4 text-amber-600" />}
+                              <span className="font-bold font-mono">CNY/Yen {!ENABLE_FOREIGN_CURRENCIES && <span className="text-[10px] text-neutral-400 font-normal">(Off)</span>}</span>
+                              {ENABLE_FOREIGN_CURRENCIES && currency === 'CNY' && <Check className="h-4 w-4 text-amber-600" />}
                             </button>
                           </motion.div>
                         )}

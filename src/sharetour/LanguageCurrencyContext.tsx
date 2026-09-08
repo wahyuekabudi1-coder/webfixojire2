@@ -13,7 +13,7 @@ import {
   getLocalizedDestinations,
 } from "../locales";
 import { Tour, Vehicle } from "../types";
-import { formatCurrencyAmount } from "../utils/pricingUtils";
+import { formatCurrencyAmount, ENABLE_FOREIGN_CURRENCIES } from "../utils/pricingUtils";
 
 export type { Language, Currency };
 
@@ -1030,7 +1030,12 @@ export const LanguageCurrencyProvider: React.FC<{ children: React.ReactNode }> =
   });
 
   const [currency, setCurrencyState] = useState<Currency>(() => {
-    return (localStorage.getItem("sj_currency") as Currency) || "USD";
+    // Tombol mata uang Dolar ($) dan Yen/Yuan (¥) sementara dimatikan (jangan dihapus)
+    if (!ENABLE_FOREIGN_CURRENCIES) {
+      try { localStorage.setItem("sj_currency", "IDR"); } catch (e) {}
+      return "IDR";
+    }
+    return (localStorage.getItem("sj_currency") as Currency) || "IDR";
   });
 
   const setLanguage = (lang: Language) => {
@@ -1039,6 +1044,10 @@ export const LanguageCurrencyProvider: React.FC<{ children: React.ReactNode }> =
   };
 
   const setCurrency = (curr: Currency) => {
+    // Jika mata uang asing dimatikan, cegah perubahan ke USD atau CNY
+    if (!ENABLE_FOREIGN_CURRENCIES && curr !== "IDR") {
+      return;
+    }
     setCurrencyState(curr);
     localStorage.setItem("sj_currency", curr);
   };

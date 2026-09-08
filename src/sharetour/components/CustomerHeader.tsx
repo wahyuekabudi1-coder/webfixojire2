@@ -1,6 +1,7 @@
 import React from "react";
 import { Compass, Languages, Coins } from "lucide-react";
 import { useLanguageCurrency } from "../LanguageCurrencyContext";
+import { ENABLE_FOREIGN_CURRENCIES } from "../../utils/pricingUtils";
 import SawahJayaLogo from "./SawahJayaLogo";
 
 interface CustomerHeaderProps {
@@ -61,21 +62,29 @@ export default function CustomerHeader({ currentView, onNavigate, isAdminLoggedI
               </button>
             </div>
 
-            {/* Currency Selector (Dollar, Rupiah & Yuan): 3 lines high, logo only */}
-            <div className="flex flex-col items-center bg-[#25463c] border border-[#2b5145] rounded-lg p-0.5" id="curr-switcher" title="Select Currency">
+            {/* Currency Selector (Dollar, Rupiah & Yuan): Tombol Dolar & Yen sementara dimatikan, jangan dihapus */}
+            <div className="flex flex-col items-center bg-[#25463c] border border-[#2b5145] rounded-lg p-0.5" id="curr-switcher" title="Pilih Mata Uang">
+              {/* Tombol Dollar (USD) - Sementara dimatikan, jangan dihapus */}
               <button
-                title="Dollar (USD)"
-                onClick={() => setCurrency("USD")}
-                className={`w-5.5 h-3.5 rounded text-[10px] font-black leading-none flex items-center justify-center transition-all duration-150 cursor-pointer ${
-                  currency === "USD"
-                    ? "bg-[#D6B16D] text-[#315B4F] shadow-sm font-black"
-                    : "text-gray-300 hover:text-white"
+                type="button"
+                disabled={!ENABLE_FOREIGN_CURRENCIES}
+                title={!ENABLE_FOREIGN_CURRENCIES ? "Dollar (USD) - Sementara dinonaktifkan" : "Dollar (USD)"}
+                onClick={() => ENABLE_FOREIGN_CURRENCIES && setCurrency("USD")}
+                className={`w-5.5 h-3.5 rounded text-[10px] font-black leading-none flex items-center justify-center transition-all duration-150 ${
+                  !ENABLE_FOREIGN_CURRENCIES
+                    ? "text-gray-500 opacity-30 cursor-not-allowed select-none"
+                    : currency === "USD"
+                    ? "bg-[#D6B16D] text-[#315B4F] shadow-sm font-black cursor-pointer"
+                    : "text-gray-300 hover:text-white cursor-pointer"
                 }`}
               >
                 $
               </button>
+
+              {/* Tombol Rupiah (IDR) - Aktif */}
               <button
-                title="Rupiah (IDR)"
+                type="button"
+                title="Rupiah (IDR) - Aktif"
                 onClick={() => setCurrency("IDR")}
                 className={`w-5.5 h-3.5 rounded text-[8.5px] font-black leading-none flex items-center justify-center transition-all duration-150 cursor-pointer ${
                   currency === "IDR"
@@ -85,13 +94,19 @@ export default function CustomerHeader({ currentView, onNavigate, isAdminLoggedI
               >
                 Rp
               </button>
+
+              {/* Tombol Yuan / Yen (CNY) - Sementara dimatikan, jangan dihapus */}
               <button
-                title="Yuan (CNY)"
-                onClick={() => setCurrency("CNY")}
-                className={`w-5.5 h-3.5 rounded text-[10px] font-black leading-none flex items-center justify-center transition-all duration-150 cursor-pointer ${
-                  currency === "CNY"
-                    ? "bg-[#D6B16D] text-[#315B4F] shadow-sm font-black"
-                    : "text-gray-300 hover:text-white"
+                type="button"
+                disabled={!ENABLE_FOREIGN_CURRENCIES}
+                title={!ENABLE_FOREIGN_CURRENCIES ? "Yen / Yuan (CNY) - Sementara dinonaktifkan" : "Yen / Yuan (CNY)"}
+                onClick={() => ENABLE_FOREIGN_CURRENCIES && setCurrency("CNY")}
+                className={`w-5.5 h-3.5 rounded text-[10px] font-black leading-none flex items-center justify-center transition-all duration-150 ${
+                  !ENABLE_FOREIGN_CURRENCIES
+                    ? "text-gray-500 opacity-30 cursor-not-allowed select-none"
+                    : currency === "CNY"
+                    ? "bg-[#D6B16D] text-[#315B4F] shadow-sm font-black cursor-pointer"
+                    : "text-gray-300 hover:text-white cursor-pointer"
                 }`}
               >
                 ¥
